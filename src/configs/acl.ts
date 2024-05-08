@@ -23,7 +23,7 @@ const defineRulesFor = (role: string, subject: string) => {
       case 'admin':
         return ['manage']
       case 'client':
-        return ['read', 'create']
+        return ['read', 'create', 'update', 'delete']
       default:
         return []
     }
@@ -42,7 +42,7 @@ export const buildAbilityFor = (role: string, subject: string): AppAbility => {
 }
 
 export const defaultACLObj: ACLObj = {
-  action: 'create',
+  action: 'read',
   subject: 'all'
 }
 

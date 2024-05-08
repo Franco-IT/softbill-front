@@ -38,9 +38,4 @@ const Home = () => {
   )
 }
 
-Home.acl = {
-  action: 'read',
-  subject: 'all'
-}
-
 export default Home

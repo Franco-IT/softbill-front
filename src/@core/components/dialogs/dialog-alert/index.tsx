@@ -13,10 +13,10 @@ interface DialogAlertProps {
   description?: string
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
-  handleClickAgree?: () => void
+  handleConfirmDelete: () => void
 }
 
-const DialogAlert = ({ open, setOpen, description, question, handleClickAgree }: DialogAlertProps) => {
+const DialogAlert = ({ open, setOpen, description, question, handleConfirmDelete }: DialogAlertProps) => {
   return (
     <Fragment>
       <Dialog
@@ -27,13 +27,18 @@ const DialogAlert = ({ open, setOpen, description, question, handleClickAgree }:
       >
         <DialogTitle id='alert-dialog-title'>{question}</DialogTitle>
         <DialogContent>
-          <DialogContentText id='alert-dialog-description'>
-            {description}
-          </DialogContentText>
+          <DialogContentText id='alert-dialog-description'>{description}</DialogContentText>
         </DialogContent>
         <DialogActions className='dialog-actions-dense'>
-          <Button onClick={handleClickAgree}>Sim</Button>
           <Button onClick={() => setOpen(false)}>Não</Button>
+          <Button
+            onClick={() => {
+              handleConfirmDelete()
+              setOpen(false)
+            }}
+          >
+            Sim
+          </Button>
         </DialogActions>
       </Dialog>
     </Fragment>

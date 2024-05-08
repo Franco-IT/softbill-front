@@ -44,8 +44,8 @@ const LinkStyled = styled(Link)(({ theme }) => ({
 }))
 
 const defaultValues = {
-  password: 'password',
-  email: 'noreply@dktech.com.br'
+  password: '',
+  email: ''
 }
 
 interface FormData {

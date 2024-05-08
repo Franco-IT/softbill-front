@@ -1,6 +1,8 @@
 import { createContext, useEffect, useState, ReactNode } from 'react'
 import { useRouter } from 'next/router'
 
+import { setCookie, deleteCookie, getCookie } from 'cookies-next'
+
 import { api } from 'src/services/api'
 import authConfig from 'src/configs/auth'
 
@@ -34,8 +36,8 @@ const AuthProvider = ({ children }: Props) => {
 
   useEffect(() => {
     const initAuth = async (): Promise<void> => {
-      const storedToken = localStorage.getItem(authConfig.storageTokenKeyName)!
-      const userId = localStorage.getItem(authConfig.storageUserDataKeyName)!
+      const storedToken = getCookie(authConfig.storageTokenKeyName)
+      const userId = getCookie(authConfig.storageUserDataKeyName)
 
       if (storedToken) {
         setLoading(true)
@@ -71,8 +73,8 @@ const AuthProvider = ({ children }: Props) => {
 
       api.defaults.headers['Authorization'] = `Bearer ${data.token}`
 
-      localStorage.setItem(authConfig.storageTokenKeyName, data.token)
-      localStorage.setItem(authConfig.storageUserDataKeyName, data.userId)
+      setCookie(authConfig.storageTokenKeyName, data.token)
+      setCookie(authConfig.storageUserDataKeyName, data.userId)
 
       const userData = await api.get(`${authConfig.meEndpoint}/${data.userId}`)
 
@@ -90,8 +92,8 @@ const AuthProvider = ({ children }: Props) => {
 
   const handleLogout = () => {
     setUser(null)
-    localStorage.removeItem(authConfig.storageUserDataKeyName)
-    localStorage.removeItem(authConfig.storageTokenKeyName)
+    deleteCookie(authConfig.storageUserDataKeyName)
+    deleteCookie(authConfig.storageTokenKeyName)
     router.push('/login')
   }
 

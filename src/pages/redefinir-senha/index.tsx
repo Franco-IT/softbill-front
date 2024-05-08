@@ -186,7 +186,7 @@ const ResetPassword = () => {
                       onBlur={onBlur}
                       label='Confirmar Senha'
                       onChange={onChange}
-                      placeholder='Senha'
+                      placeholder='Confirmar Senha'
                       error={Boolean(errors.confirmPassword)}
                       {...(errors.confirmPassword && { helperText: errors.confirmPassword.message })}
                       type={showConfirmPassword ? 'text' : 'password'}

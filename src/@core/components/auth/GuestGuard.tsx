@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import { useAuth } from 'src/hooks/useAuth'
 
 import authConfig from 'src/configs/auth'
+import { getCookie } from 'cookies-next'
 
 interface GuestGuardProps {
   children: ReactNode
@@ -24,7 +25,7 @@ const GuestGuard = (props: GuestGuardProps) => {
       return
     }
 
-    if (window.localStorage.getItem(authConfig.storageUserDataKeyName)) {
+    if (getCookie(authConfig.storageUserDataKeyName)) {
       router.replace('/')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

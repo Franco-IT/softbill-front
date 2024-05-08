@@ -25,11 +25,11 @@ const CanViewNavLink = (props: Props) => {
     return <>{children}</>
   }
 
-  if (
-    auth.user &&
-    (auth.user.role === navLink?.subject || navLink?.subject === 'all') &&
-    ability.can(navLink?.action, navLink?.subject)
-  ) {
+  if (auth.user && auth.user.role === navLink?.subject && ability.can(navLink?.action, navLink?.subject)) {
+    return <>{children}</>
+  }
+
+  if (auth.user && Array.isArray(navLink?.subject) && navLink?.subject.includes(auth.user?.role as any)) {
     return <>{children}</>
   }
 
