@@ -1,13 +1,10 @@
 import React, { createContext, useRef, useState } from 'react'
 import equals from 'fast-deep-equal'
 
-import { useProjectMenu } from 'src/hooks/useProjectMenu'
-import { useDeviceKeys } from 'src/hooks/useDeviceKeys'
-
 import { api } from 'src/services/api'
 
 type HttpMethod = 'PATCH' | 'PUT' | 'POST'
-type refreshTypeValues = 'menu' | 'deviceKeys'
+type refreshTypeValues = 'null'
 
 type AutoSaveValuesType = {
   saveState: string
@@ -29,12 +26,9 @@ const AutoSaveContext = createContext(defaultProvider)
 const AutoSaveProvider = ({ children }: { children: React.ReactNode }) => {
   const [saveState, setSaveState] = useState<string>('saved')
 
-  const { refreshMenu, setRefreshMenu } = useProjectMenu()
-  const { refreshDeviceKeys, setRefreshDeviceKeys } = useDeviceKeys()
 
   const refreshType: { [key in refreshTypeValues]: () => void } = {
-    menu: () => setRefreshMenu(!refreshMenu),
-    deviceKeys: () => setRefreshDeviceKeys(!refreshDeviceKeys)
+    null: () => null
   }
 
   const prevData = useRef<any>({})

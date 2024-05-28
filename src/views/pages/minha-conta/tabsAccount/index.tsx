@@ -1,4 +1,3 @@
-// ** React Imports
 import { SyntheticEvent, useState, useEffect } from 'react'
 
 import Box from '@mui/material/Box'
@@ -15,10 +14,9 @@ import ChangePassword from '../changePassword'
 
 import Icon from 'src/@core/components/icon'
 import { UserProps } from 'src/types/users'
-import { ResaleProps } from 'src/types/resales'
 
 interface TabsAccountProps {
-  data: UserProps | ResaleProps
+  data: UserProps
 }
 
 // ** Styled Tab component
