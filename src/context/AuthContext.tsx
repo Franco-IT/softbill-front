@@ -12,7 +12,6 @@ import toast from 'react-hot-toast'
 
 import { AuthValuesType, LoginParams, ErrCallbackType, UserDataType } from './types'
 
-// ** Defaults
 const defaultProvider: AuthValuesType = {
   user: null,
   loading: true,
@@ -39,25 +38,25 @@ const AuthProvider = ({ children }: Props) => {
       const storedToken = getCookie(authConfig.storageTokenKeyName)
       const userId = getCookie(authConfig.storageUserDataKeyName)
 
-      if (storedToken) {
-        setLoading(true)
-
-        api.defaults.headers['Authorization'] = `Bearer ${storedToken}`
-
-        api
-          .get(`${authConfig.meEndpoint}/${userId}`)
-          .then(async response => {
-            setLoading(false)
-            setUser(formatAuthUser(response.data.data))
-          })
-          .catch(() => {
-            setLoading(false)
-            handleLogout()
-            toast.error('Sua sessão expirou, faça login novamente.')
-          })
-      } else {
+      if (!storedToken) {
         setLoading(false)
+        router.pathname !== '/redefinir-senha' && handleLogout()
+
+        return
       }
+
+      setLoading(true)
+
+      api.defaults.headers['Authorization'] = `Bearer ${storedToken}`
+
+      api
+        .get(`${authConfig.meEndpoint}/${userId}`)
+        .then(async response => setUser(formatAuthUser(response.data.data)))
+        .catch(() => {
+          handleLogout()
+          toast.error('Sua sessão expirou, faça login novamente.')
+        })
+        .finally(() => setLoading(false))
     }
 
     initAuth()
