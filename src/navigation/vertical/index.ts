@@ -13,7 +13,7 @@ const navigation = (): VerticalNavItemsType => {
     },
     {
       title: 'Usuários',
-      subtitle: 'ver Usuários',
+      subtitle: 'Ver Usuários',
       path: '/usuarios',
       action: 'create',
       auth: true,
@@ -22,54 +22,24 @@ const navigation = (): VerticalNavItemsType => {
       avatarColor: 'primary'
     },
     {
-      title: 'Revendas',
-      subtitle: 'ver Revendas',
-      path: '/revendas',
-      auth: true,
+      title: 'Contabilidade',
+      subtitle: 'Ver Usuários Contabilidade',
+      path: '/contabilidade',
       action: 'create',
-      subject: 'admin',
-      icon: 'tabler:garden-cart',
-      avatarColor: 'success'
-    },
-    {
-      title: 'Dispositivos',
-      subtitle: 'ver Dispositivos',
-      path: '/dispositivos',
       auth: true,
-      action: 'create',
       subject: 'admin',
-      icon: 'tabler:devices',
+      icon: 'map:accounting',
       avatarColor: 'warning'
     },
     {
       title: 'Clientes',
-      subtitle: 'ver Clientes',
+      subtitle: 'Ver Clientes',
       action: 'read',
       auth: true,
       subject: 'client',
       path: '/clientes',
       icon: 'tabler:users',
       avatarColor: 'primary'
-    },
-    {
-      title: 'Projetos',
-      subtitle: 'ver Projetos',
-      action: 'read',
-      auth: true,
-      subject: 'client',
-      path: '/projetos',
-      icon: 'tabler:clipboard-list',
-      avatarColor: 'success'
-    },
-    {
-      title: 'Monitoramento',
-      subtitle: 'ver Monitoramento',
-      path: '/monitoramento',
-      action: 'read',
-      auth: true,
-      subject: 'client',
-      icon: 'tabler:eye-pin',
-      avatarColor: 'warning'
     },
     {
       title: 'Minha Conta',

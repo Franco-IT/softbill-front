@@ -131,6 +131,7 @@ const EditAdminAccount = ({ openEdit, handleEditClose, data, refresh, setRefresh
                   <CustomTextField
                     fullWidth
                     autoFocus
+                    type='email'
                     label='E-mail'
                     value={value}
                     onBlur={onBlur}

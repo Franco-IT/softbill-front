@@ -130,7 +130,8 @@ const LoginPage = () => {
                     <CustomTextField
                       fullWidth
                       autoFocus
-                      label='Email'
+                      type='email'
+                      label='E-mail'
                       value={value}
                       onBlur={onBlur}
                       onChange={onChange}

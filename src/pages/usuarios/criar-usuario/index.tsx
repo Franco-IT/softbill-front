@@ -112,6 +112,7 @@ const CreateUser = () => {
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
+                    type='email'
                     label='E-mail'
                     value={value}
                     onBlur={onBlur}
