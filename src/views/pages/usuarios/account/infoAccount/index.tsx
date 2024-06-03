@@ -15,13 +15,14 @@ interface ColorsType {
 }
 
 const roleColors: ColorsType = {
-  admin: 'info'
+  ADMIN: 'info',
+  CLIENT: 'success',
+  ACCOUNTING: 'warning'
 }
+
 const statusColors: ColorsType = {
-  active: 'success',
-  inactive: 'secondary',
-  blocked: 'error',
-  pending: 'warning'
+  ACTIVE: 'success',
+  INACTIVE: 'secondary'
 }
 
 interface InfoAccountProps {
@@ -54,8 +55,8 @@ const InfoAccount = ({ data }: InfoAccountProps) => {
                       rounded
                       skin='light'
                       size='small'
-                      label={verifyUserStatus(String(data.status).toLocaleLowerCase())}
-                      color={statusColors[String(data.status).toLocaleLowerCase()]}
+                      label={verifyUserStatus(String(data.status))}
+                      color={statusColors[String(data.status)]}
                       sx={{
                         textTransform: 'capitalize'
                       }}
@@ -67,8 +68,8 @@ const InfoAccount = ({ data }: InfoAccountProps) => {
                       rounded
                       skin='light'
                       size='small'
-                      label={verifyUserType(String(data.type).toLocaleLowerCase())}
-                      color={roleColors[String(data.type).toLocaleLowerCase()]}
+                      label={verifyUserType(String(data.type))}
+                      color={roleColors[String(data.type)]}
                       sx={{ textTransform: 'capitalize', mb: 4 }}
                     />
                   </Box>

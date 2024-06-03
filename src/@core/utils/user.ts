@@ -1,21 +1,21 @@
 export const verifyUserStatus = (status: string) => {
   switch (status) {
-    case 'active':
+    case 'ACTIVE':
       return 'Ativo'
-    case 'inactive':
+    case 'INACTIVE':
       return 'Inativo'
-    case 'blocked':
-      return 'Bloqueado'
-    case 'pending':
-      return 'Pendente'
+    default:
+      return 'Situação desconhecida'
   }
 }
 
 export const verifyUserType = (role: string) => {
   switch (role) {
-    case 'admin':
+    case 'ADMIN':
       return 'Administrador'
-    case 'client':
+    case 'CLIENT':
       return 'Cliente'
+    case 'ACCOUNTING':
+      return 'Contador'
   }
 }

@@ -20,9 +20,9 @@ const defineRulesFor = (role: string, subject: string) => {
   const { can, rules } = new AbilityBuilder(AppAbility)
   const permission = (role: string): string[] => {
     switch (role) {
-      case 'admin':
+      case 'ADMIN':
         return ['manage']
-      case 'client':
+      case 'ACCOUNTING':
         return ['read', 'create', 'update', 'delete']
       default:
         return []

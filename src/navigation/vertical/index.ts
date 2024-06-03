@@ -8,7 +8,7 @@ const navigation = (): VerticalNavItemsType => {
       path: '/home',
       action: 'read',
       auth: true,
-      subject: ['admin', 'client'],
+      subject: ['ADMIN', 'ACCOUNTING'],
       icon: 'tabler:smart-home'
     },
     {
@@ -17,7 +17,7 @@ const navigation = (): VerticalNavItemsType => {
       path: '/usuarios',
       action: 'create',
       auth: true,
-      subject: 'admin',
+      subject: 'ADMIN',
       icon: 'tabler:users',
       avatarColor: 'primary'
     },
@@ -27,7 +27,7 @@ const navigation = (): VerticalNavItemsType => {
       path: '/contabilidade',
       action: 'create',
       auth: true,
-      subject: 'admin',
+      subject: 'ADMIN',
       icon: 'map:accounting',
       avatarColor: 'warning'
     },
@@ -36,7 +36,7 @@ const navigation = (): VerticalNavItemsType => {
       subtitle: 'Ver Clientes',
       action: 'read',
       auth: true,
-      subject: 'client',
+      subject: 'ACCOUNTING',
       path: '/clientes',
       icon: 'tabler:users',
       avatarColor: 'primary'
@@ -46,7 +46,7 @@ const navigation = (): VerticalNavItemsType => {
       path: '/minha-conta',
       action: 'read',
       auth: true,
-      subject: ['admin', 'client'],
+      subject: ['ADMIN', 'ACCOUNTING'],
       icon: 'tabler:user-check',
       avatarColor: 'info'
     }

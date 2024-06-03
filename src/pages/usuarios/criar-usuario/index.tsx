@@ -230,7 +230,7 @@ const CreateUser = () => {
 
 CreateUser.acl = {
   action: 'manage',
-  subject: 'admin'
+  subject: 'ADMIN'
 }
 
 export default CreateUser

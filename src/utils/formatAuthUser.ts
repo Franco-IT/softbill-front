@@ -3,7 +3,7 @@ export const formatAuthUser = (user: any) => {
     id: user._id,
     name: user.name,
     email: user.email,
-    role: String(user.type).toLocaleLowerCase(),
+    role: user.type,
     avatar: user.avatar || null
   }
 }

@@ -2,10 +2,11 @@ export interface UserProps {
   _id: string
   name: string
   email: string
-  phone: string
-  createdAt?: string
-  status: 'active' | 'inactive'
-  type: 'ADMIN'
+  status: 'ACTIVE' | 'INACTIVE'
+  type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING'
+  documentNumber: string
+  documentType: 'CPF' | 'CNPJ' | 'OTHER'
+  createdAt: Date
 }
 
 export interface UserDataProps {

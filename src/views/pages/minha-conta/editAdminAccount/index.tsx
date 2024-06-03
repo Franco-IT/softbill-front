@@ -161,7 +161,6 @@ const EditAdminAccount = ({ openEdit, handleEditClose, data, refresh, setRefresh
                   >
                     <MenuItem value='ACTIVE'>Ativo</MenuItem>
                     <MenuItem value='INACTIVE'>Inativo</MenuItem>
-                    <MenuItem value='BLOCKED'>Bloqueado</MenuItem>
                   </CustomTextField>
                 )}
               />
