@@ -24,7 +24,7 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Contabilidade',
       subtitle: 'Ver Usuários Contabilidade',
-      path: '/contabilidade',
+      path: '/contabilidades',
       action: 'create',
       auth: true,
       subject: 'ADMIN',

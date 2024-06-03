@@ -34,7 +34,7 @@ interface UserProfileProps {
   setRefresh: (value: boolean) => void
 }
 
-const UserProfile = ({ data, refresh, setRefresh }: UserProfileProps) => {
+const Account = ({ data, refresh, setRefresh }: UserProfileProps) => {
   const router = useRouter()
 
   const [openEdit, setOpenEdit] = useState<boolean>(false)
@@ -152,4 +152,4 @@ const UserProfile = ({ data, refresh, setRefresh }: UserProfileProps) => {
   )
 }
 
-export default UserProfile
+export default Account

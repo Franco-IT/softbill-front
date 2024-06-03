@@ -64,7 +64,7 @@ const CreateUser = () => {
       status: 'ACTIVE',
       password: '',
       confirmPassword: '',
-      type: 'ADMIN'
+      type: 'ACCOUNTING'
     } as FormData,
     mode: 'onBlur',
     resolver: yupResolver(schema)
@@ -75,8 +75,8 @@ const CreateUser = () => {
       .post('/users', data)
       .then(response => {
         if (response.status === 201) {
-          toast.success('Usuário adicionado com sucesso!')
-          router.push('/usuarios')
+          toast.success('Contabilidade adicionada com sucesso!')
+          router.push('/contabilidades')
         }
       })
       .catch(error => {
@@ -85,13 +85,13 @@ const CreateUser = () => {
 
           return toast.error('E-mail já cadastrado')
         }
-        toast.error('Erro ao criar usuário, tente novamente mais tarde')
+        toast.error('Erro ao criar contabilidade, tente novamente mais tarde')
       })
   }
 
   return (
     <Card>
-      <CardHeader title='Adicionar Usuário' />
+      <CardHeader title='Adicionar Contabilidade' />
       <CardContent>
         <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={6}>

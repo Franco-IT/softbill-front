@@ -57,7 +57,7 @@ const List = () => {
   const [users, setUsers] = useState<UserProps[]>([])
 
   const { data: rows } = useGetDataApi<UserListDataProps>({
-    url: '/users?type=ADMIN',
+    url: '/users?type=ACCOUNTING',
     params: { page: page + 1, perPage: rowsPerPage, search: filter }
   })
 
@@ -116,7 +116,7 @@ const List = () => {
                   <TableRow>
                     <TableCell colSpan={6}>
                       <Typography noWrap variant='h6' sx={{ color: 'text.secondary' }}>
-                        Nenhum usuário encontrado
+                        Nenhuma contabilidade encontrada
                       </Typography>
                     </TableCell>
                   </TableRow>
@@ -133,7 +133,7 @@ const List = () => {
                             <Typography
                               noWrap
                               component={Link}
-                              href={`/usuarios/${row._id}`}
+                              href={`/contabilidades/${row._id}`}
                               sx={{
                                 fontWeight: 500,
                                 textDecoration: 'none',

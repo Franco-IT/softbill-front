@@ -88,7 +88,7 @@ const EditAccount = ({ openEdit, handleEditClose, data, refresh, setRefresh }: E
           pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
         }}
       >
-        Editar Usuário
+        Editar Contabilidade
       </DialogTitle>
       <DialogContent
         sx={{
@@ -97,7 +97,7 @@ const EditAccount = ({ openEdit, handleEditClose, data, refresh, setRefresh }: E
         }}
       >
         <DialogContentText variant='body2' id='user-view-edit-description' sx={{ textAlign: 'center', mb: 7 }}>
-          Edite as informações do usuário
+          Edite as informações da contabilidade
         </DialogContentText>
         <form noValidate autoComplete='off'>
           <Grid container spacing={6}>
@@ -175,11 +175,11 @@ const EditAccount = ({ openEdit, handleEditClose, data, refresh, setRefresh }: E
           pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
         }}
       >
-        <Button variant='contained' sx={{ mr: 2 }} onClick={handleSubmit(onSubmit)}>
-          Salvar
-        </Button>
         <Button variant='tonal' color='secondary' onClick={handleEditClose}>
           Cancelar
+        </Button>
+        <Button variant='contained' sx={{ mr: 2 }} onClick={handleSubmit(onSubmit)}>
+          Salvar
         </Button>
       </DialogActions>
     </Dialog>

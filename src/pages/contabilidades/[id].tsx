@@ -5,21 +5,21 @@ import { NextSeo } from 'next-seo'
 
 import { Grid, LinearProgress } from '@mui/material'
 
-import Account from 'src/views/pages/usuarios/Account'
-import TabsAccount from 'src/views/pages/usuarios/Account/tabsAccount'
+import TabsAccount from 'src/views/pages/contabilidades/Account/tabsAccount'
+import Account from 'src/views/pages/contabilidades/Account'
 
 import themeConfig from 'src/configs/themeConfig'
 
 import useGetDataApi from 'src/hooks/useGetDataApi'
 import { UserDataProps } from 'src/types/users'
 
-export default function User() {
+export default function Accounting() {
   const router = useRouter()
 
   const { id } = router.query
 
   const {
-    data: user,
+    data: accounting,
     loading,
     error,
     refresh,
@@ -32,19 +32,19 @@ export default function User() {
 
   if (loading) return <LinearProgress />
 
-  if (user) {
+  if (accounting) {
     return (
       <>
         <NextSeo
-          title={`${themeConfig.templateName} - ${user.data.name}`}
-          description={`${themeConfig.templateName} - ${user.data.name}`}
+          title={`${themeConfig.templateName} - ${accounting.data.name}`}
+          description={`${themeConfig.templateName} - ${accounting.data.name}`}
         />
         <Grid container spacing={6}>
           <Grid item xs={12} xl={4}>
-            <Account data={user.data} refresh={refresh} setRefresh={setRefresh} />
+            <Account data={accounting.data} refresh={refresh} setRefresh={setRefresh} />
           </Grid>
           <Grid item xs={12} xl={8}>
-            <TabsAccount data={user.data} />
+            <TabsAccount data={accounting.data} />
           </Grid>
         </Grid>
       </>
@@ -52,7 +52,7 @@ export default function User() {
   }
 }
 
-User.acl = {
+Accounting.acl = {
   action: 'manage',
   subject: 'ADMIN'
 }

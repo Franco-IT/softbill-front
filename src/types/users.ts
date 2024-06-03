@@ -9,7 +9,7 @@ export interface UserProps {
   createdAt: Date
 }
 
-export interface UserDataProps {
+export interface UserListDataProps {
   page: number
   per_page: number
   pre_page: number | null
@@ -17,4 +17,9 @@ export interface UserDataProps {
   total: number
   total_pages: number
   data: UserProps[]
+}
+
+export interface UserDataProps {
+  message: string
+  data: UserProps
 }
