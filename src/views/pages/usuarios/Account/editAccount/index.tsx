@@ -175,11 +175,11 @@ const EditAccount = ({ openEdit, handleEditClose, data, refresh, setRefresh }: E
           pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
         }}
       >
-        <Button variant='contained' sx={{ mr: 2 }} onClick={handleSubmit(onSubmit)}>
-          Salvar
-        </Button>
         <Button variant='tonal' color='secondary' onClick={handleEditClose}>
           Cancelar
+        </Button>
+        <Button variant='contained' sx={{ mr: 2 }} onClick={handleSubmit(onSubmit)}>
+          Salvar
         </Button>
       </DialogActions>
     </Dialog>

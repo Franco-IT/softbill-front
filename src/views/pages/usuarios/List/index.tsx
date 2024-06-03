@@ -23,7 +23,7 @@ import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
 import { formatDate } from 'src/@core/utils/format'
 
 import { ThemeColor } from 'src/@core/layouts/types'
-import { UserDataProps, UserProps } from 'src/types/users'
+import { UserListDataProps, UserProps } from 'src/types/users'
 
 import toast from 'react-hot-toast'
 import { api } from 'src/services/api'
@@ -56,7 +56,7 @@ const List = () => {
   const [filter, setFilter] = useState('')
   const [users, setUsers] = useState<UserProps[]>([])
 
-  const { data: rows } = useGetDataApi<UserDataProps>({
+  const { data: rows } = useGetDataApi<UserListDataProps>({
     url: '/users?type=ADMIN',
     params: { page: page + 1, perPage: rowsPerPage, search: filter }
   })

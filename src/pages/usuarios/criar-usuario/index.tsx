@@ -247,7 +247,7 @@ const CreateUser = () => {
                   Cancelar
                 </Button>
                 <Button type='submit' variant='contained' sx={{ mr: 2 }}>
-                  Adicionar Usuário
+                  Adicionar
                 </Button>
               </Box>
             </Grid>
