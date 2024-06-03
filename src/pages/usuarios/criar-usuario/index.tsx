@@ -18,7 +18,21 @@ const schema = yup.object().shape({
   confirmPassword: yup
     .string()
     .required('Confirmação de senha obrigatória')
-    .equals([yup.ref('password')], 'As senhas não coincidem')
+    .equals([yup.ref('password')], 'As senhas não coincidem'),
+  documentType: yup.string().required('Tipo de documento obrigatório'),
+  documentNumber: yup
+    .string()
+    .required('Número do documento obrigatório')
+    .when('documentType', ([documentType], schema) => {
+      switch (documentType) {
+        case 'CPF':
+          return schema.matches(/^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$/, 'CPF inválido')
+        case 'CNPJ':
+          return schema.matches(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido')
+        default:
+          return schema.min(9, 'Documento inválido')
+      }
+    })
 })
 
 interface FormData {
@@ -28,6 +42,8 @@ interface FormData {
   confirmPassword: string
   status: string
   type: string
+  documentType: string
+  documentNumber: string
 }
 
 const CreateUser = () => {
@@ -56,13 +72,7 @@ const CreateUser = () => {
 
   const onSubmit = async (data: FormData) => {
     api
-      .post('/users', {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        status: data.status,
-        type: data.type
-      })
+      .post('/users', data)
       .then(response => {
         if (response.status === 201) {
           toast.success('Usuário adicionado com sucesso!')
@@ -126,26 +136,46 @@ const CreateUser = () => {
             </Grid>
             <Grid item xs={12} sm={6} lg={4}>
               <Controller
-                name='status'
+                name='documentType'
                 control={control}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     select
                     fullWidth
-                    label='Status'
+                    label='Tipo de Documento'
                     required
                     value={value}
                     onBlur={onBlur}
                     onChange={onChange}
-                    error={Boolean(errors.status)}
-                    {...(errors.status && { helperText: errors.status.message })}
+                    error={Boolean(errors.documentType)}
+                    {...(errors.documentType && { helperText: errors.documentType.message })}
                   >
-                    <MenuItem value='ACTIVE'>Ativo</MenuItem>
+                    <MenuItem value='CPF'>CPF</MenuItem>
+                    <MenuItem value='CNPJ'>CNPJ</MenuItem>
+                    <MenuItem value='OTHER'>Outro</MenuItem>
                   </CustomTextField>
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={6} lg={4}>
+              <Controller
+                name='documentNumber'
+                control={control}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <CustomTextField
+                    fullWidth
+                    value={value}
+                    onBlur={onBlur}
+                    label='Número do Documento'
+                    onChange={onChange}
+                    placeholder='Número do Documento'
+                    error={Boolean(errors.documentNumber)}
+                    {...(errors.documentNumber && { helperText: errors.documentNumber.message })}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} lg={4}>
               <Controller
                 name='password'
                 control={control}
@@ -178,7 +208,7 @@ const CreateUser = () => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={6} lg={4}>
               <Controller
                 name='confirmPassword'
                 control={control}
