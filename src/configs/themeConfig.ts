@@ -49,7 +49,7 @@ type ThemeConfig = {
 
 const themeConfig: ThemeConfig = {
   // ** Layout Configs
-  templateName: 'DK Tech' /* App Name */,
+  templateName: 'SoftBill' /* App Name */,
   layout: 'vertical' /* vertical | horizontal */,
   mode: 'dark' as Mode /* light | dark | semi-dark /*! Note: semi-dark value will only work for Vertical Layout */,
   direction: 'ltr' /* ltr | rtl */,

@@ -1,12 +1,12 @@
-import UsersList from 'src/views/pages/usuarios/list'
+import List from 'src/views/pages/usuarios/List'
 
 const Users = () => {
-  return <UsersList />
+  return <List />
 }
 
 Users.acl = {
   action: 'manage',
-  subject: 'admin'
+  subject: 'ADMIN'
 }
 
 export default Users

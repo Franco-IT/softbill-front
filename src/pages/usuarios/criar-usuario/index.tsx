@@ -112,6 +112,7 @@ const CreateUser = () => {
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
+                    type='email'
                     label='E-mail'
                     value={value}
                     onBlur={onBlur}
@@ -229,7 +230,7 @@ const CreateUser = () => {
 
 CreateUser.acl = {
   action: 'manage',
-  subject: 'admin'
+  subject: 'ADMIN'
 }
 
 export default CreateUser

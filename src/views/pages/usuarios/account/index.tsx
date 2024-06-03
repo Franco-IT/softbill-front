@@ -24,10 +24,8 @@ const roleColors: ColorsType = {
 }
 
 const statusColors: ColorsType = {
-  active: 'success',
-  inactive: 'secondary',
-  blocked: 'error',
-  pending: 'warning'
+  ACTIVE: 'success',
+  INACTIVE: 'secondary'
 }
 
 interface UserProfileProps {
@@ -102,8 +100,8 @@ const UserProfile = ({ data, refresh, setRefresh }: UserProfileProps) => {
                   rounded
                   skin='light'
                   size='small'
-                  label={verifyUserStatus(String(data.status).toLocaleLowerCase())}
-                  color={statusColors[String(data.status).toLocaleLowerCase()]}
+                  label={verifyUserStatus(String(data.status))}
+                  color={statusColors[String(data.status)]}
                   sx={{
                     textTransform: 'capitalize'
                   }}

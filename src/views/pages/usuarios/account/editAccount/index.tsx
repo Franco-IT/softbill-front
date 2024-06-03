@@ -131,6 +131,7 @@ const EditAccount = ({ openEdit, handleEditClose, data, refresh, setRefresh }: E
                   <CustomTextField
                     fullWidth
                     autoFocus
+                    type='email'
                     label='E-mail'
                     value={value}
                     onBlur={onBlur}
@@ -160,7 +161,6 @@ const EditAccount = ({ openEdit, handleEditClose, data, refresh, setRefresh }: E
                   >
                     <MenuItem value='ACTIVE'>Ativo</MenuItem>
                     <MenuItem value='INACTIVE'>Inativo</MenuItem>
-                    <MenuItem value='BLOCKED'>Bloqueado</MenuItem>
                   </CustomTextField>
                 )}
               />

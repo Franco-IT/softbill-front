@@ -53,5 +53,5 @@ export default function User() {
 
 User.acl = {
   action: 'manage',
-  subject: 'admin'
+  subject: 'ADMIN'
 }
