@@ -243,7 +243,7 @@ const CreateUser = () => {
             </Grid>
             <Grid item xs={12} sm={12}>
               <Box sx={{ display: 'flex', alignItems: 'end', justifyContent: 'end' }}>
-                <Button variant='outlined' sx={{ mr: 2 }} onClick={() => router.push('/usuarios')}>
+                <Button variant='outlined' sx={{ mr: 2 }} onClick={() => router.push('/contabilidades')}>
                   Cancelar
                 </Button>
                 <Button type='submit' variant='contained' sx={{ mr: 2 }}>
