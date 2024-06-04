@@ -1,0 +1,56 @@
+import { Box, TableCell, TableHead, TableRow, TableSortLabel } from '@mui/material'
+import { visuallyHidden } from '@mui/utils'
+import { HeadCellProps } from './HeadCells'
+import { ClientProps } from 'src/types/clients'
+
+type Order = 'asc' | 'desc'
+
+interface EnhancedTableProps {
+  headCells: HeadCellProps[]
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ClientProps) => void
+  order: Order
+  orderBy: string
+  rowCount: number
+}
+
+const EnhancedTableHead = (props: EnhancedTableProps) => {
+  const { order, orderBy, onRequestSort, headCells } = props
+
+  const createSortHandler = (property: keyof ClientProps) => (event: React.MouseEvent<unknown>) => {
+    onRequestSort(event, property)
+  }
+
+  return (
+    <TableHead
+      sx={{
+        backgroundColor: '#4A5072'
+      }}
+    >
+      <TableRow>
+        {headCells.map(headCell => (
+          <TableCell
+            key={headCell.id}
+            align={'left'}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id as keyof ClientProps)}
+            >
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <Box component='span' sx={visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </Box>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  )
+}
+
+export default EnhancedTableHead

@@ -25,7 +25,7 @@ const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDele
   }
 
   const handleViewProfileClick = () => {
-    router.push(`/contabilidades/${id}`)
+    router.push(`/usuarios/${id}`)
   }
 
   const handleDeleteProfileClick = () => {
@@ -85,7 +85,7 @@ const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDele
         id={id}
         open={open}
         setOpen={setOpen}
-        question={'Você tem certeza que deseja deletar esta contabilidade?'}
+        question={'Você tem certeza que deseja deletar este cliente?'}
         description={' Esta ação não poderá ser desfeita.'}
         handleConfirmDelete={() => handleConfirmDelete(id)}
       />

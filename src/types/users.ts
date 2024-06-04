@@ -1,4 +1,4 @@
-export interface UserProps {
+export type UserProps = {
   _id: string
   name: string
   email: string
@@ -9,7 +9,7 @@ export interface UserProps {
   createdAt: Date
 }
 
-export interface UserListDataProps {
+export type UserListDataProps = {
   page: number
   per_page: number
   pre_page: number | null
@@ -19,7 +19,7 @@ export interface UserListDataProps {
   data: UserProps[]
 }
 
-export interface UserDataProps {
+export type UserDataProps = {
   message: string
   data: UserProps
 }
