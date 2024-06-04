@@ -23,3 +23,7 @@ module.exports = withPWA({
     return config
   }
 })
+
+const withVideos = require('next-videos')
+
+module.exports = withVideos()
