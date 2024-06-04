@@ -1,13 +1,13 @@
 import { Box, TableCell, TableHead, TableRow, TableSortLabel } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
 import { HeadCellProps } from './HeadCells'
-import { UserProps } from 'src/types/users'
+import { ClientProps } from 'src/types/clients'
 
 type Order = 'asc' | 'desc'
 
 interface EnhancedTableProps {
   headCells: HeadCellProps[]
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof UserProps) => void
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ClientProps) => void
   order: Order
   orderBy: string
   rowCount: number
@@ -16,7 +16,7 @@ interface EnhancedTableProps {
 const EnhancedTableHead = (props: EnhancedTableProps) => {
   const { order, orderBy, onRequestSort, headCells } = props
 
-  const createSortHandler = (property: keyof UserProps) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof ClientProps) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property)
   }
 
@@ -37,7 +37,7 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id as keyof UserProps)}
+              onClick={createSortHandler(headCell.id as keyof ClientProps)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (

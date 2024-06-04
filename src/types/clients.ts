@@ -1,6 +1,7 @@
-export interface ClientProps {
+export type ClientProps = {
   _id: string
   name: string
+  email: string
   phone: string
   cellphone: string
   cep: string
