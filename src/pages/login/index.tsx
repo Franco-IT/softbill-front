@@ -162,6 +162,9 @@ const LoginPage = () => {
         </CardContent>
       </Card>
       <video
+        autoPlay
+        loop
+        muted
         style={{
           position: 'absolute',
           width: '100%',
@@ -173,11 +176,9 @@ const LoginPage = () => {
           opacity: 0.4,
           filter: 'brightness(0.5)'
         }}
-        src={require('../../../public/login-video.mp4')}
-        autoPlay
-        muted
-        loop
-      />
+      >
+        <source src='/login-video.mp4' type='video/mp4' />
+      </video>
     </Box>
   )
 }

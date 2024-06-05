@@ -24,6 +24,3 @@ module.exports = withPWA({
   }
 })
 
-const withVideos = require('next-videos')
-
-module.exports = withVideos()
