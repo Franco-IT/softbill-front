@@ -27,6 +27,8 @@ import { useAuth } from 'src/hooks/useAuth'
 
 import toast from 'react-hot-toast'
 
+import { styleVideo } from './style'
+
 const schema = yup.object().shape({
   email: yup.string().email('E-mail inválido').required('E-mail obrigatório'),
   password: yup.string().required('Senha obrigatória')
@@ -161,23 +163,7 @@ const LoginPage = () => {
           </form>
         </CardContent>
       </Card>
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        style={{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          top: 0,
-          left: 0,
-          zIndex: -1,
-          opacity: 0.4,
-          filter: 'brightness(0.5)'
-        }}
-      >
+      <video autoPlay loop muted playsInline style={styleVideo}>
         <source src='/login-video.mp4' type='video/mp4' />
       </video>
     </Box>
