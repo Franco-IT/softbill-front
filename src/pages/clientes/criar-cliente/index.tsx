@@ -3,16 +3,17 @@ import { useRouter } from 'next/router'
 import { Box, Button, Card, CardContent, CardHeader, Grid, InputAdornment, MenuItem } from '@mui/material'
 import CustomTextField from 'src/@core/components/mui/text-field'
 
-import toast from 'react-hot-toast'
+import { useAuth } from 'src/hooks/useAuth'
 
 import * as yup from 'yup'
+import { applyDocumentMask } from 'src/utils/inputs'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 import { api } from 'src/services/api'
-
 import { delay } from 'src/utils/delay'
-import { useAuth } from 'src/hooks/useAuth'
+
+import toast from 'react-hot-toast'
 
 enum StatesEnum {
   AC = 'AC',
@@ -54,11 +55,11 @@ const schema = yup.object().shape({
     .when('documentType', ([documentType], schema) => {
       switch (documentType) {
         case 'CPF':
-          return schema.matches(/^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$/, 'CPF inválido')
+          return schema.matches(/^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$/, 'CPF inválido').max(14, 'CPF inválido')
         case 'CNPJ':
-          return schema.matches(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido')
+          return schema.matches(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido').max(18, 'CNPJ inválido')
         default:
-          return schema.min(9, 'Documento inválido')
+          return schema
       }
     }),
   status: yup.string().required('Status obrigatório'),
@@ -107,6 +108,7 @@ const CreateClient = () => {
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors }
   } = useForm({
     defaultValues: {
@@ -197,12 +199,15 @@ const CreateClient = () => {
                     fullWidth
                     label='Tipo de Documento'
                     required
-                    value={value}
+                    value={value || 'default'}
                     onBlur={onBlur}
                     onChange={onChange}
                     error={Boolean(errors.documentType)}
                     {...(errors.documentType && { helperText: errors.documentType.message })}
                   >
+                    <MenuItem value='default' disabled>
+                      Selecione
+                    </MenuItem>
                     <MenuItem value='CPF'>CPF</MenuItem>
                     <MenuItem value='CNPJ'>CNPJ</MenuItem>
                     <MenuItem value='OTHER'>Outro</MenuItem>
@@ -220,7 +225,7 @@ const CreateClient = () => {
                     value={value}
                     onBlur={onBlur}
                     label='Número do Documento'
-                    onChange={onChange}
+                    onChange={e => onChange(applyDocumentMask(e.target.value, watch('documentType')))}
                     placeholder='Número do Documento'
                     error={Boolean(errors.documentNumber)}
                     {...(errors.documentNumber && { helperText: errors.documentNumber.message })}

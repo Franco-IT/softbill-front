@@ -1,4 +1,4 @@
-import { Box, TableCell, TableHead, TableRow, TableSortLabel } from '@mui/material'
+import { Box, TableCell, TableHead, TableRow, TableSortLabel, useTheme } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
 import { HeadCellProps } from './HeadCells'
 import { ClientProps } from 'src/types/clients'
@@ -16,6 +16,8 @@ interface EnhancedTableProps {
 const EnhancedTableHead = (props: EnhancedTableProps) => {
   const { order, orderBy, onRequestSort, headCells } = props
 
+  const theme = useTheme()
+
   const createSortHandler = (property: keyof ClientProps) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property)
   }
@@ -23,7 +25,7 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
   return (
     <TableHead
       sx={{
-        backgroundColor: '#4A5072'
+        backgroundColor: theme.palette.mode === 'light' ? '#F6F6F7' : '#4A5072'
       }}
     >
       <TableRow>
