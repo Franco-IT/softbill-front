@@ -9,6 +9,7 @@ import Icon from 'src/@core/components/icon'
 import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
+import { applyMask } from 'src/utils/inputs'
 
 const schema = yup.object().shape({
   name: yup.string().required('Nome obrigatório'),
@@ -26,11 +27,11 @@ const schema = yup.object().shape({
     .when('documentType', ([documentType], schema) => {
       switch (documentType) {
         case 'CPF':
-          return schema.matches(/^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$/, 'CPF inválido')
+          return schema.matches(/^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$/, 'CPF inválido').max(14, 'CPF inválido')
         case 'CNPJ':
-          return schema.matches(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido')
+          return schema.matches(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido').max(18, 'CNPJ inválido')
         default:
-          return schema.min(9, 'Documento inválido')
+          return schema
       }
     })
 })
@@ -56,6 +57,7 @@ const CreateUser = () => {
     control,
     handleSubmit,
     setError,
+    watch,
     formState: { errors }
   } = useForm({
     defaultValues: {
@@ -144,12 +146,15 @@ const CreateUser = () => {
                     fullWidth
                     label='Tipo de Documento'
                     required
-                    value={value}
+                    value={value || 'default'}
                     onBlur={onBlur}
                     onChange={onChange}
                     error={Boolean(errors.documentType)}
                     {...(errors.documentType && { helperText: errors.documentType.message })}
                   >
+                    <MenuItem value='default' disabled>
+                      Selecione
+                    </MenuItem>
                     <MenuItem value='CPF'>CPF</MenuItem>
                     <MenuItem value='CNPJ'>CNPJ</MenuItem>
                     <MenuItem value='OTHER'>Outro</MenuItem>
@@ -167,7 +172,7 @@ const CreateUser = () => {
                     value={value}
                     onBlur={onBlur}
                     label='Número do Documento'
-                    onChange={onChange}
+                    onChange={e => onChange(applyMask(e.target.value, watch('documentType')))}
                     placeholder='Número do Documento'
                     error={Boolean(errors.documentNumber)}
                     {...(errors.documentNumber && { helperText: errors.documentNumber.message })}
