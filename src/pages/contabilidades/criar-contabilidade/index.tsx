@@ -9,7 +9,7 @@ import Icon from 'src/@core/components/icon'
 import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
-import { applyMask } from 'src/utils/inputs'
+import { applyDocumentMask } from 'src/utils/inputs'
 
 const schema = yup.object().shape({
   name: yup.string().required('Nome obrigatório'),
@@ -172,7 +172,7 @@ const CreateUser = () => {
                     value={value}
                     onBlur={onBlur}
                     label='Número do Documento'
-                    onChange={e => onChange(applyMask(e.target.value, watch('documentType')))}
+                    onChange={e => onChange(applyDocumentMask(e.target.value, watch('documentType')))}
                     placeholder='Número do Documento'
                     error={Boolean(errors.documentNumber)}
                     {...(errors.documentNumber && { helperText: errors.documentNumber.message })}
