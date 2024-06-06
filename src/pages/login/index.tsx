@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { CSSProperties, ReactNode, useState } from 'react'
 
 import Link from 'next/link'
 
@@ -27,7 +27,17 @@ import { useAuth } from 'src/hooks/useAuth'
 
 import toast from 'react-hot-toast'
 
-import { styleVideo } from './style'
+const styleVideo: CSSProperties = {
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  top: 0,
+  left: 0,
+  zIndex: -1,
+  opacity: 0.4,
+  filter: 'brightness(0.5)'
+}
 
 const schema = yup.object().shape({
   email: yup.string().email('E-mail inválido').required('E-mail obrigatório'),
