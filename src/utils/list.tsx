@@ -64,16 +64,4 @@ const renderInitials = (row: any) => {
   )
 }
 
-const renderDevicesInitials = (row: any) => {
-  return (
-    <CustomAvatar
-      skin='light'
-      color={row.avatarColor}
-      sx={{ mr: 2.5, width: 38, height: 38, fontWeight: 500, fontSize: theme => theme.typography.body1.fontSize }}
-    >
-      {getInitials(row.modelName)}
-    </CustomAvatar>
-  )
-}
-
-export { removeRowFromList, renderInitials, renderDevicesInitials, getComparator, stableSort, Loading }
+export { removeRowFromList, renderInitials, getComparator, stableSort, Loading }
