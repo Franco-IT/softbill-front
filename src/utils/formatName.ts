@@ -1,5 +1,7 @@
 export const formatName = (name: string) => {
   const nameArray = name.split(' ')
 
-  return nameArray.length > 3 ? `${nameArray[0]} ${nameArray[1]} ${nameArray[2]}...` : name
+  if (nameArray.length != 1) return `${nameArray[0]} ${nameArray[nameArray.length - 1]}`
+
+  return nameArray[0].length > 15 ? `${nameArray[0].slice(0, 15)}...` : nameArray[0]
 }

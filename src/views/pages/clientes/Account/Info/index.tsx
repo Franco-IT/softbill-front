@@ -42,7 +42,7 @@ const Info = ({ data }: InfoProps) => {
                 <Box sx={{ pt: 4 }}>
                   <Box sx={{ display: 'flex', mb: 3 }}>
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Nome:</Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>@ {data.name}</Typography>
+                    <Typography sx={{ color: 'text.secondary' }}>{data.name}</Typography>
                   </Box>
 
                   <Box sx={{ display: 'flex', mb: 3 }}>

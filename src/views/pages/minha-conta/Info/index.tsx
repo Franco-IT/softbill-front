@@ -1,23 +1,17 @@
-// ** MUI Imports
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import Grid from '@mui/material/Grid'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
+import { Grid, Card, CardContent, Typography, Box } from '@mui/material'
 
-import { UserProps } from 'src/types/users'
-import { ThemeColor } from 'src/@core/layouts/types'
 import Chip from 'src/@core/components/mui/chip'
+
+import { ThemeColor } from 'src/@core/layouts/types'
+import { UserProps } from 'src/types/users'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
 
 interface ColorsType {
   [key: string]: ThemeColor
 }
-
 const roleColors: ColorsType = {
-  ADMIN: 'info',
-  CLIENT: 'success',
-  ACCOUNTING: 'warning'
+  admin: 'info',
+  client: 'success'
 }
 
 const statusColors: ColorsType = {
@@ -25,11 +19,13 @@ const statusColors: ColorsType = {
   INACTIVE: 'secondary'
 }
 
-interface InfoAccountProps {
+interface InfoProps {
   data: UserProps
 }
 
-const InfoAccount = ({ data }: InfoAccountProps) => {
+const Info = ({ data }: InfoProps) => {
+  if (data.type !== 'ADMIN') return null
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -43,7 +39,7 @@ const InfoAccount = ({ data }: InfoAccountProps) => {
                 <Box sx={{ pt: 4 }}>
                   <Box sx={{ display: 'flex', mb: 3 }}>
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Nome:</Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>@ {data.name}</Typography>
+                    <Typography sx={{ color: 'text.secondary' }}>{data.name}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', mb: 3 }}>
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>E-mail:</Typography>
@@ -83,4 +79,4 @@ const InfoAccount = ({ data }: InfoAccountProps) => {
   )
 }
 
-export default InfoAccount
+export default Info

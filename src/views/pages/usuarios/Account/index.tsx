@@ -7,13 +7,14 @@ import Chip from 'src/@core/components/mui/chip'
 import { ThemeColor } from 'src/@core/layouts/types'
 import { getInitials } from 'src/@core/utils/get-initials'
 import { UserProps } from 'src/types/users'
-import EditProfile from './editAccount'
+import Edit from './Edit'
 
 import { verifyUserStatus } from 'src/@core/utils/user'
 import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
 import { delay } from 'src/utils/delay'
 import { useRouter } from 'next/router'
+import { formatName } from 'src/utils/formatName'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -28,13 +29,13 @@ const statusColors: ColorsType = {
   INACTIVE: 'secondary'
 }
 
-interface UserProfileProps {
+interface AccountProps {
   data: UserProps
   refresh: boolean
   setRefresh: (value: boolean) => void
 }
 
-const Account = ({ data, refresh, setRefresh }: UserProfileProps) => {
+const Account = ({ data, refresh, setRefresh }: AccountProps) => {
   const router = useRouter()
 
   const [openEdit, setOpenEdit] = useState<boolean>(false)
@@ -77,7 +78,7 @@ const Account = ({ data, refresh, setRefresh }: UserProfileProps) => {
               {getInitials(data.name)}
             </Avatar>
             <Typography variant='h4' sx={{ mb: 3 }}>
-              {data.name}
+              {formatName(data.name)}
             </Typography>
           </CardContent>
 
@@ -92,7 +93,7 @@ const Account = ({ data, refresh, setRefresh }: UserProfileProps) => {
             <Box sx={{ pt: 4 }}>
               <Box sx={{ display: 'flex', mb: 3 }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Nome:</Typography>
-                <Typography sx={{ color: 'text.secondary' }}>@ {data.name}</Typography>
+                <Typography sx={{ color: 'text.secondary' }}>{data.name}</Typography>
               </Box>
               <Box sx={{ display: 'flex', mb: 3, alignItems: 'center' }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Status:</Typography>
@@ -131,7 +132,7 @@ const Account = ({ data, refresh, setRefresh }: UserProfileProps) => {
             </Button>
           </CardActions>
 
-          <EditProfile
+          <Edit
             data={data}
             handleEditClose={handleEditClose}
             openEdit={openEdit}

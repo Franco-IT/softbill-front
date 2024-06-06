@@ -16,6 +16,7 @@ import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
 import { delay } from 'src/utils/delay'
 import { useRouter } from 'next/router'
+import { formatName } from 'src/utils/formatName'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -83,7 +84,7 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
               {getInitials(data.name)}
             </Avatar>
             <Typography variant='h4' sx={{ mb: 3 }}>
-              {data.name}
+              {formatName(data.name)}
             </Typography>
             <Chip
               rounded
@@ -106,7 +107,7 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
             <Box sx={{ pt: 4 }}>
               <Box sx={{ display: 'flex', mb: 3 }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Nome:</Typography>
-                <Typography sx={{ color: 'text.secondary' }}>@ {data.name}</Typography>
+                <Typography sx={{ color: 'text.secondary' }}>{data.name}</Typography>
               </Box>
               <Box sx={{ display: 'flex', mb: 3, alignItems: 'center' }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Status:</Typography>
