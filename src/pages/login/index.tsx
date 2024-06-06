@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { CSSProperties, ReactNode, useState } from 'react'
 
 import Link from 'next/link'
 
@@ -26,6 +26,18 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import { useAuth } from 'src/hooks/useAuth'
 
 import toast from 'react-hot-toast'
+
+const styleVideo: CSSProperties = {
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  top: 0,
+  left: 0,
+  zIndex: -1,
+  opacity: 0.4,
+  filter: 'brightness(0.5)'
+}
 
 const schema = yup.object().shape({
   email: yup.string().email('E-mail inválido').required('E-mail obrigatório'),
@@ -161,23 +173,7 @@ const LoginPage = () => {
           </form>
         </CardContent>
       </Card>
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        style={{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          top: 0,
-          left: 0,
-          zIndex: -1,
-          opacity: 0.4,
-          filter: 'brightness(0.5)'
-        }}
-      >
+      <video autoPlay loop muted playsInline style={styleVideo}>
         <source src='/login-video.mp4' type='video/mp4' />
       </video>
     </Box>
