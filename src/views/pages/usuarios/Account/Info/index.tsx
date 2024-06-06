@@ -25,11 +25,11 @@ const statusColors: ColorsType = {
   INACTIVE: 'secondary'
 }
 
-interface InfoAccountProps {
+interface InfoProps {
   data: UserProps
 }
 
-const InfoAccount = ({ data }: InfoAccountProps) => {
+const Info = ({ data }: InfoProps) => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -43,7 +43,7 @@ const InfoAccount = ({ data }: InfoAccountProps) => {
                 <Box sx={{ pt: 4 }}>
                   <Box sx={{ display: 'flex', mb: 3 }}>
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Nome:</Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>@ {data.name}</Typography>
+                    <Typography sx={{ color: 'text.secondary' }}>{data.name}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', mb: 3 }}>
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>E-mail:</Typography>
@@ -83,4 +83,4 @@ const InfoAccount = ({ data }: InfoAccountProps) => {
   )
 }
 
-export default InfoAccount
+export default Info

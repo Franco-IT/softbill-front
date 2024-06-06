@@ -23,6 +23,7 @@ import { useAuth } from 'src/hooks/useAuth'
 // ** Type Imports
 import { Settings } from 'src/@core/context/settingsContext'
 import { verifyUserType } from 'src/@core/utils/user'
+import { formatName } from 'src/utils/formatName'
 
 interface Props {
   settings: Settings
@@ -121,7 +122,7 @@ const UserDropdown = (props: Props) => {
               <Avatar alt={user?.name} sx={{ width: '2.5rem', height: '2.5rem' }} />
             </Badge>
             <Box sx={{ display: 'flex', ml: 2.5, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 500 }}>{user?.name}</Typography>
+              <Typography sx={{ fontWeight: 500 }}>{formatName(user?.name)}</Typography>
               <Typography variant='body2'>{verifyUserType(user.role)}</Typography>
             </Box>
           </Box>

@@ -1,4 +1,3 @@
-// ** React Imports
 import { SyntheticEvent, useState, useEffect } from 'react'
 
 import Box from '@mui/material/Box'
@@ -10,16 +9,11 @@ import MuiTab, { TabProps } from '@mui/material/Tab'
 import MuiTabList, { TabListProps } from '@mui/lab/TabList'
 import CircularProgress from '@mui/material/CircularProgress'
 
-import InfoAccount from '../infoAccount'
+import InfoAccount from '../Info'
 import ChangePassword from '../changePassword'
 
 import Icon from 'src/@core/components/icon'
-
 import { UserProps } from 'src/types/users'
-
-interface TabsAccountProps {
-  data: UserProps
-}
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
@@ -54,7 +48,11 @@ const TabList = styled(MuiTabList)<TabListProps>(({ theme }) => ({
   }
 }))
 
-const TabsAccount = ({ data }: TabsAccountProps) => {
+interface TabsProps {
+  data: UserProps
+}
+
+const Tabs = ({ data }: TabsProps) => {
   const [activeTab, setActiveTab] = useState<string>('account')
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
@@ -92,7 +90,7 @@ const TabsAccount = ({ data }: TabsAccountProps) => {
               <InfoAccount data={data} />
             </TabPanel>
             <TabPanel sx={{ p: 0 }} value='security'>
-              <ChangePassword id={data._id} />
+              <ChangePassword />
             </TabPanel>
           </>
         )}
@@ -101,4 +99,4 @@ const TabsAccount = ({ data }: TabsAccountProps) => {
   )
 }
 
-export default TabsAccount
+export default Tabs

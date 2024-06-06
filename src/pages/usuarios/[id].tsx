@@ -6,7 +6,7 @@ import { NextSeo } from 'next-seo'
 import { Grid, LinearProgress } from '@mui/material'
 
 import Account from 'src/views/pages/usuarios/Account'
-import TabsAccount from 'src/views/pages/usuarios/Account/tabsAccount'
+import Tabs from 'src/views/pages/usuarios/Account/Tabs'
 
 import themeConfig from 'src/configs/themeConfig'
 
@@ -44,7 +44,7 @@ export default function User() {
             <Account data={user.data} refresh={refresh} setRefresh={setRefresh} />
           </Grid>
           <Grid item xs={12} xl={8}>
-            <TabsAccount data={user.data} />
+            <Tabs data={user.data} />
           </Grid>
         </Grid>
       </>

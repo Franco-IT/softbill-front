@@ -18,9 +18,10 @@ import RowOptions from './RowOptions'
 import TableHeader from './TableHeader'
 import EnhancedTableHead from './EnhancedTableHead'
 
-import { Loading, Order, getComparator, removeRowFromList, renderInitials, stableSort } from 'src/utils/list'
-import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
+import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
+import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
+import { Loading, Order, getComparator, removeRowFromList, renderInitials, stableSort } from 'src/utils/list'
 
 import { ThemeColor } from 'src/@core/layouts/types'
 import { ClientProps, ClientsListProps } from 'src/types/clients'
@@ -141,7 +142,7 @@ const List = () => {
                                 '&:hover': { color: 'primary.main' }
                               }}
                             >
-                              {row.name}
+                              {formatName(row.name)}
                             </Typography>
                           </Box>
                         </Box>

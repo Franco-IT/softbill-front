@@ -3,7 +3,7 @@ import { useAuth } from 'src/hooks/useAuth'
 import useGetDataApi from 'src/hooks/useGetDataApi'
 import { UserProps } from 'src/types/users'
 import MyAccountContent from 'src/views/pages/minha-conta'
-import TabsAccount from 'src/views/pages/minha-conta/tabsAccount'
+import Tabs from 'src/views/pages/minha-conta/Tabs'
 
 interface UseGetDataApiProps {
   data: UserProps
@@ -25,7 +25,7 @@ const MyAccount = () => {
           <MyAccountContent data={data.data} refresh={refresh} setRefresh={setRefresh} />
         </Grid>
         <Grid item xs={12} xl={8}>
-          <TabsAccount data={data.data} />
+          <Tabs data={data.data} />
         </Grid>
       </Grid>
     )

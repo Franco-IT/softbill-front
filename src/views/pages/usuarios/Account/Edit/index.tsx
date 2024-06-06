@@ -32,7 +32,7 @@ interface FormData {
   status: string
 }
 
-interface EditProfileProps {
+interface EditProps {
   openEdit: boolean
   handleEditClose: () => void
   data: UserProps
@@ -40,7 +40,7 @@ interface EditProfileProps {
   setRefresh: (value: boolean) => void
 }
 
-const EditAccount = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProfileProps) => {
+const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProps) => {
   const {
     control,
     handleSubmit,
@@ -186,4 +186,4 @@ const EditAccount = ({ openEdit, handleEditClose, data, refresh, setRefresh }: E
   )
 }
 
-export default EditAccount
+export default Edit
