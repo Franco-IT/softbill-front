@@ -6,7 +6,7 @@ import CustomTextField from 'src/@core/components/mui/text-field'
 import { useAuth } from 'src/hooks/useAuth'
 
 import * as yup from 'yup'
-import { applyDocumentMask } from 'src/utils/inputs'
+import { StatesEnum, applyDocumentMask, applyPhoneMask } from 'src/utils/inputs'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
@@ -14,36 +14,6 @@ import { api } from 'src/services/api'
 import { delay } from 'src/utils/delay'
 
 import toast from 'react-hot-toast'
-
-enum StatesEnum {
-  AC = 'AC',
-  AL = 'AL',
-  AP = 'AP',
-  AM = 'AM',
-  BA = 'BA',
-  CE = 'CE',
-  DF = 'DF',
-  ES = 'ES',
-  GO = 'GO',
-  MA = 'MA',
-  MT = 'MT',
-  MS = 'MS',
-  MG = 'MG',
-  PA = 'PA',
-  PB = 'PB',
-  PR = 'PR',
-  PE = 'PE',
-  PI = 'PI',
-  RJ = 'RJ',
-  RN = 'RN',
-  RS = 'RS',
-  RO = 'RO',
-  RR = 'RR',
-  SC = 'SC',
-  SP = 'SP',
-  SE = 'SE',
-  TO = 'TO'
-}
 
 const schema = yup.object().shape({
   name: yup.string().required('Nome obrigatório'),
@@ -64,7 +34,10 @@ const schema = yup.object().shape({
     }),
   status: yup.string().required('Status obrigatório'),
   phone: yup.string(),
-  cellphone: yup.string(),
+  cellphone: yup
+    .string()
+    .required('Telefone obrigatório')
+    .matches(/^(\(?\d{2}\)?\s)?(\d{4,5}\-?\d{4})$/, 'Telefone inválido'),
   cep: yup
     .string()
     .required('CEP obrigatório')
@@ -275,7 +248,6 @@ const CreateClient = () => {
               <Controller
                 name='number'
                 control={control}
-                rules={{ required: false }}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
@@ -295,7 +267,6 @@ const CreateClient = () => {
               <Controller
                 name='neighborhood'
                 control={control}
-                rules={{ required: false }}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
@@ -334,7 +305,6 @@ const CreateClient = () => {
               <Controller
                 name='state'
                 control={control}
-                rules={{ required: false }}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
@@ -354,7 +324,6 @@ const CreateClient = () => {
               <Controller
                 name='complement'
                 control={control}
-                rules={{ required: false }}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
@@ -373,14 +342,14 @@ const CreateClient = () => {
               <Controller
                 name='cellphone'
                 control={control}
-                rules={{ required: false }}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
                     label='Telefone'
+                    required
                     value={value}
                     onBlur={onBlur}
-                    onChange={onChange}
+                    onChange={e => onChange(applyPhoneMask(e.target.value))}
                     placeholder='Telefone'
                     error={Boolean(errors.cellphone)}
                     {...(errors.cellphone && { helperText: errors.cellphone.message })}
@@ -392,14 +361,13 @@ const CreateClient = () => {
               <Controller
                 name='phone'
                 control={control}
-                rules={{ required: false }}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
                     label='Telefone Fixo'
                     value={value}
                     onBlur={onBlur}
-                    onChange={onChange}
+                    onChange={e => onChange(applyPhoneMask(e.target.value))}
                     placeholder='Telefone Fixo'
                     error={Boolean(errors.phone)}
                     {...(errors.phone && { helperText: errors.phone.message })}
