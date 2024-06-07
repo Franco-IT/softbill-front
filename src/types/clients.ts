@@ -1,8 +1,6 @@
 import { UserProps } from './users'
 
 export type ClientProps = UserProps & {
-  phone: string
-  cellphone: string
   type: 'CLIENT'
   accountingId: string
   clientCompanyPhone: string

@@ -2,6 +2,8 @@ export type UserProps = {
   _id: string
   name: string
   email: string
+  phone: string
+  cellphone: string
   status: 'ACTIVE' | 'INACTIVE'
   type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING'
   documentNumber: string

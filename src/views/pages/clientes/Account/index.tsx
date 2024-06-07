@@ -133,16 +133,14 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
               Contato
             </Typography>
             <Box sx={{ pt: 4 }}>
-              <Box sx={{ display: 'flex', mb: 3 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>E-mail:</Typography>
-                <Typography sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-                  {verifyDataValue(data.email)}
-                </Typography>
+                <Typography sx={{ ml: 3, color: 'text.secondary' }}>{verifyDataValue(data.email)}</Typography>
               </Box>
-              <Box sx={{ display: 'flex', mb: 3 }}>
-                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone da Empresa:</Typography>
-                <Typography sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-                  {verifyDataValue(applyPhoneMask(data.clientCompanyPhone))}
+              <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
+                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone:</Typography>
+                <Typography sx={{ ml: 3, color: 'text.secondary' }}>
+                  {verifyDataValue(applyPhoneMask(data.cellphone))}
                 </Typography>
               </Box>
             </Box>
