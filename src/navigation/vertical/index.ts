@@ -32,6 +32,16 @@ const navigation = (): VerticalNavItemsType => {
       avatarColor: 'warning'
     },
     {
+      title: 'Bancos',
+      subtitle: 'Ver Bancos',
+      path: '/bancos',
+      action: 'read',
+      auth: true,
+      subject: 'ADMIN',
+      icon: 'tabler:building-bank',
+      avatarColor: 'success'
+    },
+    {
       title: 'Clientes',
       subtitle: 'Ver Clientes',
       action: 'read',
