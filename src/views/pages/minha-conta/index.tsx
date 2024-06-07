@@ -65,8 +65,6 @@ const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
       })
   }
 
-  if (data.type !== 'ADMIN') return null
-
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>

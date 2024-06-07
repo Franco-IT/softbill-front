@@ -64,7 +64,7 @@ const Info = ({ data }: InfoProps) => {
                       skin='light'
                       size='small'
                       label={status[data.status]}
-                      color={statusColors[String(data.status).toLocaleLowerCase()]}
+                      color={statusColors[data.status]}
                       sx={{
                         textTransform: 'capitalize'
                       }}

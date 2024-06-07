@@ -10,8 +10,8 @@ interface ColorsType {
   [key: string]: ThemeColor
 }
 const roleColors: ColorsType = {
-  admin: 'info',
-  client: 'success'
+  ADMIN: 'info',
+  ACCOUNTING: 'success'
 }
 
 const statusColors: ColorsType = {
@@ -24,8 +24,6 @@ interface InfoProps {
 }
 
 const Info = ({ data }: InfoProps) => {
-  if (data.type !== 'ADMIN') return null
-
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -65,7 +63,7 @@ const Info = ({ data }: InfoProps) => {
                       skin='light'
                       size='small'
                       label={verifyUserType(String(data.type))}
-                      color={roleColors[String(data.type)]}
+                      color={roleColors[data.type]}
                       sx={{ textTransform: 'capitalize', mb: 4 }}
                     />
                   </Box>
