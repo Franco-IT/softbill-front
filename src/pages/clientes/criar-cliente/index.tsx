@@ -1,12 +1,13 @@
 import { useRouter } from 'next/router'
 
-import { Box, Button, Card, CardContent, CardHeader, Grid, InputAdornment, MenuItem } from '@mui/material'
+import { Box, Button, Card, CardContent, CardHeader, Grid } from '@mui/material'
 import CustomTextField from 'src/@core/components/mui/text-field'
 
 import { useAuth } from 'src/hooks/useAuth'
+import { ClientProps } from 'src/types/clients'
 
 import * as yup from 'yup'
-import { applyDocumentMask } from 'src/utils/inputs'
+import { applyDocumentMask, applyPhoneMask } from 'src/utils/inputs'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
@@ -15,90 +16,28 @@ import { delay } from 'src/utils/delay'
 
 import toast from 'react-hot-toast'
 
-enum StatesEnum {
-  AC = 'AC',
-  AL = 'AL',
-  AP = 'AP',
-  AM = 'AM',
-  BA = 'BA',
-  CE = 'CE',
-  DF = 'DF',
-  ES = 'ES',
-  GO = 'GO',
-  MA = 'MA',
-  MT = 'MT',
-  MS = 'MS',
-  MG = 'MG',
-  PA = 'PA',
-  PB = 'PB',
-  PR = 'PR',
-  PE = 'PE',
-  PI = 'PI',
-  RJ = 'RJ',
-  RN = 'RN',
-  RS = 'RS',
-  RO = 'RO',
-  RR = 'RR',
-  SC = 'SC',
-  SP = 'SP',
-  SE = 'SE',
-  TO = 'TO'
-}
-
 const schema = yup.object().shape({
   name: yup.string().required('Nome obrigatório'),
   email: yup.string().email('E-mail inválido').required('E-mail obrigatório'),
-  documentType: yup.string().required('Tipo de documento obrigatório'),
   documentNumber: yup
     .string()
-    .required('Número do documento obrigatório')
-    .when('documentType', ([documentType], schema) => {
-      switch (documentType) {
-        case 'CPF':
-          return schema.matches(/^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$/, 'CPF inválido').max(14, 'CPF inválido')
-        case 'CNPJ':
-          return schema.matches(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido').max(18, 'CNPJ inválido')
-        default:
-          return schema
-      }
-    }),
-  status: yup.string().required('Status obrigatório'),
-  phone: yup.string(),
-  cellphone: yup.string(),
-  cep: yup
+    .required('Número do CNPJ obrigatório')
+    .matches(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido')
+    .max(18, 'CNPJ inválido'),
+  collaboratorName: yup.string().required('Nome do colaborador obrigatório'),
+  clientCompanyPhone: yup
     .string()
-    .required('CEP obrigatório')
-    .matches(/([\d]{2})\.?([\d]{3})\-?([\d]{3})/, 'CEP inválido'),
-  city: yup.string().required('Cidade obrigatória'),
-  address: yup.string().required('Endereço obrigatório'),
-  neighborhood: yup.string().required('Bairro obrigatório'),
-  state: yup
-    .string()
-    .required('Estado obrigatório')
-    .oneOf(Object.values(StatesEnum), 'Estado inválido, informe a sigla do estado'),
-  number: yup
-    .number()
-    .typeError('Número do endereço deve conter apenas números')
-    .required('Número do endereço obrigatório'),
-  complement: yup.string()
+    .required('Telefone da empresa obrigatório')
+    .matches(/^(\(?\d{2}\)?\s)?(\d{4,5}\-?\d{4})$/, 'Telefone inválido'),
+  financialResponsible: yup.string().required('Responsável financeiro obrigatório'),
+  fantasyName: yup.string().required('Nome fantasia obrigatório'),
+  observations: yup.string()
 })
 
-interface FormData {
-  name: string
-  email: string
-  documentNumber: string
-  documentType: string
-  status: string
-  phone: string
-  cellphone: string
-  cep: string
-  city: string
-  address: string
-  neighborhood: string
-  state: string
-  number: number
-  complement: string
+interface FormData extends ClientProps {
+  status: 'ACTIVE'
   accountingId: string
+  documentType: 'CNPJ'
 }
 
 const CreateClient = () => {
@@ -112,17 +51,10 @@ const CreateClient = () => {
     formState: { errors }
   } = useForm({
     defaultValues: {
-      name: '',
       status: 'ACTIVE',
-      phone: '',
-      cellphone: '',
-      cep: '',
-      city: '',
-      address: '',
-      neighborhood: '',
-      state: '',
-      complement: '',
-      accountingId: user?.id
+      accountingId: user?.id,
+      documentType: 'CNPJ',
+      type: 'CLIENT'
     } as FormData,
     mode: 'onBlur',
     resolver: yupResolver(schema)
@@ -130,7 +62,7 @@ const CreateClient = () => {
 
   const onSubmit = (data: FormData) => {
     api
-      .post('/clients', data)
+      .post('/users', data)
       .then(response => {
         if (response.status === 201) {
           toast.success('Cliente adicionado com sucesso!')
@@ -159,13 +91,12 @@ const CreateClient = () => {
                     fullWidth
                     label='Nome'
                     required
-                    value={value}
+                    value={value || ''}
                     onBlur={onBlur}
                     onChange={onChange}
                     placeholder='Nome'
                     error={Boolean(errors.name)}
                     {...(errors.name && { helperText: errors.name.message })}
-                    InputProps={{ startAdornment: <InputAdornment position='start'>@</InputAdornment> }}
                   />
                 )}
               />
@@ -179,7 +110,8 @@ const CreateClient = () => {
                     fullWidth
                     type='email'
                     label='E-mail'
-                    value={value}
+                    required
+                    value={value || ''}
                     onBlur={onBlur}
                     onChange={onChange}
                     placeholder='E-mail'
@@ -191,42 +123,17 @@ const CreateClient = () => {
             </Grid>
             <Grid item xs={12} sm={6} lg={4} xl={3}>
               <Controller
-                name='documentType'
-                control={control}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <CustomTextField
-                    select
-                    fullWidth
-                    label='Tipo de Documento'
-                    required
-                    value={value || 'default'}
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    error={Boolean(errors.documentType)}
-                    {...(errors.documentType && { helperText: errors.documentType.message })}
-                  >
-                    <MenuItem value='default' disabled>
-                      Selecione
-                    </MenuItem>
-                    <MenuItem value='CPF'>CPF</MenuItem>
-                    <MenuItem value='CNPJ'>CNPJ</MenuItem>
-                    <MenuItem value='OTHER'>Outro</MenuItem>
-                  </CustomTextField>
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
-              <Controller
                 name='documentNumber'
                 control={control}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
-                    value={value}
+                    required
+                    value={value || ''}
                     onBlur={onBlur}
-                    label='Número do Documento'
+                    label='CNPJ'
                     onChange={e => onChange(applyDocumentMask(e.target.value, watch('documentType')))}
-                    placeholder='Número do Documento'
+                    placeholder='Número do CNPJ'
                     error={Boolean(errors.documentNumber)}
                     {...(errors.documentNumber && { helperText: errors.documentNumber.message })}
                   />
@@ -235,174 +142,75 @@ const CreateClient = () => {
             </Grid>
             <Grid item xs={12} sm={6} lg={4} xl={3}>
               <Controller
-                name='cep'
+                name='fantasyName'
                 control={control}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
-                    label='CEP'
                     required
-                    value={value}
+                    value={value || ''}
                     onBlur={onBlur}
+                    label='Nome Fantasia'
                     onChange={onChange}
-                    placeholder='CEP'
-                    error={Boolean(errors.cep)}
-                    {...(errors.cep && { helperText: errors.cep.message })}
+                    placeholder='Nome Fantasia'
+                    error={Boolean(errors.fantasyName)}
+                    {...(errors.fantasyName && { helperText: errors.fantasyName.message })}
                   />
                 )}
               />
             </Grid>
             <Grid item xs={12} sm={6} lg={4} xl={3}>
               <Controller
-                name='address'
+                name='financialResponsible'
                 control={control}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
-                    label='Endereço'
                     required
-                    value={value}
+                    value={value || ''}
                     onBlur={onBlur}
+                    label='Nome do Responsável Financeiro'
                     onChange={onChange}
-                    placeholder='Endereço'
-                    error={Boolean(errors.address)}
-                    {...(errors.address && { helperText: errors.address.message })}
+                    placeholder='Nome do Responsável Financeiro'
+                    error={Boolean(errors.financialResponsible)}
+                    {...(errors.financialResponsible && { helperText: errors.financialResponsible.message })}
                   />
                 )}
               />
             </Grid>
             <Grid item xs={12} sm={6} lg={4} xl={3}>
               <Controller
-                name='number'
+                name='collaboratorName'
                 control={control}
-                rules={{ required: false }}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
-                    label='Número do Endereço'
                     required
-                    value={value}
+                    value={value || ''}
                     onBlur={onBlur}
+                    label='Colaborador Responsável'
                     onChange={onChange}
-                    placeholder='Número do Endereço'
-                    error={Boolean(errors.number)}
-                    {...(errors.number && { helperText: errors.number.message })}
+                    placeholder='Colaborador Responsável'
+                    error={Boolean(errors.collaboratorName)}
+                    {...(errors.collaboratorName && { helperText: errors.collaboratorName.message })}
                   />
                 )}
               />
             </Grid>
             <Grid item xs={12} sm={6} lg={4} xl={3}>
               <Controller
-                name='neighborhood'
-                control={control}
-                rules={{ required: false }}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <CustomTextField
-                    fullWidth
-                    label='Bairro'
-                    required
-                    value={value}
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    placeholder='Bairro'
-                    error={Boolean(errors.neighborhood)}
-                    {...(errors.neighborhood && { helperText: errors.neighborhood.message })}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
-              <Controller
-                name='city'
+                name='clientCompanyPhone'
                 control={control}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
                     fullWidth
-                    label='Cidade'
-                    required
-                    value={value}
+                    value={value || ''}
                     onBlur={onBlur}
-                    onChange={onChange}
-                    placeholder='Cidade'
-                    error={Boolean(errors.city)}
-                    {...(errors.city && { helperText: errors.city.message })}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
-              <Controller
-                name='state'
-                control={control}
-                rules={{ required: false }}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <CustomTextField
-                    fullWidth
-                    label='Estado'
-                    required
-                    value={value}
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    placeholder='Estado'
-                    error={Boolean(errors.state)}
-                    {...(errors.state && { helperText: errors.state.message })}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
-              <Controller
-                name='complement'
-                control={control}
-                rules={{ required: false }}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <CustomTextField
-                    fullWidth
-                    label='Complemento'
-                    value={value}
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    placeholder='Complemento'
-                    error={Boolean(errors.complement)}
-                    {...(errors.complement && { helperText: errors.complement.message })}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
-              <Controller
-                name='cellphone'
-                control={control}
-                rules={{ required: false }}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <CustomTextField
-                    fullWidth
-                    label='Telefone'
-                    value={value}
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    placeholder='Telefone'
-                    error={Boolean(errors.cellphone)}
-                    {...(errors.cellphone && { helperText: errors.cellphone.message })}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
-              <Controller
-                name='phone'
-                control={control}
-                rules={{ required: false }}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <CustomTextField
-                    fullWidth
-                    label='Telefone Fixo'
-                    value={value}
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    placeholder='Telefone Fixo'
-                    error={Boolean(errors.phone)}
-                    {...(errors.phone && { helperText: errors.phone.message })}
+                    label='Telefone da Empresa'
+                    onChange={e => onChange(applyPhoneMask(e.target.value))}
+                    placeholder='Telefone da Empresa'
+                    error={Boolean(errors.clientCompanyPhone)}
+                    {...(errors.clientCompanyPhone && { helperText: errors.clientCompanyPhone.message })}
                   />
                 )}
               />

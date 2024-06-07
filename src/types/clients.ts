@@ -1,23 +1,18 @@
-export type ClientProps = {
-  _id: string
-  name: string
-  email: string
-  phone: string
-  cellphone: string
-  cep: string
-  address: string
-  neighborhood: string
-  city: string
-  state: string
-  number: number
-  complement: string
+import { UserProps } from './users'
+
+export type ClientProps = UserProps & {
   type: 'CLIENT'
-  status: 'ACTIVE' | 'INACTIVE'
   accountingId: string
-  documentNumber: string
-  documentType: 'CPF' | 'CNPJ' | 'OTHER'
-  createdAt: Date
-  updatedAt: Date
+  clientCompanyPhone: string
+  collaboratorName: string
+  financialResponsible: string
+  fantasyName: string
+  observations: string
+  createdAt: string
+  updatedAt: string
+  _id: string
+  __v: number
+  'type#status'?: string
 }
 
 export type ClientsListProps = {

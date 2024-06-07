@@ -23,7 +23,7 @@ export default function Client() {
     error,
     refresh,
     setRefresh
-  } = useGetDataApi<ClientDataProps>({ url: `/clients/${id}`, callInit: router.isReady })
+  } = useGetDataApi<ClientDataProps>({ url: `/users/${id}`, callInit: router.isReady })
 
   useEffect(() => {
     if (!loading) error && router.push('/404')
@@ -52,6 +52,6 @@ export default function Client() {
 }
 
 Client.acl = {
-  action: 'manage',
-  subject: 'ADMIN'
+  action: 'update',
+  subject: 'ACCOUNTING'
 }

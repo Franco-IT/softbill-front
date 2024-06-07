@@ -11,20 +11,23 @@ import { getInitials } from 'src/@core/utils/get-initials'
 
 import { ThemeColor } from 'src/@core/layouts/types'
 import { UserProps } from 'src/types/users'
-import { verifyUserStatus } from 'src/@core/utils/user'
+import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
 import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
 import { delay } from 'src/utils/delay'
 import { useRouter } from 'next/router'
 import { formatName } from 'src/utils/formatName'
+import verifyDataValue from 'src/utils/verifyDataValue'
+import { applyPhoneMask } from 'src/utils/inputs'
+import { formatDate } from 'src/@core/utils/format'
 
 interface ColorsType {
   [key: string]: ThemeColor
 }
 
 const roleColors: ColorsType = {
-  admin: 'info',
-  client: 'success'
+  ADMIN: 'info',
+  ACCOUNTING: 'warning',
 }
 
 const statusColors: ColorsType = {
@@ -61,11 +64,9 @@ const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
       })
       .catch(() => {
         setDeleteDialogOpen(false)
-        toast.error('Erro ao deletar sua conta, tente novamente mais tarde')
+        toast.error('Erro ao deletar sua conta, tente novamente mais tarde.')
       })
   }
-
-  if (data.type !== 'ADMIN') return null
 
   return (
     <Grid container spacing={6}>
@@ -85,6 +86,14 @@ const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
             <Typography variant='h4' sx={{ mb: 3 }}>
               {formatName(data.name)}
             </Typography>
+            <Chip
+              rounded
+              skin='light'
+              size='medium'
+              label={verifyUserType(String(data.type))}
+              color={roleColors[data.type]}
+              sx={{ textTransform: 'capitalize', mb: 4 }}
+            />
           </CardContent>
 
           <Divider sx={{ my: '0 !important', mx: 6 }} />
@@ -99,6 +108,10 @@ const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
               <Box sx={{ display: 'flex', mb: 3 }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Nome:</Typography>
                 <Typography sx={{ color: 'text.secondary' }}>{data.name}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', mb: 3 }}>
+                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Data de Cadastro:</Typography>
+                <Typography sx={{ color: 'text.secondary' }}>{formatDate(new Date(data.createdAt))}</Typography>
               </Box>
               <Box sx={{ display: 'flex', mb: 3, alignItems: 'center' }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Status:</Typography>
@@ -123,7 +136,13 @@ const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
             <Box sx={{ pt: 4 }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>E-mail:</Typography>
-                <Typography sx={{ ml: 3, color: 'text.secondary' }}>{data.email}</Typography>
+                <Typography sx={{ ml: 3, color: 'text.secondary' }}>{verifyDataValue(data.email)}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
+                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone:</Typography>
+                <Typography sx={{ ml: 3, color: 'text.secondary' }}>
+                  {verifyDataValue(applyPhoneMask(data.cellphone))}
+                </Typography>
               </Box>
             </Box>
           </CardContent>

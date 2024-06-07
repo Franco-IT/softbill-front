@@ -61,13 +61,13 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProp
       .then(response => {
         if (response.status === 200) {
           handleEditClose()
-          toast.success('Usuário atualizado com sucesso!')
+          toast.success('Contabilidade atualizada com sucesso!')
           setRefresh(!refresh)
         }
       })
       .catch(() => {
         handleEditClose()
-        toast.error('Erro ao atualizar usuário, tente novamente mais tarde')
+        toast.error('Erro ao atualizar contabilidade, tente novamente mais tarde.')
       })
   }
 

@@ -1,31 +1,14 @@
 import { Grid, Card, CardContent, Typography, Box } from '@mui/material'
 
-import Chip from 'src/@core/components/mui/chip'
-
-import { ThemeColor } from 'src/@core/layouts/types'
 import { UserProps } from 'src/types/users'
-import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
-
-interface ColorsType {
-  [key: string]: ThemeColor
-}
-const roleColors: ColorsType = {
-  admin: 'info',
-  client: 'success'
-}
-
-const statusColors: ColorsType = {
-  ACTIVE: 'success',
-  INACTIVE: 'secondary'
-}
+import { applyDocumentMask } from 'src/utils/inputs'
+import verifyDataValue from 'src/utils/verifyDataValue'
 
 interface InfoProps {
   data: UserProps
 }
 
 const Info = ({ data }: InfoProps) => {
-  if (data.type !== 'ADMIN') return null
-
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -45,29 +28,13 @@ const Info = ({ data }: InfoProps) => {
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>E-mail:</Typography>
                     <Typography sx={{ color: 'text.secondary' }}>{data.email}</Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', mb: 3, alignItems: 'center' }}>
-                    <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Status:</Typography>
-                    <Chip
-                      rounded
-                      skin='light'
-                      size='small'
-                      label={verifyUserStatus(String(data.status))}
-                      color={statusColors[String(data.status)]}
-                      sx={{
-                        textTransform: 'capitalize'
-                      }}
-                    />
-                  </Box>
                   <Box sx={{ display: 'flex', mb: 3 }}>
-                    <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Tipo:</Typography>
-                    <Chip
-                      rounded
-                      skin='light'
-                      size='small'
-                      label={verifyUserType(String(data.type))}
-                      color={roleColors[String(data.type)]}
-                      sx={{ textTransform: 'capitalize', mb: 4 }}
-                    />
+                    <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>
+                      Documento:
+                    </Typography>
+                    <Typography sx={{ color: 'text.secondary' }}>
+                      {verifyDataValue(applyDocumentMask(data.documentNumber, data.documentType))}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
