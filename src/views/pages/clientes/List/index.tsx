@@ -58,7 +58,7 @@ const List = () => {
   const [clients, setClients] = useState<ClientProps[]>([])
 
   const { data: rows } = useGetDataApi<ClientsListProps>({
-    url: `/clients/by-accounting/${user?.id}`,
+    url: `/users?accountingId=${user?.id}&type=CLIENT`,
     params: { page: page + 1, perPage: rowsPerPage, search: filter }
   })
 
@@ -81,7 +81,7 @@ const List = () => {
 
   const handleConfirmDelete = async (id: string) => {
     api
-      .delete(`/clients/${id}`)
+      .delete(`/users/${id}`)
       .then(response => {
         if (response.status === 200) {
           const updatedListClients = removeRowFromList(id, clients, '_id')

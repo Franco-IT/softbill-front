@@ -25,7 +25,7 @@ const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDele
   }
 
   const handleViewProfileClick = () => {
-    router.push(`/usuarios/${id}`)
+    router.push(`/clientes/${id}`)
   }
 
   const handleDeleteProfileClick = () => {

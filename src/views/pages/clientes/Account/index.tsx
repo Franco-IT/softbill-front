@@ -17,6 +17,8 @@ import toast from 'react-hot-toast'
 import { delay } from 'src/utils/delay'
 import { useRouter } from 'next/router'
 import { formatName } from 'src/utils/formatName'
+import { applyPhoneMask } from 'src/utils/inputs'
+import { formatDate } from 'src/@core/utils/format'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -53,7 +55,7 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
 
   const handleConfirmDeleteClient = (id: string) => {
     api
-      .delete(`/clients/${id}`)
+      .delete(`/users/${id}`)
       .then(response => {
         if (response.status === 200) {
           setDeleteDialogOpen(false)
@@ -90,14 +92,12 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
               rounded
               skin='light'
               size='small'
-              label={'Cliente de Revenda'}
+              label={'Cliente de Contabilidade'}
               color={'info'}
               sx={{ textTransform: 'capitalize', mb: 4 }}
             />
           </CardContent>
-
           <Divider sx={{ my: '0 !important', mx: 6 }} />
-
           <CardContent
             sx={{ padding: { xs: '20px 20px 10px !important', xl: '20px 40px 10px !important' }, width: '100%' }}
           >
@@ -108,6 +108,10 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
               <Box sx={{ display: 'flex', mb: 3 }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Nome:</Typography>
                 <Typography sx={{ color: 'text.secondary' }}>{data.name}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', mb: 3 }}>
+                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Data de Cadastro:</Typography>
+                <Typography sx={{ color: 'text.secondary' }}>{formatDate(new Date(data.createdAt))}</Typography>
               </Box>
               <Box sx={{ display: 'flex', mb: 3, alignItems: 'center' }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Status:</Typography>
@@ -124,27 +128,25 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
               </Box>
             </Box>
           </CardContent>
-
           <CardContent sx={{ padding: { xs: '0 20px 20px !important', xl: '0 40px 20px !important' }, width: '100%' }}>
             <Typography variant='body2' sx={{ color: 'text.disabled', textTransform: 'uppercase' }}>
               Contato
             </Typography>
             <Box sx={{ pt: 4 }}>
               <Box sx={{ display: 'flex', mb: 3 }}>
-                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone:</Typography>
+                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>E-mail:</Typography>
                 <Typography sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-                  {verifyDataValue(data.cellphone)}
+                  {verifyDataValue(data.email)}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', mb: 3 }}>
-                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone fixo:</Typography>
+                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone da Empresa:</Typography>
                 <Typography sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-                  {verifyDataValue(data.phone)}
+                  {verifyDataValue(applyPhoneMask(data.clientCompanyPhone))}
                 </Typography>
               </Box>
             </Box>
           </CardContent>
-
           <CardActions sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Button color='error' variant='tonal' onClick={() => setDeleteDialogOpen(true)}>
               Deletar
@@ -153,7 +155,6 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
               Editar
             </Button>
           </CardActions>
-
           <Edit
             data={data}
             handleEditClose={handleEditClose}
@@ -161,7 +162,6 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
             refresh={refresh}
             setRefresh={setRefresh}
           />
-
           <DialogAlert
             open={deleteDialogOpen}
             setOpen={setDeleteDialogOpen}
