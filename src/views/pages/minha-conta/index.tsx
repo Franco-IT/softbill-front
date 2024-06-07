@@ -27,7 +27,7 @@ interface ColorsType {
 
 const roleColors: ColorsType = {
   ADMIN: 'info',
-  ACCOUNTING: 'success'
+  ACCOUNTING: 'warning',
 }
 
 const statusColors: ColorsType = {
@@ -64,7 +64,7 @@ const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
       })
       .catch(() => {
         setDeleteDialogOpen(false)
-        toast.error('Erro ao deletar sua conta, tente novamente mais tarde')
+        toast.error('Erro ao deletar sua conta, tente novamente mais tarde.')
       })
   }
 
