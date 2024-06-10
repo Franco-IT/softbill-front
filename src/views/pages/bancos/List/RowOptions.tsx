@@ -3,6 +3,7 @@ import { Button, IconButton, Menu, MenuItem, useMediaQuery, Box } from '@mui/mat
 import Icon from 'src/@core/components/icon'
 import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
+import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 
 interface BankStatusType {
   [key: string]: string
@@ -23,6 +24,7 @@ const RowOptions = ({ id, status, refreshData }: RowOptionsProps) => {
   const matches = useMediaQuery('(min-width:600px)')
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [open, setOpen] = useState(false)
 
   const rowOptionsOpen = Boolean(anchorEl)
 
@@ -35,10 +37,24 @@ const RowOptions = ({ id, status, refreshData }: RowOptionsProps) => {
   }
 
   const handleActiveOrInactive = () => {
+    switch (status) {
+      case 'ACTIVE':
+        setOpen(true)
+        break
+      case 'INACTIVE':
+        handleActionActiveOrInactive()
+        break
+      default:
+        break
+    }
+  }
+
+  const handleActionActiveOrInactive = () => {
     api
       .put(`/banks/${id}`, { status: status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' })
       .then(() => refreshData())
       .catch(() => toast.error('Erro ao alterar status do banco'))
+      .finally(() => setOpen(false))
   }
 
   return (
@@ -79,6 +95,15 @@ const RowOptions = ({ id, status, refreshData }: RowOptionsProps) => {
           </Menu>
         </>
       )}
+
+      <DialogAlert
+        id={id}
+        open={open}
+        setOpen={setOpen}
+        question={`Deseja realmente ${status === 'ACTIVE' ? 'inativar' : 'ativar'} este banco?`}
+        description='Esta ação é irreversível, e todos os usuários vinculados a este banco serão afetados.'
+        handleConfirmDelete={handleActionActiveOrInactive}
+      />
     </>
   )
 }
