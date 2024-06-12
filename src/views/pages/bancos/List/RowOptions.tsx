@@ -101,7 +101,7 @@ const RowOptions = ({ id, status, refreshData }: RowOptionsProps) => {
         open={open}
         setOpen={setOpen}
         question={`Deseja realmente ${status === 'ACTIVE' ? 'inativar' : 'ativar'} este banco?`}
-        description='Esta ação é irreversível, e todos os usuários vinculados a este banco serão afetados.'
+        description='Essa ação é irreversível, e todos os usuários vinculados a este banco serão afetados.'
         handleConfirmDelete={handleActionActiveOrInactive}
       />
     </>

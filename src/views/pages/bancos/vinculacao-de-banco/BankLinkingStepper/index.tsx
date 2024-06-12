@@ -140,6 +140,11 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
 
   const { data: banks } = useGetDataApi<any>({ url: '/banks', callInit: router.isReady })
 
+  const { data: userBanks } = useGetDataApi<any>({
+    url: `/bankAccounts/by-client/${router.query.id}`,
+    params: { withBanks: true }
+  })
+
   const handleShowForm = (bankName: string) => {
     switch (bankName) {
       case 'BB':
@@ -148,6 +153,40 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
         return null
     }
   }
+
+  const handleCheckBanksAvailable = (banks: any[], userBanks: any[]) => {
+    if (!banks || !userBanks)
+      return (
+        <MenuItem value='' disabled>
+          Nenhum banco disponível
+        </MenuItem>
+      )
+
+    const banksAvailable = banks.filter((bank: any) => {
+      return !userBanks.find((userBank: any) => userBank.bankId === bank._id)
+    })
+
+    if (banksAvailable.length === 0)
+      return (
+        <MenuItem
+          value=''
+          disabled
+          sx={{
+            color: 'white'
+          }}
+        >
+          Nenhum banco disponível
+        </MenuItem>
+      )
+
+    return banksAvailable.map((bank: any) => (
+      <MenuItem key={bank._id} value={bank._id}>
+        {bank.name}
+      </MenuItem>
+    ))
+  }
+
+  handleCheckBanksAvailable(banks?.data, userBanks?.data)
 
   const handleSelectBank = (value: string, banks: any[]) => {
     methods.reset()
@@ -249,11 +288,7 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
               <MenuItem value='default' disabled>
                 Selecione
               </MenuItem>
-              {banks?.data.map((bank: any) => (
-                <MenuItem key={bank._id} value={bank._id}>
-                  {bank.name}
-                </MenuItem>
-              ))}
+              {handleCheckBanksAvailable(banks?.data, userBanks?.data)}
             </CustomTextField>
             {handleShowForm(bank.name)}
           </Box>

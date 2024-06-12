@@ -26,7 +26,9 @@ const Info = ({ data }: InfoProps) => {
                   </Box>
                   <Box sx={{ display: 'flex', mb: 3 }}>
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Nome Fantasia:</Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>{verifyDataValue(data.fantasyName)}</Typography>
+                    <Typography sx={{ color: 'text.secondary' }}>
+                      {verifyDataValue(data.additionalData.fantasyName)}
+                    </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', mb: 3 }}>
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>CNPJ:</Typography>
@@ -43,21 +45,23 @@ const Info = ({ data }: InfoProps) => {
                       Responsável Financeiro:
                     </Typography>
                     <Typography sx={{ color: 'text.secondary' }}>
-                      {verifyDataValue(data.financialResponsible)}
+                      {verifyDataValue(data.additionalData.financialResponsible)}
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', mb: 3 }}>
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>
                       Nome do Colaborador:
                     </Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>{verifyDataValue(data.collaboratorName)}</Typography>
+                    <Typography sx={{ color: 'text.secondary' }}>
+                      {verifyDataValue(data.additionalData.collaboratorName)}
+                    </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', mb: 3 }}>
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>
                       Telefone da Empresa:
                     </Typography>
                     <Typography sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-                      {verifyDataValue(applyPhoneMask(data.clientCompanyPhone))}
+                      {verifyDataValue(applyPhoneMask(data.additionalData.clientCompanyPhone))}
                     </Typography>
                   </Box>
                 </Box>

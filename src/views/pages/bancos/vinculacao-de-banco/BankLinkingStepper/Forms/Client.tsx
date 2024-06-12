@@ -29,7 +29,7 @@ const Client = ({ client }: ClientProps) => {
       <Grid item xs={12} sm={6}>
         <Box sx={{ display: 'flex' }}>
           <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Nome Fantasia:</Typography>
-          <Typography sx={{ color: 'text.secondary' }}>{verifyDataValue(client.fantasyName)}</Typography>
+          <Typography sx={{ color: 'text.secondary' }}>{verifyDataValue(client.additionalData.fantasyName)}</Typography>
         </Box>
       </Grid>
       <Grid item xs={12} sm={6}>
