@@ -4,7 +4,6 @@ import { Box, Button, Card, CardContent, CardHeader, Grid } from '@mui/material'
 import CustomTextField from 'src/@core/components/mui/text-field'
 
 import { useAuth } from 'src/hooks/useAuth'
-import { ClientProps } from 'src/types/clients'
 
 import * as yup from 'yup'
 import { applyDocumentMask, applyPhoneMask } from 'src/utils/inputs'
@@ -34,7 +33,15 @@ const schema = yup.object().shape({
   observations: yup.string()
 })
 
-interface FormData extends ClientProps {
+interface FormData {
+  name: string
+  email: string
+  documentNumber: string
+  collaboratorName: string
+  clientCompanyPhone: string
+  financialResponsible: string
+  fantasyName: string
+  observations: string
   status: 'ACTIVE'
   accountingId: string
   documentType: 'CNPJ'
@@ -51,6 +58,14 @@ const CreateClient = () => {
     formState: { errors }
   } = useForm({
     defaultValues: {
+      name: '',
+      email: '',
+      documentNumber: '',
+      collaboratorName: '',
+      clientCompanyPhone: '',
+      financialResponsible: '',
+      fantasyName: '',
+      observations: '',
       status: 'ACTIVE',
       accountingId: user?.id,
       documentType: 'CNPJ',
