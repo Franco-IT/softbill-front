@@ -95,4 +95,32 @@ const applyPhoneMask = (value: string) => {
   return value
 }
 
-export { applyDocumentMask, applyCpfMask, applyCnpjMask, applyPhoneMask, StatesEnum }
+const applyAccountNumberMask = (value: string) => {
+  if (!value) return value
+
+  value = value.replace(/\D/g, '')
+
+  if (value.length > 7) value = value.slice(0, 7) + '-' + value.slice(7, 8)
+
+  return value
+}
+
+const applyAgencyNumberMask = (value: string) => {
+  if (!value) return value
+
+  value = value.replace(/\D/g, '')
+
+  if (value.length > 4) value = value.slice(0, 4)
+
+  return value
+}
+
+export {
+  applyDocumentMask,
+  applyCpfMask,
+  applyCnpjMask,
+  applyPhoneMask,
+  StatesEnum,
+  applyAccountNumberMask,
+  applyAgencyNumberMask
+}

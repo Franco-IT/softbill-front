@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
 import Icon from 'src/@core/components/icon'
-import { IconButton, InputAdornment, Grid, Button, Box } from '@mui/material'
 import CustomTextField from 'src/@core/components/mui/text-field'
+import { IconButton, InputAdornment, Grid, Button, Box } from '@mui/material'
 
 import * as yup from 'yup'
 import { useForm, Controller } from 'react-hook-form'
@@ -11,12 +11,13 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import toast from 'react-hot-toast'
 import { api } from 'src/services/api'
 import { BankAccountProps } from 'src/types/banks'
+import { applyAccountNumberMask, applyAgencyNumberMask } from 'src/utils/inputs'
 
 const schema = yup.object().shape({
   bankClientId: yup.string().required('Campo obrigatório'),
   bankClientSecret: yup.string().required('Campo obrigatório'),
-  accountNumber: yup.string().required('Campo obrigatório'),
-  agencyNumber: yup.string().required('Campo obrigatório')
+  accountNumber: yup.string().required('Campo obrigatório').min(8, 'Mínimo de 8 caracteres'),
+  agencyNumber: yup.string().required('Campo obrigatório').min(4, 'Mínimo de 4 caracteres')
 })
 
 interface FormData {
@@ -144,7 +145,7 @@ const BB = ({ data, handleEditClose }: BBProps) => {
                 label='Número da Conta'
                 value={value || ''}
                 onBlur={onBlur}
-                onChange={onChange}
+                onChange={e => onChange(applyAccountNumberMask(e.target.value))}
                 placeholder='Número da Conta'
                 error={Boolean(errors.accountNumber)}
                 {...(errors.accountNumber && { helperText: errors.accountNumber.message as any })}
@@ -162,7 +163,7 @@ const BB = ({ data, handleEditClose }: BBProps) => {
                 label='Número da Agência'
                 value={value || ''}
                 onBlur={onBlur}
-                onChange={onChange}
+                onChange={e => onChange(applyAgencyNumberMask(e.target.value))}
                 placeholder='Número da Agência'
                 error={Boolean(errors.agencyNumber)}
                 {...(errors.agencyNumber && { helperText: errors.agencyNumber.message as any })}

@@ -9,6 +9,15 @@ interface EditProps {
 }
 
 const Edit = ({ openEdit, handleEditClose, data }: EditProps) => {
+  const handleGetForm = (bankSlug: string) => {
+    switch (bankSlug) {
+      case 'BB':
+        return <BB data={data} handleEditClose={handleEditClose} />
+      default:
+        return null
+    }
+  }
+
   return (
     <Dialog
       open={openEdit}
@@ -37,7 +46,7 @@ const Edit = ({ openEdit, handleEditClose, data }: EditProps) => {
         <DialogContentText variant='body2' id='user-view-edit-description' sx={{ textAlign: 'center', mb: 7 }}>
           Edite as informações da conta
         </DialogContentText>
-        <BB data={data} handleEditClose={handleEditClose} />
+        {handleGetForm(data.bank.slug)}
       </DialogContent>
       <DialogActions
         sx={{

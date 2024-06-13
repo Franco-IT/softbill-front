@@ -1,9 +1,9 @@
-import Grid from '@mui/material/Grid'
-import CustomTextField from 'src/@core/components/mui/text-field'
-import { Controller, useFormContext } from 'react-hook-form'
-import { IconButton, InputAdornment } from '@mui/material'
-import Icon from 'src/@core/components/icon'
 import { useState } from 'react'
+import { IconButton, InputAdornment, Grid } from '@mui/material'
+import Icon from 'src/@core/components/icon'
+import CustomTextField from 'src/@core/components/mui/text-field'
+import { applyAccountNumberMask, applyAgencyNumberMask } from 'src/utils/inputs'
+import { Controller, useFormContext } from 'react-hook-form'
 
 const BB = () => {
   const [showBankClientSecret, setShowBankClientSecret] = useState<boolean>(false)
@@ -77,7 +77,7 @@ const BB = () => {
               label='Número da Conta'
               value={value || ''}
               onBlur={onBlur}
-              onChange={onChange}
+              onChange={e => onChange(applyAccountNumberMask(e.target.value))}
               placeholder='Número da Conta'
               error={Boolean(errors.accountNumber)}
               {...(errors.accountNumber && { helperText: errors.accountNumber.message as any })}
@@ -95,7 +95,7 @@ const BB = () => {
               label='Número da Agência'
               value={value || ''}
               onBlur={onBlur}
-              onChange={onChange}
+              onChange={e => onChange(applyAgencyNumberMask(e.target.value))}
               placeholder='Número da Agência'
               error={Boolean(errors.agencyNumber)}
               {...(errors.agencyNumber && { helperText: errors.agencyNumber.message as any })}
