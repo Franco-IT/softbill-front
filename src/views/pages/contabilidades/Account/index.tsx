@@ -163,7 +163,7 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
             open={deleteDialogOpen}
             setOpen={setDeleteDialogOpen}
             question={'Você tem certeza que deseja deletar esta contabilidade?'}
-            description={'Esta ação não poderá ser desfeita.'}
+            description={'Essa ação não poderá ser desfeita.'}
             handleConfirmDelete={() => handleConfirmDeleteProfile(data._id)}
           />
         </Card>

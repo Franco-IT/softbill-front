@@ -138,9 +138,9 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
                 <Typography sx={{ ml: 3, color: 'text.secondary' }}>{verifyDataValue(data.email)}</Typography>
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
-                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone:</Typography>
+                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone da Empresa:</Typography>
                 <Typography sx={{ ml: 3, color: 'text.secondary' }}>
-                  {verifyDataValue(applyPhoneMask(data.cellphone))}
+                  {verifyDataValue(applyPhoneMask(data.additionalData.clientCompanyPhone))}
                 </Typography>
               </Box>
             </Box>
@@ -164,7 +164,7 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
             open={deleteDialogOpen}
             setOpen={setDeleteDialogOpen}
             question={'Você tem certeza que deseja deletar este cliente?'}
-            description={'Esta ação não poderá ser desfeita.'}
+            description={'Essa ação não poderá ser desfeita.'}
             handleConfirmDelete={() => handleConfirmDeleteClient(data._id)}
           />
         </Card>

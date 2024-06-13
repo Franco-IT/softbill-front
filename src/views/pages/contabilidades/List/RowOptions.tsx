@@ -86,7 +86,7 @@ const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDele
         open={open}
         setOpen={setOpen}
         question={'Você tem certeza que deseja deletar esta contabilidade?'}
-        description={' Esta ação não poderá ser desfeita.'}
+        description={'Essa ação não poderá ser desfeita.'}
         handleConfirmDelete={() => handleConfirmDelete(id)}
       />
     </>

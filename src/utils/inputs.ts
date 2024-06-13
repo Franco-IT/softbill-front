@@ -29,7 +29,9 @@ enum StatesEnum {
 }
 
 const applyCnpjMask = (value: string) => {
-  value = value.replace(/\D/g, '') // Remove qualquer caractere que não seja número
+  if (!value) return value
+
+  value = value.replace(/\D/g, '')
 
   if (value.length > 12) {
     value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')
@@ -93,4 +95,32 @@ const applyPhoneMask = (value: string) => {
   return value
 }
 
-export { applyDocumentMask, applyCpfMask, applyCnpjMask, applyPhoneMask, StatesEnum }
+const applyAccountNumberMask = (value: string) => {
+  if (!value) return value
+
+  value = value.replace(/\D/g, '')
+
+  if (value.length > 7) value = value.slice(0, 7) + '-' + value.slice(7, 8)
+
+  return value
+}
+
+const applyAgencyNumberMask = (value: string) => {
+  if (!value) return value
+
+  value = value.replace(/\D/g, '')
+
+  if (value.length > 4) value = value.slice(0, 4)
+
+  return value
+}
+
+export {
+  applyDocumentMask,
+  applyCpfMask,
+  applyCnpjMask,
+  applyPhoneMask,
+  StatesEnum,
+  applyAccountNumberMask,
+  applyAgencyNumberMask
+}

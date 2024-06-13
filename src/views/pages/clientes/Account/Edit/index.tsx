@@ -40,9 +40,14 @@ const schema = yup.object().shape({
   observations: yup.string()
 })
 
-interface FormData extends ClientProps {
-  status: 'ACTIVE' | 'INACTIVE'
+interface FormData {
   accountingId: string
+  clientCompanyPhone: string
+  collaboratorName: string
+  financialResponsible: string
+  fantasyName: string
+  observations: string
+  status: 'ACTIVE' | 'INACTIVE'
 }
 
 interface EditProfileProps {
@@ -61,9 +66,17 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
     formState: { errors }
   } = useForm({
     defaultValues: {
-      ...data,
+      name: data.name,
+      status: data.status,
+      email: data.email,
+      documentType: 'CNPJ',
+      financialResponsible: data.additionalData.financialResponsible,
+      fantasyName: data.additionalData.fantasyName,
+      collaboratorName: data.additionalData.collaboratorName,
       documentNumber: applyDocumentMask(data.documentNumber, data.documentType),
-      clientCompanyPhone: applyPhoneMask(data.clientCompanyPhone || '')
+      clientCompanyPhone: applyPhoneMask(data.additionalData.clientCompanyPhone || ''),
+      observations: data.additionalData.observations || '',
+      accountingId: data.additionalData.accountingId
     },
     mode: 'onBlur',
     resolver: yupResolver(schema)
@@ -74,11 +87,8 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
       delete formData['type#status']
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _id, __v, createdAt, updatedAt, ...dataFormated } = formData
-
     api
-      .put(`/users/${data._id}`, dataFormated)
+      .put(`/users/${data._id}`, formData)
       .then(response => {
         if (response.status === 200) {
           handleEditClose()

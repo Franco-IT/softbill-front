@@ -1,14 +1,19 @@
 import { useState, MouseEvent } from 'react'
-
-import { useRouter } from 'next/router'
-
 import { Button, IconButton, Menu, MenuItem, useMediaQuery, Box } from '@mui/material'
-import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import Icon from 'src/@core/components/icon'
+import { api } from 'src/services/api'
+import toast from 'react-hot-toast'
+import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
+import Edit from './Edit'
 
-const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDelete: (id: string) => void }) => {
-  const router = useRouter()
+interface RowOptionsProps {
+  data: any
+  openEdit: boolean
+  setOpenEdit: (open: boolean) => void
+  refreshData: () => void
+}
 
+const RowOptions = ({ data, refreshData, openEdit, setOpenEdit }: RowOptionsProps) => {
   const matches = useMediaQuery('(min-width:600px)')
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -24,12 +29,16 @@ const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDele
     setAnchorEl(null)
   }
 
-  const handleViewProfileClick = () => {
-    router.push(`/clientes/${id}`)
+  const handleClickDelete = () => {
+    setOpen(true)
   }
 
-  const handleDeleteProfileClick = () => {
-    setOpen(true)
+  const handleDelete = () => {
+    api
+      .delete(`/bankAccounts/${data._id}`)
+      .then(() => refreshData())
+      .catch(() => toast.error('Erro ao deletar banco'))
+      .finally(() => setOpen(false))
   }
 
   return (
@@ -42,10 +51,10 @@ const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDele
             padding: '0 8 0 0 '
           }}
         >
-          <Button size='small' variant='outlined' color='primary' onClick={handleViewProfileClick}>
-            Ver Perfil
+          <Button size='small' variant='outlined' color='primary'>
+            Extrato
           </Button>
-          <Button size='small' variant='outlined' color='primary' onClick={handleDeleteProfileClick}>
+          <Button size='small' variant='outlined' color='primary' onClick={handleClickDelete}>
             Deletar
           </Button>
         </Box>
@@ -69,25 +78,21 @@ const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDele
             }}
             PaperProps={{ style: { minWidth: '8rem' } }}
           >
-            <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={handleViewProfileClick}>
-              <Icon icon='tabler:eye' fontSize={20} />
-              Ver Perfil
-            </MenuItem>
-            <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={handleDeleteProfileClick}>
-              <Icon icon='tabler:trash' fontSize={20} />
-              Deletar
-            </MenuItem>
+            <MenuItem>Extrato</MenuItem>
+            <MenuItem onClick={handleClickDelete}>Deletar</MenuItem>
           </Menu>
         </>
       )}
 
+      <Edit data={data} openEdit={openEdit} handleEditClose={() => setOpenEdit(false)} />
+
       <DialogAlert
-        id={id}
+        id={data._id}
         open={open}
         setOpen={setOpen}
-        question={'Você tem certeza que deseja deletar este cliente?'}
-        description={'Essa ação não poderá ser desfeita.'}
-        handleConfirmDelete={() => handleConfirmDelete(id)}
+        question={`Deseja realmente deletar este banco?`}
+        description='Essa ação não poderá ser desfeita.'
+        handleConfirmDelete={handleDelete}
       />
     </>
   )

@@ -2,13 +2,14 @@ import { UserProps } from './users'
 
 export type ClientProps = UserProps & {
   type: 'CLIENT'
-  accountingId: string
-  clientCompanyPhone: string
-  collaboratorName: string
-  financialResponsible: string
-  fantasyName: string
-  observations: string
-  createdAt: string
+  additionalData: {
+    accountingId: string
+    clientCompanyPhone: string
+    collaboratorName: string
+    financialResponsible: string
+    fantasyName: string
+    observations: string
+  }
   updatedAt: string
   _id: string
   __v: number

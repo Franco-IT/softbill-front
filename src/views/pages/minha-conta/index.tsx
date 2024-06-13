@@ -168,7 +168,7 @@ const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
             open={deleteDialogOpen}
             setOpen={setDeleteDialogOpen}
             question={'Você tem certeza que deseja deletar sua conta?'}
-            description={'Esta ação não poderá ser desfeita.'}
+            description={'Essa ação não poderá ser desfeita.'}
             handleConfirmDelete={() => handleConfirmDeleteProfile(data._id)}
           />
         </Card>
