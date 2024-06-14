@@ -52,6 +52,16 @@ const navigation = (): VerticalNavItemsType => {
       avatarColor: 'primary'
     },
     {
+      title: 'Bancos do Cliente',
+      subtitle: 'Ver Bancos do Cliente',
+      action: 'read',
+      auth: true,
+      subject: 'ACCOUNTING',
+      path: '/bancos/extrato',
+      icon: 'tabler:building-bank',
+      avatarColor: 'success'
+    },
+    {
       title: 'Minha Conta',
       path: '/minha-conta',
       action: 'read',

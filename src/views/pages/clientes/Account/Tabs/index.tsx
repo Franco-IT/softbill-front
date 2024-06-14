@@ -15,6 +15,7 @@ import Icon from 'src/@core/components/icon'
 
 import { ClientProps } from 'src/types/clients'
 import Banks from '../Banks'
+import { useRouter } from 'next/router'
 
 interface TabsAccountProps {
   data: ClientProps
@@ -53,7 +54,8 @@ const TabList = styled(MuiTabList)<TabListProps>(({ theme }) => ({
 }))
 
 const Tabs = ({ data }: TabsAccountProps) => {
-  const [activeTab, setActiveTab] = useState<string>('account')
+  const router = useRouter()
+  const [activeTab, setActiveTab] = useState<string>((router.query.tab as string) || 'account')
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const handleChange = (event: SyntheticEvent, value: string) => {

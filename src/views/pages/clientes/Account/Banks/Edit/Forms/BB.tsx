@@ -16,7 +16,7 @@ import { applyAccountNumberMask, applyAgencyNumberMask } from 'src/utils/inputs'
 const schema = yup.object().shape({
   bankClientId: yup.string().required('Campo obrigatório'),
   bankClientSecret: yup.string().required('Campo obrigatório'),
-  accountNumber: yup.string().required('Campo obrigatório').min(8, 'Mínimo de 8 caracteres'),
+  accountNumber: yup.string().required('Campo obrigatório'),
   agencyNumber: yup.string().required('Campo obrigatório').min(4, 'Mínimo de 4 caracteres')
 })
 
@@ -79,6 +79,7 @@ const BB = ({ data, handleEditClose }: BBProps) => {
       .catch(() => {
         toast.error('Erro ao atualizar dados, tente novamente mais tarde')
       })
+      .finally(() => handleEditClose())
   }
 
   return (

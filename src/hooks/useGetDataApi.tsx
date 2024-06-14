@@ -17,6 +17,12 @@ const useGetDataApi = <T,>({ url, params, callInit = true }: GetDataApiProps) =>
 
   const paramsRef = useRef(params)
 
+  const handleResetData = () => {
+    setData(null)
+    setError(null)
+    setLoading(false)
+  }
+
   useEffect(() => {
     if (callInit) {
       if (JSON.stringify(paramsRef.current) !== JSON.stringify(params)) {
@@ -55,7 +61,7 @@ const useGetDataApi = <T,>({ url, params, callInit = true }: GetDataApiProps) =>
     }
   }, [url, refresh, callInit])
 
-  return { data, loading, error, setRefresh, refresh }
+  return { data, loading, error, setRefresh, refresh, handleResetData }
 }
 
 export default useGetDataApi

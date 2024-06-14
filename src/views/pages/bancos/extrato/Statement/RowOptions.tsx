@@ -4,18 +4,12 @@ import Icon from 'src/@core/components/icon'
 import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
-import Edit from './Edit'
-import { useRouter } from 'next/router'
 
 interface RowOptionsProps {
   data: any
-  openEdit: boolean
-  setOpenEdit: (open: boolean) => void
-  refreshData: () => void
 }
 
-const RowOptions = ({ data, refreshData, openEdit, setOpenEdit }: RowOptionsProps) => {
-  const router = useRouter()
+const RowOptions = ({ data }: RowOptionsProps) => {
   const matches = useMediaQuery('(min-width:600px)')
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -35,16 +29,9 @@ const RowOptions = ({ data, refreshData, openEdit, setOpenEdit }: RowOptionsProp
     setOpen(true)
   }
 
-  const handleStatement = () =>
-    router.push({
-      pathname: '/clientes/bancos/extrato/[id]',
-      query: { id: data._id, slug: data.bank.slug, client: data.clientId }
-    })
-
   const handleDelete = () => {
     api
       .delete(`/bankAccounts/${data._id}`)
-      .then(() => refreshData())
       .catch(() => toast.error('Erro ao deletar banco'))
       .finally(() => setOpen(false))
   }
@@ -59,11 +46,11 @@ const RowOptions = ({ data, refreshData, openEdit, setOpenEdit }: RowOptionsProp
             padding: '0 8 0 0 '
           }}
         >
-          <Button size='small' variant='outlined' color='primary' onClick={handleStatement}>
-            Extrato
+          <Button size='small' variant='outlined' color='primary'>
+            Filtro
           </Button>
           <Button size='small' variant='outlined' color='primary' onClick={handleClickDelete}>
-            Deletar
+            Exportar
           </Button>
         </Box>
       ) : (
@@ -86,13 +73,11 @@ const RowOptions = ({ data, refreshData, openEdit, setOpenEdit }: RowOptionsProp
             }}
             PaperProps={{ style: { minWidth: '8rem' } }}
           >
-            <MenuItem onClick={handleStatement}>Extrato</MenuItem>
-            <MenuItem onClick={handleClickDelete}>Deletar</MenuItem>
+            <MenuItem>Filtro</MenuItem>
+            <MenuItem onClick={handleClickDelete}>Exportar</MenuItem>
           </Menu>
         </>
       )}
-
-      <Edit data={data} openEdit={openEdit} handleEditClose={() => setOpenEdit(false)} />
 
       <DialogAlert
         id={data._id}
