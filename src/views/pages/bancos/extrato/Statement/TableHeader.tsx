@@ -177,10 +177,6 @@ const TableHeader = (props: TableHeaderProps) => {
     setClientId(val)
   }
 
-  const handleCreateBank = () => {
-    router.push(`/bancos/vinculacao-de-banco/${router.query.id}`)
-  }
-
   const handleClickBack = () => {
     if (router.query.client)
       router.push({
