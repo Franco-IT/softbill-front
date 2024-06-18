@@ -13,6 +13,7 @@ import { useAuth } from 'src/hooks/useAuth'
 import { ClientsListProps } from 'src/types/clients'
 import StatementsTableBB from './Banks/BB'
 import { iniitialStateIntegration, reducerIntegration } from './reducers/integrationReducer'
+import { iniitialStateImport, reducerImport } from './reducers/importReducer'
 
 export type OperationTypeProps = 'INTEGRATION' | 'IMPORT' | null
 
@@ -28,6 +29,7 @@ const StatementsTable = () => {
   const [clientId, setClientId] = useState<string | null>(null)
   const [statements, setStatements] = useState<any[]>([])
   const [stateIntegration, dispatchStateIntegration] = useReducer(reducerIntegration, iniitialStateIntegration)
+  const [stateImport, dispatchStateImport] = useReducer(reducerImport, iniitialStateImport)
   const [operationType, setOperationType] = useState<OperationTypeProps>(null)
 
   const { bankId } = stateIntegration
@@ -98,40 +100,70 @@ const StatementsTable = () => {
   }
 
   useEffect(() => {
+    if (!clientId) return setStatements([])
+
     if (rows) setStatements(rows.listaLancamento)
-  }, [rows])
+  }, [clientId, rows])
+
+  const filterProps = {
+    filter,
+    handleFilter: setFilter
+  }
+
+  const clientProps = {
+    clientId,
+    setClientId,
+    clients: clients?.data || []
+  }
+
+  const clientBanksProps = {
+    clientBanks: clientBanks?.data || [],
+    handleResetClientBanks
+  }
+
+  const OperationTypePropsValues = {
+    operationType,
+    setOperationType
+  }
+
+  const stateIntegrationProps = {
+    stateIntegration,
+    dispatchStateIntegration
+  }
+
+  const stateImportProps = {
+    stateImport,
+    dispatchStateImport
+  }
 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <TableHeader
-          filter={filter}
-          handleFilter={setFilter}
-          clients={clients?.data || []}
-          clientId={clientId || ''}
-          setClientId={setClientId}
-          clientBanks={clientBanks?.data || []}
-          handleResetClientBanks={handleResetClientBanks}
-          stateIntegration={stateIntegration}
-          dispatchStateIntegration={dispatchStateIntegration}
-          operationType={operationType}
-          setOperationType={setOperationType}
+          filterProps={filterProps}
+          clientProps={clientProps}
+          clientBanksProps={clientBanksProps}
+          importStateProps={stateImportProps}
+          stateIntegrationProps={stateIntegrationProps}
+          OperationTypePropsValues={OperationTypePropsValues}
         />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={'medium'}>
             {handleRenderStatementBank(handleFilterBank(bankId, clientBanks?.data || null) || '', visibleRows || [])}
           </Table>
         </TableContainer>
-        <TablePagination
-          labelRowsPerPage='Linhas por página:'
-          rowsPerPageOptions={[5, 10, 25]}
-          component='div'
-          count={rows?.quantidadeRegistroPaginaAtual || 0}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+        {visibleRows.length > 0 && (
+          <TablePagination
+            labelRowsPerPage='Linhas por página:'
+            rowsPerPageOptions={[5, 10, 25]}
+            component='div'
+            count={rows?.quantidadeRegistroPaginaAtual || 0}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        )}
       </Paper>
     </Box>
   )

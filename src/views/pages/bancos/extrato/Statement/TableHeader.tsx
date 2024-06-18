@@ -1,10 +1,10 @@
+import { Dispatch, SyntheticEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
 import {
   CardHeader,
   Grid,
   Box,
-  Button,
   IconButton,
   MenuItem,
   FormControl,
@@ -20,18 +20,17 @@ import {
   Radio
 } from '@mui/material'
 
-import CustomTextField from 'src/@core/components/mui/text-field'
-
 import Icon from 'src/@core/components/icon'
-import CustomDatePicker from 'src/components/CustomDatePicker'
 import IconifyIcon from 'src/@core/components/icon'
+
+import { OperationTypeProps } from '.'
 import { ClientProps } from 'src/types/clients'
 import { BankAccountProps } from 'src/types/banks'
-import { StateIntegrationProps } from './reducers/integrationReducer'
-import { SyntheticEvent, useState } from 'react'
-import { OperationTypeProps } from '.'
-import { api } from 'src/services/api'
-import toast from 'react-hot-toast'
+
+import Import from './Operations/Import'
+import Integration from './Operations/Integration'
+import { StateImportProps, ActionsImport } from './reducers/importReducer'
+import { ActionsIntegration, StateIntegrationProps } from './reducers/integrationReducer'
 
 const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   borderWidth: 1,
@@ -50,113 +49,65 @@ const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   }
 }))
 
-interface TableHeaderProps {
+interface FilterProps {
   filter: string
   handleFilter: (val: string) => void
-  clients: ClientProps[]
-  clientId: string
+}
+
+interface ClientComponentProps {
+  clientId: string | null
   setClientId: (val: string | null) => void
+  clients: ClientProps[]
+}
+
+interface ClientBanksProps {
   clientBanks: BankAccountProps[]
   handleResetClientBanks: () => void
+}
+
+interface IntegrationStateProps {
   stateIntegration: StateIntegrationProps
-  dispatchStateIntegration: any
+  dispatchStateIntegration: Dispatch<ActionsIntegration>
+}
+
+interface ImportStateProps {
+  stateImport: StateImportProps
+  dispatchStateImport: Dispatch<ActionsImport>
+}
+
+interface OperationTypePropsValues {
   operationType: OperationTypeProps
   setOperationType: (val: OperationTypeProps) => void
 }
 
-const TableHeader = (props: TableHeaderProps) => {
+interface TableHeaderProps {
+  filterProps: FilterProps
+  clientProps: ClientComponentProps
+  clientBanksProps: ClientBanksProps
+  stateIntegrationProps: IntegrationStateProps
+  importStateProps: ImportStateProps
+  OperationTypePropsValues: OperationTypePropsValues
+}
+
+const TableHeader = ({
+  filterProps,
+  clientProps,
+  clientBanksProps,
+  OperationTypePropsValues,
+  importStateProps,
+  stateIntegrationProps
+}: TableHeaderProps) => {
   const router = useRouter()
 
-  const {
-    handleFilter,
-    filter,
-    clientId,
-    clients,
-    setClientId,
-    clientBanks,
-    handleResetClientBanks,
-    stateIntegration,
-    dispatchStateIntegration,
-    operationType,
-    setOperationType
-  } = props
+  const { clientId, setClientId, clients } = clientProps
+  const { dispatchStateIntegration } = stateIntegrationProps
+  const { dispatchStateImport } = importStateProps
+  const { clientBanks, handleResetClientBanks } = clientBanksProps
+  const { operationType, setOperationType } = OperationTypePropsValues
 
-  const { bankId, startDate, endDate } = stateIntegration
+  const operationClientProps = { clientId, clientBanks }
 
   const [expanded, setExpanded] = useState<string | false>('panel1')
-
-  const handleClickExport = () => {
-    api
-      .get(`/bankAccounts/export-bank-data/${bankId}?exportFileType=CSV`, { params: { startDate, endDate } })
-      .then(response => {
-        router.push(response.data)
-      })
-      .catch(() => {
-        toast.error('Erro ao exportar arquivo.')
-      })
-  }
-
-  const OperationIntegration = (clientBanks: BankAccountProps[]) => (
-    <>
-      <Grid item xs={12} md={6} xl={2}>
-        <FormControl size='small' fullWidth>
-          <InputLabel>Bancos</InputLabel>
-          <Select
-            label='Bancos'
-            value={bankId ?? ''}
-            onChange={e =>
-              dispatchStateIntegration({
-                type: 'SET_BANK_ID',
-                payload: e.target.value
-              })
-            }
-          >
-            <MenuItem value='' disabled>
-              {clientId ? 'Selecione' : 'Selecione um cliente'}
-            </MenuItem>
-            {clientBanks.map(bank => (
-              <MenuItem key={bank._id} value={bank._id}>
-                {bank.bank.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item xs={12} md={6} xl={2}>
-        <CustomDatePicker
-          value={startDate}
-          onChange={e =>
-            dispatchStateIntegration({
-              type: 'SET_START_DATE',
-              payload: e
-            })
-          }
-          placeholderText='Inicio'
-        />
-      </Grid>
-      <Grid item xs={12} md={6} xl={2}>
-        <CustomDatePicker
-          value={endDate}
-          onChange={e =>
-            dispatchStateIntegration({
-              type: 'SET_END_DATE',
-              payload: e
-            })
-          }
-          placeholderText='Fim'
-        />
-      </Grid>
-      <Grid item xs={12} md={6} xl={2}>
-        <CustomTextField fullWidth value={filter} placeholder='Buscar' onChange={e => handleFilter(e.target.value)} />
-      </Grid>
-      <Grid item xs={12} md={6} xl={2}>
-        <Button fullWidth variant='contained' sx={{ '& svg': { mr: 2 } }} onClick={handleClickExport}>
-          <Icon fontSize='1.125rem' icon='tabler:file-export' />
-          Exportar
-        </Button>
-      </Grid>
-    </>
-  )
 
   const handleChange = (panel: string) => (event: SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false)
@@ -165,11 +116,18 @@ const TableHeader = (props: TableHeaderProps) => {
   const handleSelectClient = (val: string) => {
     if (!val) {
       setClientId(null)
+      setOperationType(null)
+      handleResetClientBanks()
+
       dispatchStateIntegration({
         type: 'SET_BANK_ID',
         payload: null
       })
-      handleResetClientBanks()
+
+      dispatchStateImport({
+        type: 'SET_FILE',
+        payload: null
+      })
 
       return
     }
@@ -185,8 +143,30 @@ const TableHeader = (props: TableHeaderProps) => {
       })
   }
 
+  const handleCheckOperationType = (operationType: string | null) => {
+    if (!operationType) return null
+
+    return operationType === 'INTEGRATION' ? 'Integração' : 'Importação'
+  }
+
+  const handleCheckOperationTypeSelected = (operationType: string | null) => {
+    if (!operationType) return null
+
+    return operationType === 'INTEGRATION'
+      ? 'Selecione um banco já vinculado ao cliente'
+      : 'Importe o arquivo OFX que você deseja exportar'
+  }
+
+  useEffect(() => {
+    if (!clientId && !operationType) setExpanded(false)
+
+    if (clientId && !operationType) setExpanded('panel2')
+
+    if (clientId && operationType) setExpanded('panel3')
+  }, [clientId, operationType])
+
   return (
-    <Grid container gap={3} paddingX={6} paddingY={4} justifyContent={'space-between'}>
+    <Grid container gap={4} paddingX={6} paddingY={1} justifyContent={'space-between'}>
       <Box display='flex'>
         <CardHeader
           title='Extrato Bancário'
@@ -200,9 +180,8 @@ const TableHeader = (props: TableHeaderProps) => {
           }}
         />
       </Box>
-
-      <Grid container spacing={5} justifyContent={'space-between'}>
-        <Grid item xs={12} md={6} xl={4}>
+      <Grid container pb={4} justifyContent={'space-between'}>
+        <Grid item mb={2} xs={12} md={6} xl={4}>
           <FormControl size='small' fullWidth>
             <InputLabel>Clientes</InputLabel>
             <Select label='Clientes' value={clientId || ''} onChange={e => handleSelectClient(e.target.value)}>
@@ -224,7 +203,8 @@ const TableHeader = (props: TableHeaderProps) => {
               aria-controls='form-layouts-collapsible-content-2'
             >
               <Typography variant='subtitle1' sx={{ fontWeight: 500 }}>
-                Opções de Operações (selecione um cliente para acessar as opções)
+                {handleCheckOperationType(operationType) ||
+                  'Opções de Operações (selecione um cliente para acessar as opções)'}
               </Typography>
             </AccordionSummary>
             <Divider sx={{ m: '0 !important' }} />
@@ -270,7 +250,35 @@ const TableHeader = (props: TableHeaderProps) => {
             </AccordionDetails>
           </Accordion>
         </Grid>
-        {operationType === 'INTEGRATION' && clientBanks && OperationIntegration(clientBanks)}
+        <Grid item xs={12}>
+          <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')} disabled={!operationType}>
+            <AccordionSummary
+              expandIcon={<Icon icon='tabler:chevron-down' />}
+              id='form-layouts-collapsible-header-2'
+              aria-controls='form-layouts-collapsible-content-2'
+            >
+              <Typography variant='subtitle1' sx={{ fontWeight: 500 }}>
+                {handleCheckOperationTypeSelected(operationType) || 'Selecione uma operação para acessar as opções'}
+              </Typography>
+            </AccordionSummary>
+            <Divider sx={{ m: '0 !important' }} />
+            {operationType === 'INTEGRATION' && clientBanks && (
+              <Integration
+                filterProps={filterProps}
+                clientProps={operationClientProps}
+                integrationStateProps={stateIntegrationProps}
+              />
+            )}
+            {operationType === 'IMPORT' && (
+              <Import
+                importStateProps={importStateProps}
+                clientProps={{
+                  clientId
+                }}
+              />
+            )}
+          </Accordion>
+        </Grid>
       </Grid>
     </Grid>
   )
