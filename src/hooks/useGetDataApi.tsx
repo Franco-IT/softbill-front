@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 import { api } from 'src/services/api'
 
@@ -17,11 +17,11 @@ const useGetDataApi = <T,>({ url, params, callInit = true }: GetDataApiProps) =>
 
   const paramsRef = useRef(params)
 
-  const handleResetData = () => {
+  const handleResetData = useCallback(() => {
     setData(null)
     setError(null)
     setLoading(false)
-  }
+  }, [])
 
   useEffect(() => {
     if (callInit) {

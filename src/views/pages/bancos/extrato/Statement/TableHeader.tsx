@@ -1,11 +1,9 @@
 import { Dispatch, SyntheticEvent, useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
 
 import {
   CardHeader,
   Grid,
   Box,
-  IconButton,
   MenuItem,
   FormControl,
   InputLabel,
@@ -21,7 +19,6 @@ import {
 } from '@mui/material'
 
 import Icon from 'src/@core/components/icon'
-import IconifyIcon from 'src/@core/components/icon'
 
 import { OperationTypeProps } from '.'
 import { ClientProps } from 'src/types/clients'
@@ -54,6 +51,12 @@ interface FilterProps {
   handleFilter: (val: string) => void
 }
 
+interface PaginationProps {
+  page: number
+  perPage: number
+  setTotalPages: (totalPages: number) => void
+}
+
 interface ClientComponentProps {
   clientId: string | null
   setClientId: (val: string | null) => void
@@ -82,6 +85,7 @@ interface OperationTypePropsValues {
 
 interface TableHeaderProps {
   filterProps: FilterProps
+  paginationProps: PaginationProps
   clientProps: ClientComponentProps
   clientBanksProps: ClientBanksProps
   stateIntegrationProps: IntegrationStateProps
@@ -92,13 +96,12 @@ interface TableHeaderProps {
 const TableHeader = ({
   filterProps,
   clientProps,
+  paginationProps,
   clientBanksProps,
   OperationTypePropsValues,
   importStateProps,
   stateIntegrationProps
 }: TableHeaderProps) => {
-  const router = useRouter()
-
   const { clientId, setClientId, clients } = clientProps
   const { dispatchStateIntegration } = stateIntegrationProps
   const { dispatchStateImport } = importStateProps
@@ -135,12 +138,25 @@ const TableHeader = ({
     setClientId(val)
   }
 
-  const handleClickBack = () => {
-    if (router.query.client)
-      router.push({
-        pathname: '/clientes/[id]',
-        query: { id: router.query.client, tab: 'banks' }
-      })
+  const handleSelectOperationType = (val: OperationTypeProps) => {
+    switch (val) {
+      case 'INTEGRATION':
+        setOperationType('INTEGRATION')
+        dispatchStateImport({
+          type: 'SET_FILE',
+          payload: null
+        })
+        break
+      case 'IMPORT':
+        dispatchStateIntegration({
+          type: 'SET_BANK_ID',
+          payload: null
+        })
+        setOperationType('IMPORT')
+        break
+      default:
+        setOperationType(null)
+    }
   }
 
   const handleCheckOperationType = (operationType: string | null) => {
@@ -166,19 +182,9 @@ const TableHeader = ({
   }, [clientId, operationType])
 
   return (
-    <Grid container gap={4} paddingX={6} paddingY={1} justifyContent={'space-between'}>
+    <Grid container gap={4} paddingX={6} paddingY={5} justifyContent={'space-between'}>
       <Box display='flex'>
-        <CardHeader
-          title='Extrato Bancário'
-          avatar={
-            <IconButton title='Voltar' aria-label='Voltar' onClick={handleClickBack}>
-              <IconifyIcon icon='material-symbols:arrow-back' />
-            </IconButton>
-          }
-          sx={{
-            padding: 0
-          }}
-        />
+        <CardHeader title='Extrato Bancário' sx={{ padding: 0 }} />
       </Box>
       <Grid container pb={4} justifyContent={'space-between'}>
         <Grid item mb={2} xs={12} md={6} xl={4}>
@@ -210,7 +216,7 @@ const TableHeader = ({
             <Divider sx={{ m: '0 !important' }} />
             <AccordionDetails sx={{ pt: 6, pb: 6 }}>
               <BoxWrapper
-                onClick={() => setOperationType('INTEGRATION')}
+                onClick={() => handleSelectOperationType('INTEGRATION')}
                 sx={operationType === 'INTEGRATION' ? { borderColor: 'primary.main' } : {}}
               >
                 <Radio
@@ -229,7 +235,7 @@ const TableHeader = ({
                 </Box>
               </BoxWrapper>
               <BoxWrapper
-                onClick={() => setOperationType('IMPORT')}
+                onClick={() => handleSelectOperationType('IMPORT')}
                 sx={operationType === 'IMPORT' ? { borderColor: 'primary.main' } : {}}
               >
                 <Radio
@@ -272,6 +278,7 @@ const TableHeader = ({
             {operationType === 'IMPORT' && (
               <Import
                 importStateProps={importStateProps}
+                paginationProps={paginationProps}
                 clientProps={{
                   clientId
                 }}

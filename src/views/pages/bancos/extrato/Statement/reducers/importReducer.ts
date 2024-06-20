@@ -1,13 +1,11 @@
-import router from 'next/router'
-import toast from 'react-hot-toast'
-import { api } from 'src/services/api'
-
 export type StateImportProps = {
   file: File | null
+  preview: any[]
 }
 
 export const iniitialStateImport: StateImportProps = {
-  file: null
+  file: null,
+  preview: []
 }
 
 export type ActionsImport =
@@ -16,8 +14,12 @@ export type ActionsImport =
       payload: File | null
     }
   | {
-      type: 'SEND_FILE'
-      payload: File
+      type: 'SET_PREVIEW'
+      payload: any
+    }
+  | {
+      type: 'GET_PREVIEW'
+      payload: any
     }
   | {
       type: 'EXPORT_FILE'
@@ -27,29 +29,18 @@ export type ActionsImport =
       }
     }
 
-export const reducerImport = (state: StateImportProps, action: ActionsImport): StateImportProps => {
+export const reducerImport = (state: StateImportProps, action: ActionsImport) => {
   switch (action.type) {
     case 'SET_FILE':
+      if (!action.payload) return { ...state, file: null, preview: [] }
+
       return { ...state, file: action.payload }
-    case 'SEND_FILE':
-      const formData = new FormData()
-      formData.append('file', action.payload)
-
-      api
-        .post('/bankAccounts/ofx-preview', formData)
-        .then(res => console.log(res))
-        .catch(() => toast.error('Erro ao gerar preview, tente novamente mais tarde..'))
-
-      return { ...state, file: null }
+    case 'SET_PREVIEW':
+      return { ...state, preview: action.payload }
+    case 'GET_PREVIEW':
+      return { ...state, preview: action.payload }
     case 'EXPORT_FILE':
-      const formDataExport = new FormData()
-      formDataExport.append('file', action.payload.file)
-      formDataExport.append('clientId', action.payload.clientId)
-
-      api
-        .post('/bankAccounts/ofx-export', formDataExport)
-        .then(res => router.push(res.data))
-        .catch(() => toast.error('Erro ao exportar arquivo, tente novamente mais tarde.'))
+      return { ...state, file: action.payload.file }
     default:
       return state
   }
