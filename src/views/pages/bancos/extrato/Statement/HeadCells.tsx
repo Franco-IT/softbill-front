@@ -89,10 +89,40 @@ export const HeadCellsBB: HeadCellProps[] = [
     id: 'textoDvContaContrapartida',
     disablePadding: false,
     label: 'DV da Conta Contrapartida'
+  }
+
+  // {
+  //   id: 'actions',
+  //   disablePadding: false,
+  //   label: 'Ações'
+  // }
+]
+
+export const HeadCellsOFX: HeadCellProps[] = [
+  {
+    id: 'date',
+    disablePadding: true,
+    label: 'Data'
   },
   {
-    id: 'actions',
+    id: 'type',
     disablePadding: false,
-    label: 'Ações'
+    label: 'Tipo'
+  },
+  {
+    id: 'value',
+    disablePadding: false,
+    label: 'Valor'
+  },
+  {
+    id: 'origin',
+    disablePadding: false,
+    label: 'Origem'
   }
+
+  // {
+  //   id: 'actions',
+  //   disablePadding: false,
+  //   label: 'Ações'
+  // }
 ]
