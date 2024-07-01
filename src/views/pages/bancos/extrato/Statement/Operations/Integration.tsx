@@ -5,8 +5,11 @@ import CustomTextField from 'src/@core/components/mui/text-field'
 import CustomDatePicker from 'src/components/CustomDatePicker'
 
 import { BankAccountProps } from 'src/types/banks'
-import { ActionsIntegration, StateIntegrationProps } from '../reducers/integrationReducer'
-import { Dispatch } from 'react'
+
+import { useAppSelector } from 'src/hooks/useAppSelector'
+import { setBankId, setStartDate, setEndDate, handleExportFile } from 'src/store/modules/statement/reducer'
+import { useAppDispatch } from 'src/hooks/useAppDispatch'
+import toast from 'react-hot-toast'
 
 interface FilterProps {
   filter: string
@@ -18,23 +21,28 @@ interface ClientProps {
   clientBanks: BankAccountProps[]
 }
 
-interface IntegrationStateProps {
-  stateIntegration: StateIntegrationProps
-  dispatchStateIntegration: Dispatch<ActionsIntegration>
-}
-
 interface IntegrationProps {
   filterProps: FilterProps
   clientProps: ClientProps
-  integrationStateProps: IntegrationStateProps
 }
 
-const Integration = ({ filterProps, clientProps, integrationStateProps }: IntegrationProps) => {
+const Integration = ({ filterProps, clientProps }: IntegrationProps) => {
   const { filter, handleFilter } = filterProps
   const { clientId, clientBanks } = clientProps
-  const { stateIntegration, dispatchStateIntegration } = integrationStateProps
 
-  const { bankId, startDate, endDate } = stateIntegration
+  const bankId = useAppSelector(state => state.StatementsReducer.operations.integration.bankId)
+  const startDate = useAppSelector(state => state.StatementsReducer.operations.integration.startDate)
+  const endDate = useAppSelector(state => state.StatementsReducer.operations.integration.endDate)
+
+  const dispatch = useAppDispatch()
+
+  const handleConvertStringToDate = (date: string | null) => {
+    return date ? new Date(date) : null
+  }
+
+  const handleConvertDateToString = (date: Date | null) => {
+    return date ? date.toISOString() : null
+  }
 
   return (
     <AccordionDetails sx={{ py: 4 }}>
@@ -42,16 +50,7 @@ const Integration = ({ filterProps, clientProps, integrationStateProps }: Integr
         <Grid item xs={12} md={6} xl={2}>
           <FormControl size='small' fullWidth>
             <InputLabel>Bancos</InputLabel>
-            <Select
-              label='Bancos'
-              value={bankId ?? ''}
-              onChange={e =>
-                dispatchStateIntegration({
-                  type: 'SET_BANK_ID',
-                  payload: e.target.value
-                })
-              }
-            >
+            <Select label='Bancos' value={bankId ?? ''} onChange={e => dispatch(setBankId(e.target.value))}>
               <MenuItem value='' disabled>
                 {clientId ? 'Selecione' : 'Selecione um cliente'}
               </MenuItem>
@@ -65,25 +64,15 @@ const Integration = ({ filterProps, clientProps, integrationStateProps }: Integr
         </Grid>
         <Grid item xs={12} md={6} xl={2}>
           <CustomDatePicker
-            value={startDate}
-            onChange={e =>
-              dispatchStateIntegration({
-                type: 'SET_START_DATE',
-                payload: e
-              })
-            }
+            value={handleConvertStringToDate(startDate)}
+            onChange={e => dispatch(setStartDate(handleConvertDateToString(e)))}
             placeholderText='Inicio'
           />
         </Grid>
         <Grid item xs={12} md={6} xl={2}>
           <CustomDatePicker
-            value={endDate}
-            onChange={e =>
-              dispatchStateIntegration({
-                type: 'SET_END_DATE',
-                payload: e
-              })
-            }
+            value={handleConvertStringToDate(endDate)}
+            onChange={e => dispatch(setEndDate(handleConvertDateToString(e)))}
             placeholderText='Fim'
           />
         </Grid>
@@ -96,13 +85,10 @@ const Integration = ({ filterProps, clientProps, integrationStateProps }: Integr
             variant='contained'
             sx={{ '& svg': { mr: 2 } }}
             onClick={() =>
-              dispatchStateIntegration({
-                type: 'EXPORT_FILE',
-                payload: {
-                  bankId: bankId || '',
-                  startDate,
-                  endDate
-                }
+              toast.promise(dispatch(handleExportFile({ bankId, startDate, endDate })).unwrap(), {
+                loading: 'Exportando arquivo...',
+                success: 'Arquivo exportado com sucesso!',
+                error: 'Erro ao exportar arquivo, tente novamente mais tarde.'
               })
             }
           >

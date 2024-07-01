@@ -37,7 +37,12 @@ import Spinner from 'src/@core/components/spinner'
 
 // ** Contexts
 import { AuthProvider } from 'src/context/AuthContext'
+import { AutoSaveProvider } from 'src/context/AutoSaveContext'
 import { SettingsConsumer, SettingsProvider } from 'src/@core/context/settingsContext'
+
+// ** Redux Imports
+import { store } from 'src/store'
+import { Provider } from 'react-redux'
 
 // ** Styled Components
 import ReactHotToast from 'src/@core/styles/libs/react-hot-toast'
@@ -58,7 +63,6 @@ import 'src/iconify-bundle/icons-bundle-react'
 
 // ** Global css styles
 import '../../styles/globals.css'
-import { AutoSaveProvider } from 'src/context/AutoSaveContext'
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -126,7 +130,9 @@ const App = (props: ExtendedAppProps) => {
                   <Guard authGuard={authGuard} guestGuard={guestGuard}>
                     <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard} authGuard={authGuard}>
                       <DynamicSEO defaultTitle={themeConfig.templateName} />
-                      <AutoSaveProvider>{getLayout(<Component {...pageProps} />)}</AutoSaveProvider>
+                      <AutoSaveProvider>
+                        <Provider store={store}>{getLayout(<Component {...pageProps} />)}</Provider>
+                      </AutoSaveProvider>
                     </AclGuard>
                   </Guard>
                   <ReactHotToast>

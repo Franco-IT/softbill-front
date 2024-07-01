@@ -1,4 +1,4 @@
-import { Suspense, useState, ChangeEvent, MouseEvent, useMemo, useEffect, useReducer, useCallback } from 'react'
+import { Suspense, useState, ChangeEvent, MouseEvent, useMemo, useEffect, useCallback } from 'react'
 import { Box, Paper, Table, TableContainer, TablePagination } from '@mui/material'
 
 import { HeadCellsBB, HeadCellsOFX } from './HeadCells'
@@ -7,34 +7,36 @@ import EnhancedTableHead from './EnhancedTableHead'
 
 import { Loading, Order, getComparator, stableSort } from 'src/utils/list'
 
-import { BankAccountListDataProps, BankAccountProps } from 'src/types/banks'
+import { BankAccountListDataProps } from 'src/types/banks'
 import useGetDataApi from 'src/hooks/useGetDataApi'
 import { useAuth } from 'src/hooks/useAuth'
 import { ClientsListProps } from 'src/types/clients'
 import StatementsTableBB from './Tables/Banks/BB'
-import { iniitialStateIntegration, reducerIntegration } from './reducers/integrationReducer'
-import { iniitialStateImport, reducerImport } from './reducers/importReducer'
 import StatementsOFX from './Tables/OFX'
+
+import { useAppSelector } from 'src/hooks/useAppSelector'
+import { useAppDispatch } from 'src/hooks/useAppDispatch'
+import { setStatements } from 'src/store/modules/statement/reducer'
 
 export type OperationTypeProps = 'INTEGRATION' | 'IMPORT' | null
 
 const StatementsTable = () => {
   const { user } = useAuth()
 
+  const clientId = useAppSelector(state => state.StatementsReducer.clientId)
+  const operationType = useAppSelector(state => state.StatementsReducer.operationType)
+  const bankId = useAppSelector(state => state.StatementsReducer.operations.integration.bankId)
+  const statements = useAppSelector(state => state.StatementsReducer.statements)
+
+  const dispatch = useAppDispatch()
+
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof BankAccountProps>('createdAt')
+  const [orderBy, setOrderBy] = useState<any>('createdAt')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [totalRows, setTotalRows] = useState(0)
 
   const [filter, setFilter] = useState('')
-  const [clientId, setClientId] = useState<string | null>(null)
-  const [statements, setStatements] = useState<any[]>([])
-  const [stateIntegration, dispatchStateIntegration] = useReducer(reducerIntegration, iniitialStateIntegration)
-  const [stateImport, dispatchStateImport] = useReducer(reducerImport, iniitialStateImport)
-  const [operationType, setOperationType] = useState<OperationTypeProps>(null)
-
-  const { bankId } = stateIntegration
 
   const { data: clients } = useGetDataApi<ClientsListProps>({
     url: `/users?accountingId=${user?.id}&type=CLIENT`,
@@ -57,7 +59,7 @@ const StatementsTable = () => {
     callInit: !!bankId
   })
 
-  const handleRequestSort = (event: MouseEvent<unknown>, property: keyof BankAccountProps) => {
+  const handleRequestSort = (event: MouseEvent<unknown>, property: any) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
     setOrderBy(property)
@@ -74,7 +76,7 @@ const StatementsTable = () => {
 
   const visibleRows = useMemo(() => stableSort(statements, getComparator(order, orderBy)), [statements, order, orderBy])
 
-  const handleFilterBank = (val: string | null, banks: BankAccountProps[] | null) => {
+  const handleFilterBank = (val: string | null, banks: any[] | null) => {
     if (!val || !banks) return null
 
     const filteredBanks = banks.filter(bank => bank._id == val)[0]
@@ -128,14 +130,14 @@ const StatementsTable = () => {
     (operationType: string, rows: any) => {
       switch (operationType) {
         case 'INTEGRATION':
-          return setStatements(rows.listaLancamento || [])
+          return dispatch(setStatements(rows.listaLancamento || []))
         case 'IMPORT':
-          return setStatements(stateImport.preview || [])
+          return dispatch(setStatements(rows.preview || []))
         default:
           return null
       }
     },
-    [stateImport.preview]
+    [dispatch]
   )
 
   const handleRenderRowsForOperationType = (operationType: OperationTypeProps) => {
@@ -150,21 +152,18 @@ const StatementsTable = () => {
   }
 
   useEffect(() => {
-    if (!clientId) return setStatements([])
+    if (!bankId && rows) return handleResetRows()
 
-    if (!bankId && rows) {
-      handleResetRows()
-      setStatements([])
-
-      return
-    }
-
-    if (rows || stateImport.preview) handleSetStatements(operationType || '', rows || stateImport.preview)
-  }, [bankId, clientId, handleResetRows, handleSetStatements, operationType, rows, stateImport.preview])
+    if (bankId && rows) handleSetStatements(operationType || '', rows)
+  }, [clientId, bankId, dispatch, rows, handleResetRows, handleSetStatements, operationType])
 
   const filterProps = {
     filter,
     handleFilter: setFilter
+  }
+
+  const clientProps = {
+    clients: clients?.data || []
   }
 
   const paginationProps = {
@@ -173,30 +172,9 @@ const StatementsTable = () => {
     setTotalPages: setTotalRows
   }
 
-  const clientProps = {
-    clientId,
-    setClientId,
-    clients: clients?.data || []
-  }
-
   const clientBanksProps = {
     clientBanks: clientBanks?.data || [],
     handleResetClientBanks
-  }
-
-  const OperationTypePropsValues = {
-    operationType,
-    setOperationType
-  }
-
-  const stateIntegrationProps = {
-    stateIntegration,
-    dispatchStateIntegration
-  }
-
-  const stateImportProps = {
-    stateImport,
-    dispatchStateImport
   }
 
   return (
@@ -207,9 +185,6 @@ const StatementsTable = () => {
           clientProps={clientProps}
           paginationProps={paginationProps}
           clientBanksProps={clientBanksProps}
-          importStateProps={stateImportProps}
-          stateIntegrationProps={stateIntegrationProps}
-          OperationTypePropsValues={OperationTypePropsValues}
         />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={'medium'}>

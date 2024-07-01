@@ -1,4 +1,4 @@
-import { Dispatch, SyntheticEvent, useEffect, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 
 import {
   CardHeader,
@@ -26,8 +26,10 @@ import { BankAccountProps } from 'src/types/banks'
 
 import Import from './Operations/Import'
 import Integration from './Operations/Integration'
-import { StateImportProps, ActionsImport } from './reducers/importReducer'
-import { ActionsIntegration, StateIntegrationProps } from './reducers/integrationReducer'
+
+import { useAppDispatch } from 'src/hooks/useAppDispatch'
+import { setClientId, setBankId, setOperationType, setFile, setStatements } from 'src/store/modules/statement/reducer'
+import { useAppSelector } from 'src/hooks/useAppSelector'
 
 const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   borderWidth: 1,
@@ -58,8 +60,6 @@ interface PaginationProps {
 }
 
 interface ClientComponentProps {
-  clientId: string | null
-  setClientId: (val: string | null) => void
   clients: ClientProps[]
 }
 
@@ -68,47 +68,21 @@ interface ClientBanksProps {
   handleResetClientBanks: () => void
 }
 
-interface IntegrationStateProps {
-  stateIntegration: StateIntegrationProps
-  dispatchStateIntegration: Dispatch<ActionsIntegration>
-}
-
-interface ImportStateProps {
-  stateImport: StateImportProps
-  dispatchStateImport: Dispatch<ActionsImport>
-}
-
-interface OperationTypePropsValues {
-  operationType: OperationTypeProps
-  setOperationType: (val: OperationTypeProps) => void
-}
-
 interface TableHeaderProps {
   filterProps: FilterProps
   paginationProps: PaginationProps
   clientProps: ClientComponentProps
   clientBanksProps: ClientBanksProps
-  stateIntegrationProps: IntegrationStateProps
-  importStateProps: ImportStateProps
-  OperationTypePropsValues: OperationTypePropsValues
 }
 
-const TableHeader = ({
-  filterProps,
-  clientProps,
-  paginationProps,
-  clientBanksProps,
-  OperationTypePropsValues,
-  importStateProps,
-  stateIntegrationProps
-}: TableHeaderProps) => {
-  const { clientId, setClientId, clients } = clientProps
-  const { dispatchStateIntegration } = stateIntegrationProps
-  const { dispatchStateImport } = importStateProps
+const TableHeader = ({ filterProps, clientProps, paginationProps, clientBanksProps }: TableHeaderProps) => {
+  const { clients } = clientProps
   const { clientBanks, handleResetClientBanks } = clientBanksProps
-  const { operationType, setOperationType } = OperationTypePropsValues
 
-  const operationClientProps = { clientId, clientBanks }
+  const clientId = useAppSelector(state => state.StatementsReducer.clientId)
+  const operationType = useAppSelector(state => state.StatementsReducer.operationType)
+
+  const dispatch = useAppDispatch()
 
   const [expanded, setExpanded] = useState<string | false>('panel1')
 
@@ -118,44 +92,40 @@ const TableHeader = ({
 
   const handleSelectClient = (val: string) => {
     if (!val) {
-      setClientId(null)
-      setOperationType(null)
+      dispatch(setBankId(null))
+      dispatch(setClientId(null))
+      dispatch(setOperationType(null))
+      dispatch(setFile({ fileOFX: null }))
+      dispatch(setStatements([]))
+
       handleResetClientBanks()
-
-      dispatchStateIntegration({
-        type: 'SET_BANK_ID',
-        payload: null
-      })
-
-      dispatchStateImport({
-        type: 'SET_FILE',
-        payload: null
-      })
 
       return
     }
 
-    setClientId(val)
+    dispatch(setClientId(val))
   }
 
   const handleSelectOperationType = (val: OperationTypeProps) => {
+    if (operationType === val) return null
+
+    dispatch(setStatements([]))
+
     switch (val) {
       case 'INTEGRATION':
-        setOperationType('INTEGRATION')
-        dispatchStateImport({
-          type: 'SET_FILE',
-          payload: null
-        })
+        dispatch(setOperationType('INTEGRATION'))
+        dispatch(
+          setFile({
+            fileOFX: null
+          })
+        )
         break
       case 'IMPORT':
-        dispatchStateIntegration({
-          type: 'SET_BANK_ID',
-          payload: null
-        })
-        setOperationType('IMPORT')
+        dispatch(setBankId(null))
+        dispatch(setOperationType('IMPORT'))
         break
       default:
-        setOperationType(null)
+        dispatch(setOperationType(null))
     }
   }
 
@@ -180,6 +150,11 @@ const TableHeader = ({
 
     if (clientId && operationType) setExpanded('panel3')
   }, [clientId, operationType])
+
+  const operationClientProps = {
+    clientId,
+    clientBanks
+  }
 
   return (
     <Grid container gap={4} paddingX={6} paddingY={5} justifyContent={'space-between'}>
@@ -269,15 +244,10 @@ const TableHeader = ({
             </AccordionSummary>
             <Divider sx={{ m: '0 !important' }} />
             {operationType === 'INTEGRATION' && clientBanks && (
-              <Integration
-                filterProps={filterProps}
-                clientProps={operationClientProps}
-                integrationStateProps={stateIntegrationProps}
-              />
+              <Integration filterProps={filterProps} clientProps={operationClientProps} />
             )}
             {operationType === 'IMPORT' && (
               <Import
-                importStateProps={importStateProps}
                 paginationProps={paginationProps}
                 clientProps={{
                   clientId
