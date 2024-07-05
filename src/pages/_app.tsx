@@ -32,6 +32,9 @@ import AuthGuard from 'src/@core/components/auth/AuthGuard'
 import GuestGuard from 'src/@core/components/auth/GuestGuard'
 import DynamicSEO from 'src/components/DynamicSEO/index'
 
+// ** Error Boundary
+import ErrorBoundary from 'src/components/ErrorBoundary'
+
 // ** Spinner Import
 import Spinner from 'src/@core/components/spinner'
 
@@ -131,7 +134,13 @@ const App = (props: ExtendedAppProps) => {
                     <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard} authGuard={authGuard}>
                       <DynamicSEO defaultTitle={themeConfig.templateName} />
                       <AutoSaveProvider>
-                        <Provider store={store}>{getLayout(<Component {...pageProps} />)}</Provider>
+                        <Provider store={store}>
+                          {getLayout(
+                            <ErrorBoundary>
+                              <Component {...pageProps} />
+                            </ErrorBoundary>
+                          )}
+                        </Provider>
                       </AutoSaveProvider>
                     </AclGuard>
                   </Guard>
