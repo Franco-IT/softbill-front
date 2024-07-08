@@ -2,30 +2,21 @@ import { CSSProperties, ReactNode, useState } from 'react'
 
 import Link from 'next/link'
 
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import CardContent from '@mui/material/CardContent'
-import { styled } from '@mui/material/styles'
-import MuiCard, { CardProps } from '@mui/material/Card'
-import InputAdornment from '@mui/material/InputAdornment'
-
-import CustomTextField from 'src/@core/components/mui/text-field'
+import { Box, Button, CardContent, CardProps, IconButton, Typography, styled, Card as MuiCard } from '@mui/material'
 
 import Icon from 'src/@core/components/icon'
+import InputAdornment from '@mui/material/InputAdornment'
+import CustomTextField from 'src/@core/components/mui/text-field'
 
-import * as yup from 'yup'
-import { useForm, Controller } from 'react-hook-form'
+import { useAuth } from 'src/hooks/useAuth'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm, Controller } from 'react-hook-form'
+import { IUserLoginDTO } from 'src/modules/auth/dtos/IUserLoginDTO'
+import { loginSchema } from 'src/services/yup/schemas/loginSchema'
 
 import themeConfig from 'src/configs/themeConfig'
 
 import BlankLayout from 'src/@core/layouts/BlankLayout'
-
-import { useAuth } from 'src/hooks/useAuth'
-
-import toast from 'react-hot-toast'
 
 const styleVideo: CSSProperties = {
   position: 'absolute',
@@ -38,11 +29,6 @@ const styleVideo: CSSProperties = {
   opacity: 0.4,
   filter: 'brightness(0.5)'
 }
-
-const schema = yup.object().shape({
-  email: yup.string().email('E-mail inválido').required('E-mail obrigatório'),
-  password: yup.string().required('Senha obrigatória')
-})
 
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { width: '25rem' }
@@ -58,11 +44,6 @@ const defaultValues = {
   email: ''
 }
 
-interface FormData {
-  email: string
-  password: string
-}
-
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
@@ -73,17 +54,15 @@ const LoginPage = () => {
   } = useForm({
     defaultValues,
     mode: 'onBlur',
-    resolver: yupResolver(schema)
+    resolver: yupResolver(loginSchema)
   })
 
   const auth = useAuth()
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: IUserLoginDTO) => {
     const { email, password } = data
 
-    auth.login({ email, password }, () => {
-      toast.error('E-mail ou Senha inválidos')
-    })
+    auth.login({ email, password })
   }
 
   return (
