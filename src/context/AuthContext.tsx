@@ -1,16 +1,19 @@
 import { createContext, useEffect, useState, ReactNode } from 'react'
+
 import { useRouter } from 'next/router'
-
-import { setCookie, deleteCookie, getCookie } from 'cookies-next'
-
-import { api } from 'src/services/api'
-import authConfig from 'src/configs/auth'
-
-import { formatAuthUser } from 'src/utils/formatAuthUser'
+import { deleteCookie, getCookie, setCookie } from 'cookies-next'
 
 import toast from 'react-hot-toast'
 
-import { AuthValuesType, LoginParams, ErrCallbackType, UserDataType } from './types'
+import authConfig from 'src/configs/auth'
+
+import { api } from 'src/services/api'
+import { authController } from 'src/modules/auth'
+import { cryptoProvider } from 'src/shared/providers'
+import { AuthValuesType } from './types'
+import { IUserLoginDTO } from 'src/modules/auth/dtos/IUserLoginDTO'
+import { IUserLoggedDTO } from 'src/modules/auth/dtos/IUserLoggedDTO'
+import { AppError } from 'src/shared/errors/AppError'
 
 const defaultProvider: AuthValuesType = {
   user: null,
@@ -28,17 +31,26 @@ type Props = {
 }
 
 const AuthProvider = ({ children }: Props) => {
-  const [user, setUser] = useState<UserDataType | null>(defaultProvider.user)
-  const [loading, setLoading] = useState<boolean>(defaultProvider.loading)
-
   const router = useRouter()
+  const [user, setUser] = useState<IUserLoggedDTO | null>(defaultProvider.user)
+  const [loading, setLoading] = useState<boolean>(defaultProvider.loading)
 
   useEffect(() => {
     const initAuth = async (): Promise<void> => {
-      const storedToken = getCookie(authConfig.storageTokenKeyName)
-      const userId = getCookie(authConfig.storageUserDataKeyName)
+      const encryptedToken = getCookie(authConfig.storageTokenKeyName)
+      const encryptedUserId = getCookie(authConfig.storageUserDataKeyName)
 
-      if (!storedToken) {
+      if (!encryptedToken || !encryptedUserId) {
+        setLoading(false)
+        router.pathname !== '/redefinir-senha' && handleLogout()
+
+        return
+      }
+
+      const ivToken = getCookie(`${authConfig.storageTokenKeyName}-iv`)
+      const ivUserId = getCookie(`${authConfig.storageUserDataKeyName}-iv`)
+
+      if (!ivToken || !ivUserId) {
         setLoading(false)
         router.pathname !== '/redefinir-senha' && handleLogout()
 
@@ -47,14 +59,25 @@ const AuthProvider = ({ children }: Props) => {
 
       setLoading(true)
 
-      api.defaults.headers['Authorization'] = `Bearer ${storedToken}`
+      const token = cryptoProvider.decrypt(encryptedToken as string, ivToken as string)
+      const userId = cryptoProvider.decrypt(encryptedUserId as string, ivUserId as string)
 
-      api
-        .get(`${authConfig.meEndpoint}/${userId}`)
-        .then(async response => setUser(formatAuthUser(response.data.data)))
-        .catch(() => {
+      if (!token || !userId) {
+        setLoading(false)
+        router.pathname !== '/redefinir-senha' && handleLogout()
+        toast.error('Sua sessão expirou, faça login novamente.')
+
+        return
+      }
+
+      api.defaults.headers['Authorization'] = `Bearer ${token}`
+
+      authController
+        .getAuthUser(userId as string)
+        .then(userData => userData && setUser(userData))
+        .catch(error => {
           handleLogout()
-          toast.error('Sua sessão expirou, faça login novamente.')
+          if (error instanceof AppError) toast.error(error.message)
         })
         .finally(() => setLoading(false))
     }
@@ -63,21 +86,29 @@ const AuthProvider = ({ children }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleLogin = async (params: LoginParams, errorCallback?: ErrCallbackType) => {
+  const handleLogin = async (params: IUserLoginDTO) => {
     try {
-      const { data } = await api.post(authConfig.loginEndpoint, {
-        email: params.email,
-        password: params.password
-      })
+      const response = await authController.login(params)
 
-      api.defaults.headers['Authorization'] = `Bearer ${data.token}`
+      if (!response) return null
 
-      setCookie(authConfig.storageTokenKeyName, data.token)
-      setCookie(authConfig.storageUserDataKeyName, data.userId)
+      const { token, userId } = response
 
-      const userData = await api.get(`${authConfig.meEndpoint}/${data.userId}`)
+      api.defaults.headers['Authorization'] = `Bearer ${token}`
 
-      setUser(formatAuthUser(userData.data.data))
+      const { iv: ivToken, encrypted: encryptedToken } = cryptoProvider.encrypt(token)
+      const { iv: ivUserId, encrypted: encryptedUserId } = cryptoProvider.encrypt(userId)
+
+      setCookie(authConfig.storageTokenKeyName, encryptedToken)
+      setCookie(`${authConfig.storageTokenKeyName}-iv`, ivToken)
+      setCookie(authConfig.storageUserDataKeyName, encryptedUserId)
+      setCookie(`${authConfig.storageUserDataKeyName}-iv`, ivUserId)
+
+      const userData = await authController.getAuthUser(userId)
+
+      if (!userData) return null
+
+      setUser(userData)
 
       const returnUrl = router.query.returnUrl
 
@@ -85,14 +116,17 @@ const AuthProvider = ({ children }: Props) => {
 
       router.replace(redirectURL as string)
     } catch (error) {
-      if (errorCallback) errorCallback(error as any)
+      if (error instanceof AppError) toast.error(error.message)
     }
   }
 
   const handleLogout = () => {
     setUser(null)
+    authController.logout()
     deleteCookie(authConfig.storageUserDataKeyName)
+    deleteCookie(`${authConfig.storageUserDataKeyName}-iv`)
     deleteCookie(authConfig.storageTokenKeyName)
+    deleteCookie(`${authConfig.storageTokenKeyName}-iv`)
     router.push('/login')
   }
 
