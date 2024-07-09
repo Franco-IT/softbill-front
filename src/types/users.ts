@@ -5,7 +5,7 @@ export type UserProps = {
   phone: string
   cellphone: string
   status: 'ACTIVE' | 'INACTIVE'
-  type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING'
+  type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'COUNTER'
   documentNumber: string
   documentType: 'CPF' | 'CNPJ' | 'OTHER'
   createdAt: Date
