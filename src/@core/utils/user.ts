@@ -17,5 +17,9 @@ export const verifyUserType = (role: string) => {
       return 'Cliente'
     case 'ACCOUNTING':
       return 'Contabilidade'
+    case 'COUNTER':
+      return 'Contador'
+    default:
+      return 'Tipo desconhecido'
   }
 }
