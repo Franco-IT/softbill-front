@@ -8,14 +8,14 @@ const navigation = (): VerticalNavItemsType => {
       path: '/home',
       action: 'read',
       auth: true,
-      subject: ['ADMIN', 'ACCOUNTING'],
+      subject: ['ADMIN', 'ACCOUNTING', 'COUNTER', 'CLIENT'],
       icon: 'tabler:smart-home'
     },
     {
       title: 'Usuários',
       subtitle: 'Ver Usuários',
       path: '/usuarios',
-      action: 'create',
+      action: 'manage',
       auth: true,
       subject: 'ADMIN',
       icon: 'tabler:users',
@@ -25,7 +25,7 @@ const navigation = (): VerticalNavItemsType => {
       title: 'Contabilidade',
       subtitle: 'Ver Usuários Contabilidade',
       path: '/contabilidades',
-      action: 'create',
+      action: 'manage',
       auth: true,
       subject: 'ADMIN',
       icon: 'map:accounting',
@@ -35,7 +35,7 @@ const navigation = (): VerticalNavItemsType => {
       title: 'Bancos',
       subtitle: 'Ver Bancos',
       path: '/bancos',
-      action: 'read',
+      action: 'manage',
       auth: true,
       subject: 'ADMIN',
       icon: 'tabler:building-bank',
@@ -44,9 +44,9 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Clientes',
       subtitle: 'Ver Clientes',
-      action: 'read',
+      action: ['read', 'delete'],
       auth: true,
-      subject: 'ACCOUNTING',
+      subject: ['ACCOUNTING', 'COUNTER'],
       path: '/clientes',
       icon: 'tabler:users',
       avatarColor: 'primary'
@@ -56,7 +56,7 @@ const navigation = (): VerticalNavItemsType => {
       subtitle: 'Ver Bancos do Cliente',
       action: 'read',
       auth: true,
-      subject: 'ACCOUNTING',
+      subject: ['ACCOUNTING', 'COUNTER'],
       path: '/bancos/extrato',
       icon: 'tabler:building-bank',
       avatarColor: 'success'
@@ -64,9 +64,9 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Minha Conta',
       path: '/minha-conta',
-      action: 'read',
+      action: ['read', 'update', 'delete'],
       auth: true,
-      subject: ['ADMIN', 'ACCOUNTING'],
+      subject: ['ADMIN', 'ACCOUNTING', 'COUNTER', 'CLIENT'],
       icon: 'tabler:user-check',
       avatarColor: 'info'
     }

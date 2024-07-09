@@ -11,7 +11,7 @@ import type { ACLObj, AppAbility } from 'src/configs/acl'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
 
 // ** Config Import
-import { buildAbilityFor } from 'src/configs/acl'
+import { buildAbilityFor, canAny } from 'src/configs/acl'
 
 // ** Component Import
 import NotAuthorized from 'src/pages/401'
@@ -40,7 +40,7 @@ const AclGuard = (props: AclGuardProps) => {
   const router = useRouter()
 
   // ** Vars
-  let ability: AppAbility
+  let ability: AppAbility | null = null
 
   useEffect(() => {
     if (auth.user && auth.user.role && !guestGuard && router.route === '/') {
@@ -72,8 +72,14 @@ const AclGuard = (props: AclGuardProps) => {
   if (
     ability &&
     auth.user &&
-    ability.can(aclAbilities.action, aclAbilities.subject) &&
-    (auth.user.role === aclAbilities.subject || aclAbilities.subject === 'all')
+    canAny(
+      ability,
+      Array.isArray(aclAbilities.action) ? aclAbilities.action : [aclAbilities.action],
+      aclAbilities.subject.includes(auth.user.role) ? auth.user.role : aclAbilities.subject
+    ) &&
+    (aclAbilities.subject.includes(auth.user.role) ||
+      auth.user.role === aclAbilities.subject ||
+      aclAbilities.subject === 'all')
   ) {
     if (router.route === '/') {
       return <Spinner />

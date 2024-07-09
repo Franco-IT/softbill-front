@@ -249,7 +249,7 @@ const CreateClient = () => {
 
 CreateClient.acl = {
   action: 'create',
-  subject: 'ACCOUNTING'
+  subject: ['ACCOUNTING', 'COUNTER']
 }
 
 export default CreateClient

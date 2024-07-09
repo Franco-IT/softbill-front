@@ -27,7 +27,7 @@ interface ColorsType {
 
 const roleColors: ColorsType = {
   ADMIN: 'info',
-  ACCOUNTING: 'warning',
+  ACCOUNTING: 'warning'
 }
 
 const statusColors: ColorsType = {

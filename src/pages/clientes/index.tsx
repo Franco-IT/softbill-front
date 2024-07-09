@@ -5,8 +5,8 @@ const Clients = () => {
 }
 
 Clients.acl = {
-  action: 'read',
-  subject: 'ACCOUNTING'
+  action: ['read', 'delete'],
+  subject: ['ACCOUNTING', 'COUNTER']
 }
 
 export default Clients

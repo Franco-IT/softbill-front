@@ -32,4 +32,9 @@ const MyAccount = () => {
   }
 }
 
+MyAccount.acl = {
+  action: ['read', 'update', 'delete'],
+  subject: ['ADMIN', 'ACCOUNTING', 'COUNTER', 'CLIENT']
+}
+
 export default MyAccount

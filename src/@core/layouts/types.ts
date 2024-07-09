@@ -55,7 +55,7 @@ export type NavLink = {
   title?: string
   subtitle?: string
   auth?: boolean
-  action?: string
+  action?: string | string[]
   subject?: string | string[]
   disabled?: boolean
   children?: (NavGroup | NavLink)[]

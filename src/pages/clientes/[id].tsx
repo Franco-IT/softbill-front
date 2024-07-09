@@ -52,6 +52,6 @@ export default function Client() {
 }
 
 Client.acl = {
-  action: 'update',
-  subject: 'ACCOUNTING'
+  action: ['read', 'update', 'delete'],
+  subject: ['ACCOUNTING', 'COUNTER']
 }
