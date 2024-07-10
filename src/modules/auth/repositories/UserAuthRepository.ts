@@ -1,10 +1,13 @@
 import { UserAuth } from '../entities/UserAuth'
-import { IUserAuthRepository } from './IUserAuthRepository'
-import { IUserLoginDTO, IUserLoginResponseDTO } from '../dtos/IUserLoginDTO'
-import { api } from '../../../services/api'
-import authConfig from '../../../configs/auth'
 import { IUserLoggedDTO } from '../dtos/IUserLoggedDTO'
 import { IGetAuthUserDTO } from '../dtos/IGetAuthUserDTO'
+import { IUserAuthRepository } from './IUserAuthRepository'
+import { IUserFirstAccessDTO } from '../dtos/IUserFirstAccessDTO'
+import { IUserLoginDTO, IUserLoginResponseDTO } from '../dtos/IUserLoginDTO'
+
+import { AxiosResponse } from 'axios'
+import { api } from '../../../services/api'
+import authConfig from '../../../configs/auth'
 
 export class UserAuthRepository implements IUserAuthRepository {
   async login(data: IUserLoginDTO): Promise<IUserLoginResponseDTO> {
@@ -32,5 +35,17 @@ export class UserAuthRepository implements IUserAuthRepository {
     })
 
     return user
+  }
+
+  async firtsAccess({ newPassword, confirmPassword, token }: IUserFirstAccessDTO): Promise<AxiosResponse> {
+    return await api.post(
+      '/auth/reset-password',
+      { newPassword, confirmPassword },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
   }
 }
