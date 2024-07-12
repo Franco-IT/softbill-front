@@ -17,6 +17,7 @@ import { loginSchema } from 'src/services/yup/schemas/loginSchema'
 import themeConfig from 'src/configs/themeConfig'
 
 import BlankLayout from 'src/@core/layouts/BlankLayout'
+import Logo from 'src/components/Logo'
 
 const styleVideo: CSSProperties = {
   position: 'absolute',
@@ -66,9 +67,7 @@ const LoginPage = () => {
       <Card>
         <CardContent sx={{ p: theme => `${theme.spacing(10.5, 8, 8)} !important` }}>
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Typography variant='h3' sx={{ fontWeight: 700 }}>
-              {themeConfig.templateName}
-            </Typography>
+            <Logo />
           </Box>
           <Box sx={{ mb: 6 }}>
             <Typography variant='h4' sx={{ mb: 1.5 }}>
