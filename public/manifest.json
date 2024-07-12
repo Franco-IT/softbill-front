@@ -1,15 +1,15 @@
 {
   "name": "Plataforma Softbill",
   "short_name": "Softbill",
-  "theme_color": "#2196f3",
-  "background_color": "#2196f3",
+  "theme_color": "#4D23BE",
+  "background_color": "#4D23BE",
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
   "icons": [
     {
-      "src": "./images/apple-touch-icon.png",
+      "src": "./images/favicon.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "maskable any"
