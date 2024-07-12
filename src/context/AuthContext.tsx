@@ -5,23 +5,29 @@ import { deleteCookie, getCookie, setCookie } from 'cookies-next'
 
 import toast from 'react-hot-toast'
 
+import { api } from 'src/services/api'
+import { AuthValuesType } from './types'
 import authConfig from 'src/configs/auth'
 
-import { api } from 'src/services/api'
 import { authController } from 'src/modules/auth'
 import { cryptoProvider } from 'src/shared/providers'
-import { AuthValuesType } from './types'
+import { AppError } from 'src/shared/errors/AppError'
 import { IUserLoginDTO } from 'src/modules/auth/dtos/IUserLoginDTO'
 import { IUserLoggedDTO } from 'src/modules/auth/dtos/IUserLoggedDTO'
-import { AppError } from 'src/shared/errors/AppError'
+import { IUserResetPasswordDTO } from 'src/modules/auth/dtos/IUserResetPasswordDTO'
+import { IUserEmailResetPasswordDTO } from 'src/modules/auth/dtos/IUserEmailResetPasswordDTO'
+import { IUserFirstAccessDTO } from 'src/modules/auth/dtos/IUserFirstAccessDTO'
 
 const defaultProvider: AuthValuesType = {
   user: null,
   loading: true,
   setUser: () => null,
   setLoading: () => Boolean,
-  login: () => Promise.resolve(),
-  logout: () => Promise.resolve()
+  login: async () => Promise.resolve(),
+  logout: () => null,
+  resetPassword: async () => Promise.resolve(),
+  emailResetPassword: async () => Promise.resolve(),
+  firstAccess: async () => Promise.resolve()
 }
 
 const AuthContext = createContext(defaultProvider)
@@ -35,6 +41,12 @@ const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = useState<IUserLoggedDTO | null>(defaultProvider.user)
   const [loading, setLoading] = useState<boolean>(defaultProvider.loading)
 
+  const handleCheckRoutes = (currentRoute: string) => {
+    const routes = ['/primeiro-acesso', '/redefinir-senha', '/esqueceu-a-senha']
+
+    return routes.includes(currentRoute)
+  }
+
   useEffect(() => {
     const initAuth = async (): Promise<void> => {
       const encryptedToken = getCookie(authConfig.storageTokenKeyName)
@@ -42,7 +54,7 @@ const AuthProvider = ({ children }: Props) => {
 
       if (!encryptedToken || !encryptedUserId) {
         setLoading(false)
-        router.pathname !== '/redefinir-senha' && handleLogout()
+        !handleCheckRoutes(router.pathname) && handleLogout()
 
         return
       }
@@ -52,7 +64,7 @@ const AuthProvider = ({ children }: Props) => {
 
       if (!ivToken || !ivUserId) {
         setLoading(false)
-        router.pathname !== '/redefinir-senha' && handleLogout()
+        !handleCheckRoutes(router.pathname) && handleLogout()
 
         return
       }
@@ -64,7 +76,7 @@ const AuthProvider = ({ children }: Props) => {
 
       if (!token || !userId) {
         setLoading(false)
-        router.pathname !== '/redefinir-senha' && handleLogout()
+        !handleCheckRoutes(router.pathname) && handleLogout()
         toast.error('Sua sessão expirou, faça login novamente.')
 
         return
@@ -86,11 +98,11 @@ const AuthProvider = ({ children }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleLogin = async (params: IUserLoginDTO) => {
+  const handleLogin = async (params: IUserLoginDTO): Promise<void> => {
     try {
       const response = await authController.login(params)
 
-      if (!response) return null
+      if (!response) return
 
       const { token, userId } = response
 
@@ -106,7 +118,7 @@ const AuthProvider = ({ children }: Props) => {
 
       const userData = await authController.getAuthUser(userId)
 
-      if (!userData) return null
+      if (!userData) return
 
       setUser(userData)
 
@@ -130,13 +142,58 @@ const AuthProvider = ({ children }: Props) => {
     router.push('/login')
   }
 
+  const handleResetPassword = async (data: IUserResetPasswordDTO) => {
+    try {
+      const response = await authController.resetPassword(data)
+
+      if (response && response.status === 200) {
+        toast.success('Senha redefinida com sucesso')
+        router.push('/login')
+      }
+    } catch (error) {
+      if (error instanceof AppError) toast.error(error.message)
+      router.push('/esqueceu-a-senha')
+    }
+  }
+
+  const handleEmailResetPassword = async (data: IUserEmailResetPasswordDTO) => {
+    try {
+      const response = await authController.emailResetPassword(data)
+
+      if (response && response.status === 200) {
+        toast.success('E-mail enviado com sucesso.')
+        router.push('/login')
+      }
+    } catch (error) {
+      if (error instanceof AppError) toast.error(error.message)
+      router.push('/esqueceu-a-senha')
+    }
+  }
+
+  const handleFirstAccess = async (data: IUserFirstAccessDTO) => {
+    try {
+      const response = await authController.firstAccess(data)
+
+      if (response?.status === 200) {
+        toast.success('Senha redefinida com sucesso')
+        router.push('/login')
+      }
+    } catch (error) {
+      if (error instanceof AppError) toast.error(error.message)
+      router.push('/login')
+    }
+  }
+
   const values = {
     user,
     loading,
     setUser,
     setLoading,
     login: handleLogin,
-    logout: handleLogout
+    logout: handleLogout,
+    resetPassword: handleResetPassword,
+    emailResetPassword: handleEmailResetPassword,
+    firstAccess: handleFirstAccess
   }
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>

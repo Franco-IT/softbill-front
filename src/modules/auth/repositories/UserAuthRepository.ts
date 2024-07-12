@@ -3,7 +3,9 @@ import { IUserLoggedDTO } from '../dtos/IUserLoggedDTO'
 import { IGetAuthUserDTO } from '../dtos/IGetAuthUserDTO'
 import { IUserAuthRepository } from './IUserAuthRepository'
 import { IUserFirstAccessDTO } from '../dtos/IUserFirstAccessDTO'
+import { IUserResetPasswordDTO } from '../dtos/IUserResetPasswordDTO'
 import { IUserLoginDTO, IUserLoginResponseDTO } from '../dtos/IUserLoginDTO'
+import { IUserEmailResetPasswordDTO } from '../dtos/IUserEmailResetPasswordDTO'
 
 import { AxiosResponse } from 'axios'
 import { api } from '../../../services/api'
@@ -37,10 +39,33 @@ export class UserAuthRepository implements IUserAuthRepository {
     return user
   }
 
-  async firtsAccess({ newPassword, confirmPassword, token }: IUserFirstAccessDTO): Promise<AxiosResponse> {
+  async firtsAccess({ newPassword, confirmPassword, token }: IUserFirstAccessDTO): Promise<AxiosResponse<any, any>> {
     return await api.post(
       '/auth/reset-password',
       { newPassword, confirmPassword },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+  }
+
+  async emailResetPassword(data: IUserEmailResetPasswordDTO): Promise<AxiosResponse<any, any>> {
+    return await api.post('/auth/email-reset-password', data)
+  }
+
+  async resetPassword({
+    newPassword,
+    confirmPassword,
+    token
+  }: IUserResetPasswordDTO): Promise<AxiosResponse<any, any>> {
+    return await api.post(
+      '/auth/reset-password',
+      {
+        newPassword,
+        confirmPassword
+      },
       {
         headers: {
           Authorization: `Bearer ${token}`
