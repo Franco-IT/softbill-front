@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react'
+import { useState, ReactNode, useEffect } from 'react'
 
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -8,7 +8,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 
@@ -18,13 +18,14 @@ import CustomTextField from 'src/@core/components/mui/text-field'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 import AuthIllustrationV1Wrapper from 'src/views/pages/auth/AuthIllustrationV1Wrapper'
 
-import toast from 'react-hot-toast'
-
-import * as yup from 'yup'
-import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm, Controller } from 'react-hook-form'
+import { resetPasswordSchema } from 'src/services/yup/schemas/resetPasswordSchema'
 
-import { api } from 'src/services/api'
+import { useAuth } from 'src/hooks/useAuth'
+import { IUserResetPasswordDTO } from 'src/modules/auth/dtos/IUserResetPasswordDTO'
+
+import toast from 'react-hot-toast'
 
 import themeConfig from 'src/configs/themeConfig'
 
@@ -40,62 +41,42 @@ const LinkStyled = styled(Link)(({ theme }) => ({
   color: `${theme.palette.primary.main} !important`
 }))
 
-const schema = yup.object().shape({
-  newPassword: yup.string().min(8, 'minino de 8 caracteres').required('Senha obrigatória'),
-  confirmPassword: yup
-    .string()
-    .required('Confirmação de senha obrigatória')
-    .equals([yup.ref('newPassword')], 'As senhas não coincidem')
-})
-
-interface FormData {
-  newPassword: string
-  confirmPassword: string
-}
-
 const ResetPassword = () => {
   const router = useRouter()
+
+  const { resetPassword } = useAuth()
 
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
 
-  const theme = useTheme()
-
   const {
     control,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    setValue
   } = useForm({
     defaultValues: {
       newPassword: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      token: ''
     },
     mode: 'onBlur',
-    resolver: yupResolver(schema)
+    resolver: yupResolver(resetPasswordSchema)
   })
 
-  const onSubmit = async (data: FormData) => {
-    api
-      .post('/auth/reset-password', data, {
-        headers: {
-          Authorization: `Bearer ${router.query.token}`
-        }
-      })
-      .then(response => {
-        if (response.status === 200) {
-          toast.success('Senha redefinida com sucesso')
-          router.push('/login')
-        }
-      })
-      .catch(error => {
-        if (error.response.status === 401) {
-          toast.error('Token inválido, solicite uma nova redefinição de senha')
+  const onSubmit = async (data: IUserResetPasswordDTO) => await resetPassword(data)
 
-          return router.push('/esqueceu-a-senha')
-        }
-        toast.error('Erro ao redefinir senha')
-      })
-  }
+  useEffect(() => {
+    if (router.isReady) {
+      if (router.query.token) return setValue('token', router.query.token as string)
+
+      toast.error('Token inválido, tente novamente.')
+
+      setInterval(() => {
+        router.push('/login')
+      }, 3000)
+    }
+  }, [router, setValue])
 
   return (
     <Box className='content-center'>
@@ -103,34 +84,6 @@ const ResetPassword = () => {
         <Card>
           <CardContent sx={{ p: theme => `${theme.spacing(10.5, 8, 8)} !important` }}>
             <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width={34} viewBox='0 0 32 22' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                <path
-                  fillRule='evenodd'
-                  clipRule='evenodd'
-                  fill={theme.palette.primary.main}
-                  d='M0.00172773 0V6.85398C0.00172773 6.85398 -0.133178 9.01207 1.98092 10.8388L13.6912 21.9964L19.7809 21.9181L18.8042 9.88248L16.4951 7.17289L9.23799 0H0.00172773Z'
-                />
-                <path
-                  fill='#161616'
-                  opacity={0.06}
-                  fillRule='evenodd'
-                  clipRule='evenodd'
-                  d='M7.69824 16.4364L12.5199 3.23696L16.5541 7.25596L7.69824 16.4364Z'
-                />
-                <path
-                  fill='#161616'
-                  opacity={0.06}
-                  fillRule='evenodd'
-                  clipRule='evenodd'
-                  d='M8.07751 15.9175L13.9419 4.63989L16.5849 7.28475L8.07751 15.9175Z'
-                />
-                <path
-                  fillRule='evenodd'
-                  clipRule='evenodd'
-                  fill={theme.palette.primary.main}
-                  d='M7.77295 16.3566L23.6563 0H32V6.88383C32 6.88383 31.8262 9.17836 30.6591 10.4057L19.7824 22H13.6938L7.77295 16.3566Z'
-                />
-              </svg>
               <Typography variant='h3' sx={{ ml: 2.5, fontWeight: 700 }}>
                 {themeConfig.templateName}
               </Typography>

@@ -20,12 +20,10 @@ import AuthIllustrationV1Wrapper from 'src/views/pages/auth/AuthIllustrationV1Wr
 
 import toast from 'react-hot-toast'
 
+import { useAuth } from 'src/hooks/useAuth'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { firstAccessSchema } from 'src/services/yup/schemas/firstAccessSchema'
-
-import { authController } from 'src/modules/auth'
-import { AppError } from 'src/shared/errors/AppError'
 import { IUserFirstAccessDTO } from 'src/modules/auth/dtos/IUserFirstAccessDTO'
 
 import themeConfig from 'src/configs/themeConfig'
@@ -44,6 +42,7 @@ const LinkStyled = styled(Link)(({ theme }) => ({
 
 const FirstAccess = () => {
   const router = useRouter()
+  const { firstAccess } = useAuth()
 
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
@@ -51,40 +50,31 @@ const FirstAccess = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    setValue
   } = useForm({
     defaultValues: {
       newPassword: '',
       confirmPassword: '',
-      token: router.query.token as string
+      token: ''
     },
     mode: 'onBlur',
     resolver: yupResolver(firstAccessSchema)
   })
 
-  const onSubmit = (data: IUserFirstAccessDTO) => {
-    authController
-      .firstAccess(data)
-      .then(response => {
-        if (response?.status === 200) {
-          toast.success('Senha redefinida com sucesso')
-          router.push('/login')
-        }
-      })
-      .catch(error => {
-        if (error instanceof AppError) toast.error(error.message)
-        router.push('/login')
-      })
-  }
+  const onSubmit = async (data: IUserFirstAccessDTO) => await firstAccess(data)
 
   useEffect(() => {
-    if (!router.query.token) {
+    if (router.isReady) {
+      if (router.query.token) return setValue('token', router.query.token as string)
+
       toast.error('Token inválido, tente novamente.')
+
       setInterval(() => {
         router.push('/login')
       }, 3000)
     }
-  }, [router])
+  }, [router, setValue])
 
   return (
     <Box className='content-center'>

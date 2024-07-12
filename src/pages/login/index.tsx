@@ -59,11 +59,7 @@ const LoginPage = () => {
 
   const auth = useAuth()
 
-  const onSubmit = (data: IUserLoginDTO) => {
-    const { email, password } = data
-
-    auth.login({ email, password })
-  }
+  const onSubmit = async (data: IUserLoginDTO) => await auth.login(data)
 
   return (
     <Box className='content-center'>
