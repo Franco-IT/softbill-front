@@ -42,6 +42,16 @@ const navigation = (): VerticalNavItemsType => {
       avatarColor: 'success'
     },
     {
+      title: 'Contadores',
+      subtitle: 'Ver Contadores',
+      action: 'read',
+      auth: true,
+      subject: ['ACCOUNTING', 'COUNTER'],
+      path: '/contadores',
+      icon: 'tabler:user-dollar',
+      avatarColor: 'primary'
+    },
+    {
       title: 'Clientes',
       subtitle: 'Ver Clientes',
       action: ['read', 'delete'],
@@ -49,7 +59,7 @@ const navigation = (): VerticalNavItemsType => {
       subject: ['ACCOUNTING', 'COUNTER'],
       path: '/clientes',
       icon: 'tabler:users',
-      avatarColor: 'primary'
+      avatarColor: 'success'
     },
     {
       title: 'Bancos do Cliente',
@@ -59,7 +69,7 @@ const navigation = (): VerticalNavItemsType => {
       subject: ['ACCOUNTING', 'COUNTER'],
       path: '/bancos/extrato',
       icon: 'tabler:building-bank',
-      avatarColor: 'success'
+      avatarColor: 'warning'
     },
     {
       title: 'Minha Conta',
