@@ -33,7 +33,7 @@ export class Counter extends User {
     return this.cellphone
   }
 
-  public getStatus(): 'ACTIVE' | 'INACTIVE' {
+  public getStatus(): 'ACTIVE' | 'INACTIVE' | 'BLOCKED' {
     return this.status
   }
 

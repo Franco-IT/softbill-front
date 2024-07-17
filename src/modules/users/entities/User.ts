@@ -6,7 +6,7 @@ export class User implements IUserDTO {
   email: string
   phone: string
   cellphone: string
-  status: 'ACTIVE' | 'INACTIVE'
+  status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
   type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'COUNTER'
   documentNumber: string
   documentType: 'CPF' | 'CNPJ' | 'OTHER'
@@ -45,7 +45,7 @@ export class User implements IUserDTO {
     return this.cellphone
   }
 
-  public getStatus(): 'ACTIVE' | 'INACTIVE' {
+  public getStatus(): 'ACTIVE' | 'INACTIVE' | 'BLOCKED' {
     return this.status
   }
 

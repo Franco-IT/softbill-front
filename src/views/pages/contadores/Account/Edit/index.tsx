@@ -32,7 +32,7 @@ interface EditProps {
 interface FormData {
   name: string
   email: string
-  status: 'ACTIVE' | 'INACTIVE'
+  status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
 }
 
 const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProps) => {
