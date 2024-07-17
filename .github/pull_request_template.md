@@ -2,17 +2,23 @@
 
 Descrição da PR..
 
-[FRIT-XXXX](https://frit.atlassian.net/browse/FRIT-XXXX)
+[FRIT-SFB](https://frit.atlassian.net/jira/software/projects/SFB/boards/4)
 
 ## Tipo de Alteração
 
-What types of changes does your code implements?
-_Adicione um `x` na opcão que melhor descreve essa PR_
+_Adicione um `x` na opção que melhor descreve essa PR_
 
-- [ ] Bugfix
-- [ ] Feature
-- [ ] Tests
-- [ ] Documentation Update
+- [ ] Feature (feat)
+- [ ] Bugfix (fix)
+- [ ] Refactoring (refactor)
+- [ ] Tests (test)
+- [ ] Documentation Update (docs)
+- [ ] Performance Improvement (perf)
+- [ ] Chore (chore)
+- [ ] Build Changes (build)
+- [ ] Continuous Integration Changes (ci)
+- [ ] Reverts (revert)
+- [ ] Style Changes (style)
 
 ## Resultados Esperados
 
