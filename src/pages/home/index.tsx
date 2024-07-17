@@ -24,9 +24,10 @@ export type DashboardProps = {
   icon: string
 }
 
-export const getServerSideProps: GetServerSideProps<{ data: DashboardProps[]; lastUpdate: string }> = async ({
-  req
-}) => {
+export const getServerSideProps: GetServerSideProps<{
+  data: DashboardProps[] | null
+  lastUpdate: string | null
+}> = async ({ req }) => {
   const encryptedToken = req.cookies[authConfig.storageTokenKeyName]
   const ivToken = req.cookies[`${authConfig.storageTokenKeyName}-iv`]
   const ivUserId = req.cookies[`${authConfig.storageUserDataKeyName}-iv`]
@@ -34,7 +35,10 @@ export const getServerSideProps: GetServerSideProps<{ data: DashboardProps[]; la
 
   if (!encryptedToken || !ivToken || !ivUserId || !encryptedUserId) {
     return {
-      notFound: true
+      props: {
+        data: null,
+        lastUpdate: null
+      }
     }
   }
 
@@ -43,7 +47,10 @@ export const getServerSideProps: GetServerSideProps<{ data: DashboardProps[]; la
 
   if (!token || !userId) {
     return {
-      notFound: true
+      props: {
+        data: null,
+        lastUpdate: null
+      }
     }
   }
 
@@ -70,7 +77,10 @@ export const getServerSideProps: GetServerSideProps<{ data: DashboardProps[]; la
 
   if (!res.ok) {
     return {
-      notFound: true
+      props: {
+        data: null,
+        lastUpdate: null
+      }
     }
   }
 
@@ -108,10 +118,13 @@ export const getServerSideProps: GetServerSideProps<{ data: DashboardProps[]; la
     }
   ]
 
-  const dateNow = dateProvider.getCurrentDate().toString()
+  const dateNow = dateProvider.getCurrentDate().toISOString()
 
   return {
-    props: { data: dashboardData, lastUpdate: dateNow }
+    props: {
+      data: dashboardData,
+      lastUpdate: dateNow
+    }
   }
 }
 
@@ -121,13 +134,11 @@ const Home = ({ data, lastUpdate }: InferGetServerSidePropsType<typeof getServer
       <Grid container spacing={6}>
         <CanView actions='manage'>
           <Grid item xs={12}>
-            <AccountingDashboard data={data} lastUpdate={new Date(lastUpdate)} />
+            {data && lastUpdate && <AccountingDashboard data={data} lastUpdate={new Date(lastUpdate)} />}
           </Grid>
         </CanView>
         {navigation().map((item: NavLink, index) => {
-          if (item.path === '/home') {
-            return null
-          }
+          if (item.path === '/home') return null
 
           return (
             <CanViewNavLink key={index} navLink={item}>
