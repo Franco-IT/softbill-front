@@ -4,7 +4,7 @@ export type UserProps = {
   email: string
   phone: string
   cellphone: string
-  status: 'ACTIVE' | 'INACTIVE'
+  status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
   type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'COUNTER'
   documentNumber: string
   documentType: 'CPF' | 'CNPJ' | 'OTHER'
