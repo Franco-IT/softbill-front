@@ -40,15 +40,7 @@ const AccountingDashboard = ({ data, lastUpdate }: AccountingDashboardProps) => 
 
   return (
     <Card>
-      <CardHeader
-        title='Contabilidade Informações'
-        sx={{ '& .MuiCardHeader-action': { m: 0, alignSelf: 'center' } }}
-        action={
-          <Typography variant='body2' sx={{ color: 'text.disabled' }}>
-            Atualizado {timeSinceUpdate}
-          </Typography>
-        }
-      />
+      <CardHeader title='Contabilidade Informações' subheader={`Atualizado ${timeSinceUpdate}`} sx={{ pb: 0 }} />
       <CardContent
         sx={{ pt: theme => `${theme.spacing(7)} !important`, pb: theme => `${theme.spacing(7.5)} !important` }}
       >
