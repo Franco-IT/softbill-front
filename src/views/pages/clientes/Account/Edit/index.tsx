@@ -47,7 +47,7 @@ interface FormData {
   financialResponsible: string
   fantasyName: string
   observations: string
-  status: 'ACTIVE' | 'INACTIVE'
+  status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
 }
 
 interface EditProfileProps {
