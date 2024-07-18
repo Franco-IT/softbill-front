@@ -78,16 +78,22 @@ const Import = ({ clientProps, paginationProps }: ImportProps) => {
 
   const handleGeneratePreview = useCallback(
     (file: File) => {
-      const formData = new FormData()
-      formData.append('file', file)
-
       api
-        .post('/bankAccounts/ofx-preview', formData, {
-          params: {
-            page,
-            perPage
+        .post(
+          '/bankAccounts/ofx-preview',
+          {
+            file
+          },
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
+            params: {
+              page,
+              perPage
+            }
           }
-        })
+        )
         .then(response => {
           const preview = response.data
           setTotalPages(preview.total)
