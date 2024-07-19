@@ -6,6 +6,7 @@ import { IDeleteUserDTO } from '../dtos/IDeleteUserDTO'
 import { ICreateCounterDTO } from '../dtos/ICreateCounterDTO'
 import { IUpdateCounterDTO } from '../dtos/IUpdateCounterDTO'
 import { IChangeUserPasswordDTO } from '../dtos/IChangeUserPasswordDTO'
+import { IFirstAccessUserDTO } from '../dtos/IFirstAccessUserDTO'
 
 export class UserRepository implements IUserRepository {
   async create(data: ICreateUserDTO | ICreateCounterDTO): Promise<AxiosResponse<any, any>> {
@@ -25,5 +26,9 @@ export class UserRepository implements IUserRepository {
       newPassword,
       confirmPassword
     })
+  }
+
+  async firstAccess({ id }: IFirstAccessUserDTO): Promise<AxiosResponse<any, any>> {
+    return await api.get(`/users/first-access/${id}`)
   }
 }
