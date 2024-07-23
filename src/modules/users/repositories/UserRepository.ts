@@ -7,6 +7,7 @@ import { ICreateCounterDTO } from '../dtos/ICreateCounterDTO'
 import { IUpdateCounterDTO } from '../dtos/IUpdateCounterDTO'
 import { IChangeUserPasswordDTO } from '../dtos/IChangeUserPasswordDTO'
 import { IFirstAccessUserDTO } from '../dtos/IFirstAccessUserDTO'
+import { ISetUserAvatarDTO } from '../dtos/ISetUserAvatarDTO'
 
 export class UserRepository implements IUserRepository {
   async create(data: ICreateUserDTO | ICreateCounterDTO): Promise<AxiosResponse<any, any>> {
@@ -25,6 +26,14 @@ export class UserRepository implements IUserRepository {
     return await api.put(`/auth/change-auth-password/${id}`, {
       newPassword,
       confirmPassword
+    })
+  }
+
+  async setAvatar(data: ISetUserAvatarDTO): Promise<AxiosResponse<any, any>> {
+    return await api.post('/files', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     })
   }
 

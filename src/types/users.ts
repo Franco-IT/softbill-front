@@ -8,6 +8,7 @@ export type UserProps = {
   type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'COUNTER'
   documentNumber: string
   documentType: 'CPF' | 'CNPJ' | 'OTHER'
+  avatar: string | null
   createdAt: Date
 }
 

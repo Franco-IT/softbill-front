@@ -10,6 +10,7 @@ export class User implements IUserDTO {
   type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'COUNTER'
   documentNumber: string
   documentType: 'CPF' | 'CNPJ' | 'OTHER'
+  avatar: string
   createdAt: Date
 
   constructor(user: IUserDTO) {
@@ -22,6 +23,7 @@ export class User implements IUserDTO {
     this.type = user.type
     this.documentNumber = user.documentNumber
     this.documentType = user.documentType
+    this.avatar = user.avatar
     this.createdAt = user.createdAt
   }
 
@@ -63,5 +65,9 @@ export class User implements IUserDTO {
 
   public getCreatedAt(): Date {
     return this.createdAt
+  }
+
+  public getAvatar(): string {
+    return this.avatar
   }
 }
