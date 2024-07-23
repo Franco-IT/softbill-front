@@ -1,13 +1,10 @@
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { Grid, Card, CardContent, Typography, Divider, CardActions, Button, Box } from '@mui/material'
 
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
-import Avatar from 'src/@core/components/mui/avatar'
 import Chip from 'src/@core/components/mui/chip'
 
 import Edit from './Edit'
-
-import { getInitials } from 'src/@core/utils/get-initials'
 
 import { ThemeColor } from 'src/@core/layouts/types'
 import { UserProps } from 'src/types/users'
@@ -20,6 +17,14 @@ import { formatName } from 'src/utils/formatName'
 import verifyDataValue from 'src/utils/verifyDataValue'
 import { applyPhoneMask } from 'src/utils/inputs'
 import { formatDate } from 'src/@core/utils/format'
+import { ISetUserAvatarDTO } from 'src/modules/users/dtos/ISetUserAvatarDTO'
+import { userController } from 'src/modules/users'
+import { AppError } from 'src/shared/errors/AppError'
+import CustomBadge from 'src/components/CustomBadge'
+import Icon from 'src/@core/components/icon'
+import { renderInitials, renderUser } from 'src/utils/list'
+import ImageCropper from 'src/components/ImageCropper'
+import { useAuth } from 'src/hooks/useAuth'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -45,9 +50,11 @@ interface MyAccountProps {
 
 const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
   const router = useRouter()
+  const { setUser, user } = useAuth()
 
   const [openEdit, setOpenEdit] = useState<boolean>(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
+  const [openImageCropper, setOpenImageCropper] = useState<boolean>(false)
 
   const handleEditClickOpen = () => setOpenEdit(true)
   const handleEditClose = () => setOpenEdit(false)
@@ -70,6 +77,32 @@ const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
       })
   }
 
+  const onSubmit = async (file: File) => {
+    const formData: ISetUserAvatarDTO = {
+      file,
+      userId: data._id,
+      uploadType: data.type != 'ACCOUNTING' ? 'PROFILE' : 'LOGO'
+    }
+
+    try {
+      const response = await userController.setAvatar(formData)
+
+      if (response) {
+        const responseData = response.data
+
+        if (response.status === 201) {
+          setRefresh(!refresh)
+          user && setUser({ ...user, avatar: responseData.data.url })
+          toast.success('Imagem alterada com sucesso!')
+        }
+      }
+    } catch (error) {
+      if (error instanceof AppError) toast.error(error.message)
+    } finally {
+      setOpenImageCropper(false)
+    }
+  }
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -77,14 +110,44 @@ const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
           <CardContent
             sx={{ padding: '40px 40px 20px', display: 'flex', alignItems: 'center', flexDirection: 'column' }}
           >
-            <Avatar
-              skin='light'
-              variant='rounded'
-              color={roleColors[data.type] as ThemeColor}
-              sx={{ width: 100, height: 100, mb: 4, fontSize: '3rem' }}
+            <Suspense
+              fallback={renderInitials(data, {
+                skin: 'light',
+                variant: 'rounded',
+                sx: {
+                  width: 100,
+                  height: 100,
+                  mb: 4,
+                  fontSize: '3rem'
+                },
+                color: roleColors[data.type] as ThemeColor
+              })}
             >
-              {getInitials(data.name)}
-            </Avatar>
+              <CustomBadge
+                badgeContent={<Icon fontSize='1rem' icon='tabler:edit' />}
+                onClick={() => setOpenImageCropper(true)}
+                color='secondary'
+                variant='standard'
+                overlap={'circular'}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
+                }}
+              >
+                {renderUser(data, {
+                  skin: 'light',
+                  variant: 'rounded',
+                  sx: {
+                    width: 100,
+                    height: 100,
+                    mb: 4,
+                    fontSize: '3rem'
+                  },
+                  color: roleColors[data.type] as ThemeColor
+                })}
+              </CustomBadge>
+            </Suspense>
+            <ImageCropper open={openImageCropper} onClose={() => setOpenImageCropper(false)} onSubmit={onSubmit} />
             <Typography variant='h4' sx={{ mb: 3 }}>
               {formatName(data.name)}
             </Typography>

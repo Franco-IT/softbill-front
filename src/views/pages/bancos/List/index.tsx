@@ -109,7 +109,15 @@ const List = () => {
                     <TableRow hover tabIndex={-1} key={row._id}>
                       <TableCell component='th' id={labelId} scope='row' padding='none'>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          {renderInitials(row)}
+                          {renderInitials(row, {
+                            sx: {
+                              mr: 2.5,
+                              width: 38,
+                              height: 38,
+                              fontWeight: 500,
+                              fontSize: (theme: any) => theme.typography.body1.fontSize
+                            }
+                          })}
                           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
                             <Typography
                               noWrap

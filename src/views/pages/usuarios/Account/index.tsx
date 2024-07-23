@@ -1,22 +1,27 @@
-import { Grid, Card, CardContent, Typography, Divider, CardActions, Button } from '@mui/material'
-import { Box } from '@mui/system'
-import { useState } from 'react'
-import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
-import Avatar from 'src/@core/components/mui/avatar'
-import Chip from 'src/@core/components/mui/chip'
-import { ThemeColor } from 'src/@core/layouts/types'
-import { getInitials } from 'src/@core/utils/get-initials'
-import { UserProps } from 'src/types/users'
-import Edit from './Edit'
-import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
-import { api } from 'src/services/api'
-import toast from 'react-hot-toast'
-import { delay } from 'src/utils/delay'
+import { Suspense, useState } from 'react'
 import { useRouter } from 'next/router'
+
+import { Grid, Card, CardContent, Typography, Divider, CardActions, Button, Box } from '@mui/material'
+
+import Chip from 'src/@core/components/mui/chip'
+import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
+
+import Edit from './Edit'
+
+import { UserProps } from 'src/types/users'
+import { ThemeColor } from 'src/@core/layouts/types'
+import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
+
+import { api } from 'src/services/api'
+
+import toast from 'react-hot-toast'
+
+import { delay } from 'src/utils/delay'
+import { renderInitials, renderUser } from 'src/utils/list'
 import { formatName } from 'src/utils/formatName'
+import { applyPhoneMask } from 'src/utils/inputs'
 import { formatDate } from 'src/@core/utils/format'
 import verifyDataValue from 'src/utils/verifyDataValue'
-import { applyPhoneMask } from 'src/utils/inputs'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -70,14 +75,31 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
           <CardContent
             sx={{ padding: '40px 40px 20px', display: 'flex', alignItems: 'center', flexDirection: 'column' }}
           >
-            <Avatar
-              skin='light'
-              variant='rounded'
-              color={roleColors[data.type] as ThemeColor}
-              sx={{ width: 100, height: 100, mb: 4, fontSize: '3rem' }}
+            <Suspense
+              fallback={renderInitials(data, {
+                skin: 'light',
+                variant: 'rounded',
+                sx: {
+                  width: 100,
+                  height: 100,
+                  mb: 4,
+                  fontSize: '3rem'
+                },
+                color: roleColors[data.type] as ThemeColor
+              })}
             >
-              {getInitials(data.name)}
-            </Avatar>
+              {renderUser(data, {
+                skin: 'light',
+                variant: 'rounded',
+                sx: {
+                  width: 100,
+                  height: 100,
+                  mb: 4,
+                  fontSize: '3rem'
+                },
+                color: roleColors[data.type] as ThemeColor
+              })}
+            </Suspense>
             <Typography variant='h4' sx={{ mb: 3 }}>
               {formatName(data.name)}
             </Typography>

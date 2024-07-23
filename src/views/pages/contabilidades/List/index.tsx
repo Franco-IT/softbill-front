@@ -21,7 +21,7 @@ import EnhancedTableHead from './EnhancedTableHead'
 import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
-import { Loading, Order, getComparator, removeRowFromList, renderInitials, stableSort } from 'src/utils/list'
+import { Loading, Order, getComparator, removeRowFromList, renderUser, stableSort } from 'src/utils/list'
 
 import { ThemeColor } from 'src/@core/layouts/types'
 import { UserListDataProps, UserProps } from 'src/types/users'
@@ -127,7 +127,15 @@ const List = () => {
                     <TableRow hover tabIndex={-1} key={row._id}>
                       <TableCell component='th' id={labelId} scope='row' padding='none'>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          {renderInitials(row)}
+                          {renderUser(row, {
+                            sx: {
+                              mr: 2.5,
+                              width: 38,
+                              height: 38,
+                              fontWeight: 500,
+                              fontSize: (theme: any) => theme.typography.body1.fontSize
+                            }
+                          })}
                           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
                             <Typography
                               noWrap

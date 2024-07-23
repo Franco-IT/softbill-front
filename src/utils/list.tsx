@@ -52,16 +52,22 @@ export const removeRowFromList = (id: string, array: any[], param: string) => {
   return array.filter((item: any) => item[param] !== id)
 }
 
-export const renderInitials = (row: any) => {
+export const renderInitials = (row: any, rest?: any) => {
   return (
-    <CustomAvatar
-      skin='light'
-      color={row.avatarColor}
-      sx={{ mr: 2.5, width: 38, height: 38, fontWeight: 500, fontSize: theme => theme.typography.body1.fontSize }}
-    >
+    <CustomAvatar skin='light' color={row.avatarColor} {...rest}>
       {getInitials(row.name)}
     </CustomAvatar>
   )
+}
+
+export const renderAvatar = (row: any, rest?: any) => {
+  return <CustomAvatar src={row.avatar} alt={row.name} {...rest} />
+}
+
+export const renderUser = (row: any, rest?: any) => {
+  if (row.avatar) return renderAvatar(row, rest)
+
+  return renderInitials(row, rest)
 }
 
 export const checkEmpty = (value: any) => {
