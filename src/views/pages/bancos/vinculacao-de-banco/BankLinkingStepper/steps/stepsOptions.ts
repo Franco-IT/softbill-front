@@ -1,4 +1,4 @@
-const steps = [
+const stepsOptions = [
   {
     title: 'Cliente',
     subtitle: 'Informações do cliente',
@@ -16,4 +16,4 @@ const steps = [
   }
 ]
 
-export default steps
+export default stepsOptions
