@@ -20,8 +20,6 @@ interface SummaryProps {
 }
 
 const Summary = ({ client, payload }: SummaryProps) => {
-  console.log('🚀 ~ Summary ~ payload:', payload)
-
   return (
     <Grid container spacing={5}>
       <Grid item xs={12} sm={6}>

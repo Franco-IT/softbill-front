@@ -20,6 +20,7 @@ export interface TypeMapEntry extends Partial<ControllerRenderProps<FieldValues>
     placeholder?: string
     required?: boolean
     min?: number
+    bank?: string
   }
   options?: { value: string; label: string }[]
   startAdornment?: React.ReactNode

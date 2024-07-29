@@ -37,7 +37,7 @@ const interTypeMap: Record<InterFields, TypeMapEntry> = {
   },
   files: {
     Input: FileInput,
-    inputProps: { label: 'Certificado Digital', required: true }
+    inputProps: { label: 'Certificado Digital', required: true, bank: 'INTER' }
   }
 }
 

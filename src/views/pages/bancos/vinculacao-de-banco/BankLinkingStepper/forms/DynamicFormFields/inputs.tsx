@@ -9,6 +9,7 @@ import DropzoneWrapper from 'src/@core/styles/libs/react-dropzone'
 import FileUploaderRestrictions from 'src/components/FileUploaderRestrictions'
 import { TypeMapEntry } from './dtos'
 import { Message, MultipleFieldErrors, Ref } from 'react-hook-form'
+import { filesTypesBanks } from './schemas'
 
 type FieldError = {
   type: string
@@ -152,14 +153,12 @@ export const FileInput = React.forwardRef(({ field, errors, inputProps, onChange
       }}
     >
       <FileUploaderRestrictions
-        accept={{
-          'application/x-x509-ca-cert': ['.crt'],
-          'application/x-key': ['.key']
-        }}
+        accept={filesTypesBanks[inputProps.bank as string]}
         onChange={handleOnChange}
         value={value || []}
         inputProps={inputProps}
         onError={!!errors[field]}
+        error={errors[field]?.message}
       />
     </DropzoneWrapper>
   )

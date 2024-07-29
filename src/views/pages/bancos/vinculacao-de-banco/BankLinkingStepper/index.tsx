@@ -14,7 +14,7 @@ import { getValidationSchema } from './steps/utils'
 import StepperCustomDot from './steps/StepperCustomDot'
 import { baseValidationSchemaByStep } from './steps/schemas'
 import { validationSchemaByBank } from './forms/DynamicFormFields/schemas'
-import { DefaultValuesByStep, defaultValuesByStep, Step1DefaultValues } from './steps/defaultValues'
+import { defaultValuesByStep, Step1DefaultValues } from './steps/defaultValues'
 
 import toast from 'react-hot-toast'
 import StepperWrapper from 'src/@core/styles/mui/stepper'
@@ -37,7 +37,7 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
     _id: '',
     name: ''
   })
-  const [formValues, setFormValues] = useState<DefaultValuesByStep[]>(defaultValuesByStep)
+  const [formValues, setFormValues] = useState<Partial<Step1DefaultValues>>()
 
   const methods = useForm({
     defaultValues:
@@ -48,37 +48,47 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
   })
 
   const handleSelectBank = (value: string, banks: any[]) => {
-    methods.reset()
+    methods.clearErrors()
+
+    const values = methods.getValues()
+
+    const objectKeysValues = Object.keys(values)
+
+    objectKeysValues.map(key => methods.setValue(key, key === 'files' ? undefined : ''))
 
     const bank = banks.find((bank: any) => bank._id === value)
 
     setBank(bank)
 
     setFormValues(() => {
-      const newValues = defaultValuesByStep
+      const bankValues = defaultValuesByStep[1][bank.name as keyof Step1DefaultValues]
 
-      newValues[activeStep][bank.name as keyof Step1DefaultValues] = {
-        ...newValues[activeStep][bank.name as keyof Step1DefaultValues],
+      const newValues = Object.assign(bankValues, {
+        ...values,
         bankId: bank._id,
         clientId: client._id
-      }
+      })
 
-      return newValues
+      return bank.name && { [bank.name]: newValues }
     })
   }
 
   const handleNext = (data: any) => {
     if (activeStep === 1) {
       setFormValues(prevValues => {
-        const newValues = [...prevValues]
-        newValues[activeStep][bank.name as keyof Step1DefaultValues] = {
-          ...newValues[activeStep][bank.name as keyof Step1DefaultValues],
-          ...data
-        }
+        if (!prevValues) return prevValues
 
-        return newValues
+        const bankKey = bank.name as keyof Step1DefaultValues
+
+        return {
+          [bankKey]: {
+            ...(prevValues[bankKey] as any),
+            ...data
+          }
+        }
       })
     }
+
     setActiveStep(prevActiveStep => prevActiveStep + 1)
   }
 
@@ -95,7 +105,15 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
 
     const formData = new FormData()
 
-    dataKeys.map(key => formData.append(key, data[key]))
+    dataKeys.map(key => {
+      if (data[key]) {
+        if (key === 'files') {
+          data[key].map((file: any) => formData.append(key, file))
+        } else {
+          formData.append(key, data[key])
+        }
+      }
+    })
 
     api
       .post('/bankAccounts', formData, {
@@ -116,7 +134,7 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
 
   const onSubmit = (data: any) => {
     if (activeStep === stepsOptions.length - 1) {
-      handleFinalSubmit(formValues[activeStep - 1][bank.name as keyof Step1DefaultValues])
+      handleFinalSubmit(formValues?.[bank.name as keyof Step1DefaultValues])
     } else {
       handleNext(data)
     }
@@ -129,7 +147,7 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
       case 1:
         return <Banks handleSelectBank={handleSelectBank} methods={methods} bank={bank} />
       case 2:
-        return <Summary client={client} payload={formValues[step - 1][bank.name as keyof Step1DefaultValues]} />
+        return <Summary client={client} payload={formValues?.[bank.name as keyof Step1DefaultValues]} />
       default:
         return null
     }

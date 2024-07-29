@@ -19,13 +19,7 @@ const Edit = ({ openEdit, handleEditClose, data }: EditProps) => {
   }
 
   return (
-    <Dialog
-      open={openEdit}
-      onClose={handleEditClose}
-      aria-labelledby='user-view-edit'
-      aria-describedby='user-view-edit-description'
-      sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 1000 } }}
-    >
+    <Dialog open={openEdit} onClose={handleEditClose} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 1000 } }}>
       <DialogTitle
         id='user-view-edit'
         sx={{
@@ -43,7 +37,7 @@ const Edit = ({ openEdit, handleEditClose, data }: EditProps) => {
           px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
         }}
       >
-        <DialogContentText variant='body2' id='user-view-edit-description' sx={{ textAlign: 'center', mb: 7 }}>
+        <DialogContentText variant='body2' sx={{ textAlign: 'center', mb: 7 }}>
           Edite as informações da conta
         </DialogContentText>
         {handleGetForm(data.bank.slug)}

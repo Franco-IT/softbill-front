@@ -19,6 +19,7 @@ interface FileUploaderRestrictionsProps {
   value: File[]
   inputProps?: any
   onError: boolean
+  error: string | undefined
 }
 
 const FileUploaderRestrictions = ({
@@ -26,7 +27,8 @@ const FileUploaderRestrictions = ({
   onChange,
   value: files,
   onError,
-  inputProps
+  inputProps,
+  error
 }: FileUploaderRestrictionsProps) => {
   const { getRootProps, getInputProps } = useDropzone({
     maxFiles: 2,
@@ -51,17 +53,15 @@ const FileUploaderRestrictions = ({
   })
 
   const renderFilePreview = (file: FileProp) => {
-    if (file.type.startsWith('image')) {
+    if (file.type.startsWith('image'))
       return <img width={38} height={38} alt={file.name} src={URL.createObjectURL(file as any)} />
-    } else {
-      return <Icon icon='tabler:file-description' />
-    }
+
+    return <Icon icon='tabler:file-description' />
   }
 
-  const handleRemoveFile = (file: FileProp) => {
-    const filtered = files.filter((i: File) => i.name !== file.name)
-    filtered.length ? onChange(filtered) : onChange(undefined)
-  }
+  const handleRemoveAllFiles = () => onChange([])
+
+  const handleRemoveFile = (file: FileProp) => onChange(files.filter((i: File) => i.name !== file.name))
 
   const fileList = files.map((file: FileProp) => (
     <ListItem key={file.name}>
@@ -81,10 +81,6 @@ const FileUploaderRestrictions = ({
       </IconButton>
     </ListItem>
   ))
-
-  const handleRemoveAllFiles = () => {
-    onChange(undefined)
-  }
 
   return (
     <Fragment>
@@ -106,7 +102,7 @@ const FileUploaderRestrictions = ({
             <Icon icon='tabler:upload' fontSize='1.75rem' />
           </Box>
           <Typography variant='h4' sx={{ mb: 2.5 }} color={onError ? '#ea5455' : ''}>
-            {!onError ? inputProps.label : 'É necessário adicionar os arquivos solicitados'}
+            {!onError ? inputProps.label : error}
           </Typography>
           <Typography sx={{ color: 'text.secondary' }}>
             Aceita arquivos do tipo {'  '}

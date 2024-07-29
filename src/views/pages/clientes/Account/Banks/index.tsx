@@ -1,4 +1,6 @@
 import { Suspense, useEffect, useState, ChangeEvent, MouseEvent, useMemo } from 'react'
+import { useRouter } from 'next/router'
+
 import {
   Box,
   Paper,
@@ -22,9 +24,10 @@ import { formatDate } from 'src/@core/utils/format'
 import { Loading, Order, getComparator, renderInitials, stableSort } from 'src/utils/list'
 
 import { ThemeColor } from 'src/@core/layouts/types'
-import { BankAccountListDataProps, BankAccountProps } from 'src/types/banks'
+
 import useGetDataApi from 'src/hooks/useGetDataApi'
-import { useRouter } from 'next/router'
+
+import { BankAccountListDataProps, BankAccountProps } from 'src/types/banks'
 
 interface BankStatusColor {
   [key: string]: ThemeColor
@@ -53,7 +56,6 @@ const Banks = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [filter, setFilter] = useState('')
   const [banks, setBanks] = useState<BankAccountProps[]>([])
-  const [openEdit, setOpenEdit] = useState(false)
 
   const { data: rows, setRefresh } = useGetDataApi<BankAccountListDataProps>({
     url: `/bankAccounts/by-client/${router.query.id}`,
@@ -112,17 +114,22 @@ const Banks = () => {
                     <TableRow hover tabIndex={-1} key={row._id}>
                       <TableCell component='th' id={labelId} scope='row' padding='none'>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          {renderInitials(row.bank)}
+                          {renderInitials(row.bank, {
+                            sx: {
+                              mr: 2.5,
+                              width: 38,
+                              height: 38,
+                              fontWeight: 500,
+                              fontSize: (theme: any) => theme.typography.body1.fontSize
+                            }
+                          })}
                           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
                             <Typography
                               noWrap
-                              onClick={() => setOpenEdit(true)}
                               sx={{
                                 fontWeight: 500,
                                 textDecoration: 'none',
-                                color: 'text.secondary',
-                                cursor: 'pointer',
-                                '&:hover': { color: 'primary.main' }
+                                color: 'text.secondary'
                               }}
                             >
                               {formatName(row.bank.name)}
@@ -146,12 +153,7 @@ const Banks = () => {
                         />
                       </TableCell>
                       <TableCell align='left'>
-                        <RowOptions
-                          data={row}
-                          refreshData={() => setRefresh(current => !current)}
-                          openEdit={openEdit}
-                          setOpenEdit={setOpenEdit}
-                        />
+                        <RowOptions data={row} refreshData={() => setRefresh(current => !current)} />
                       </TableCell>
                     </TableRow>
                   )
