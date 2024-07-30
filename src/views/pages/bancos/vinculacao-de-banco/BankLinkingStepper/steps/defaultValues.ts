@@ -1,4 +1,4 @@
-import { BB, INTER } from '../forms/DynamicFormFields/defaultValues'
+import { BB, INTER, OFX } from '../forms/DynamicFormFields/defaultValues'
 
 export type BBValues = {
   bankClientId: string | undefined
@@ -21,11 +21,18 @@ export type InterValues = {
   files: File[] | undefined
 }
 
+export type OFXValues = {
+  importedBank: string | undefined
+  generatedBy: string | undefined
+  clientId: string | undefined
+}
+
 export type Step0DefaultValues = Record<string, any>
 
 export type Step1DefaultValues = {
   BB: BBValues
   inter: InterValues
+  OFX: OFXValues
 }
 
 export type Step2DefaultValues = Record<string, any>
@@ -36,7 +43,8 @@ export const defaultValuesByStep: DefaultValuesByStep[] = [
   {},
   {
     BB: BB,
-    INTER: INTER
+    INTER: INTER,
+    OFX: OFX
   },
   {}
 ]

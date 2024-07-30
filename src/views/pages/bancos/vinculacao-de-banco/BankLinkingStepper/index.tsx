@@ -6,13 +6,13 @@ import { Box, Step, Grid, Button, Divider, Stepper, StepLabel, Typography } from
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm, FormProvider } from 'react-hook-form'
 
-import Banks from './steps/Banks'
 import Client from './steps/Client'
 import Summary from './steps/Summary'
 import stepsOptions from './steps/stepsOptions'
 import { getValidationSchema } from './steps/utils'
+import OperationsTypes from './steps/OperationsTypes'
 import StepperCustomDot from './steps/StepperCustomDot'
-import { baseValidationSchemaByStep } from './steps/schemas'
+import { baseValidationSchemaByStep, OFXValidationSchema } from './steps/schemas'
 import { validationSchemaByBank } from './forms/DynamicFormFields/schemas'
 import { defaultValuesByStep, Step1DefaultValues } from './steps/defaultValues'
 
@@ -33,6 +33,7 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
   const router = useRouter()
 
   const [activeStep, setActiveStep] = useState<number>(0)
+  const [operationType, setOperationType] = useState<string | null>(null)
   const [bank, setBank] = useState<{ _id: string; name: string }>({
     _id: '',
     name: ''
@@ -41,20 +42,55 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
 
   const methods = useForm({
     defaultValues:
-      defaultValuesByStep[activeStep][bank.name as keyof Step1DefaultValues] || defaultValuesByStep[activeStep],
+      defaultValuesByStep[activeStep][(operationType === 'IMPORT' ? 'OFX' : bank.name) as keyof Step1DefaultValues] ||
+      defaultValuesByStep[activeStep],
     resolver: yupResolver(
-      getValidationSchema(activeStep, bank.name, baseValidationSchemaByStep, validationSchemaByBank)
+      getValidationSchema(
+        activeStep,
+        bank.name,
+        operationType || '',
+        baseValidationSchemaByStep,
+        validationSchemaByBank,
+        OFXValidationSchema
+      )
     )
   })
 
-  const handleSelectBank = (value: string, banks: any[]) => {
+  const handleResetData = (values: any) => {
     methods.clearErrors()
-
-    const values = methods.getValues()
 
     const objectKeysValues = Object.keys(values)
 
     objectKeysValues.map(key => methods.setValue(key, key === 'files' ? undefined : ''))
+  }
+
+  const handleSetOperationType = (value: string | null) => {
+    const values = methods.getValues()
+
+    handleResetData(values)
+
+    if (value === 'IMPORT') {
+      setBank({ _id: '', name: '' })
+
+      const defaultValue = defaultValuesByStep[1]['OFX' as keyof Step1DefaultValues]
+
+      setFormValues(() => {
+        return {
+          OFX: {
+            ...defaultValue,
+            clientId: client._id
+          }
+        }
+      })
+    }
+
+    setOperationType(value)
+  }
+
+  const handleSelectBank = (value: string, banks: any[]) => {
+    const values = methods.getValues()
+
+    handleResetData(values)
 
     const bank = banks.find((bank: any) => bank._id === value)
 
@@ -75,14 +111,25 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
 
   const handleNext = (data: any) => {
     if (activeStep === 1) {
+      if (!operationType) return toast.error('Selecione o tipo de operação')
+
       setFormValues(prevValues => {
         if (!prevValues) return prevValues
 
-        const bankKey = bank.name as keyof Step1DefaultValues
+        if (operationType === 'INTEGRATION') {
+          const bankKey = bank.name as keyof Step1DefaultValues
+
+          return {
+            [bankKey]: {
+              ...(prevValues[bankKey] as any),
+              ...data
+            }
+          }
+        }
 
         return {
-          [bankKey]: {
-            ...(prevValues[bankKey] as any),
+          OFX: {
+            ...prevValues['OFX'],
             ...data
           }
         }
@@ -97,7 +144,11 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
 
     setActiveStep(prevActiveStep => prevActiveStep - 1)
 
-    if (activeStep - 1 === 0) setBank({ _id: '', name: '' }), methods.reset()
+    if (activeStep - 1 === 0) {
+      if (operationType === 'INTEGRATION') setBank({ _id: '', name: '' })
+
+      methods.reset()
+    }
   }
 
   const handleFinalSubmit = (data: any) => {
@@ -134,10 +185,23 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
 
   const onSubmit = (data: any) => {
     if (activeStep === stepsOptions.length - 1) {
-      handleFinalSubmit(formValues?.[bank.name as keyof Step1DefaultValues])
+      const key = bank.name || 'OFX'
+      handleFinalSubmit(formValues?.[key as keyof Step1DefaultValues])
     } else {
       handleNext(data)
     }
+  }
+
+  const banksProps = {
+    handleSelectBank,
+    bank
+  }
+
+  const operationsTypesProps = {
+    methods,
+    operationType,
+    handleSetOperationType,
+    banksProps
   }
 
   const getStepContent = (step: number) => {
@@ -145,9 +209,9 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
       case 0:
         return <Client client={client} />
       case 1:
-        return <Banks handleSelectBank={handleSelectBank} methods={methods} bank={bank} />
+        return <OperationsTypes {...operationsTypesProps} />
       case 2:
-        return <Summary client={client} payload={formValues?.[bank.name as keyof Step1DefaultValues]} />
+        return <Summary client={client} payload={formValues?.[(bank.name || 'OFX') as keyof Step1DefaultValues]} />
       default:
         return null
     }

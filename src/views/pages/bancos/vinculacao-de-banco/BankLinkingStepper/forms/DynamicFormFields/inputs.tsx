@@ -49,7 +49,7 @@ export const NumberInput = React.forwardRef(
 
 export const SelectInput = React.forwardRef(
   ({ field, errors, options, onChange, inputProps, onBlur, value }: InputProps, ref) => {
-    const selectedValue = value !== undefined ? value : ''
+    const selectedValue = value !== undefined ? value : 'default'
 
     return (
       <CustomTextField
@@ -58,12 +58,14 @@ export const SelectInput = React.forwardRef(
         select
         label={inputProps.label}
         placeholder={inputProps.placeholder}
+        required={inputProps.required}
         error={!!errors[field]}
+        helperText={errors[field]?.message}
         value={selectedValue}
         onChange={onChange}
         onBlur={onBlur}
       >
-        <MenuItem value='' disabled>
+        <MenuItem value='default' disabled>
           Selecione
         </MenuItem>
         {options &&

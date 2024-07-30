@@ -54,8 +54,8 @@ export const removeRowFromList = (id: string, array: any[], param: string) => {
 
 export const renderInitials = (row: any, rest?: any) => {
   return (
-    <CustomAvatar skin='light' color={row.avatarColor} {...rest}>
-      {getInitials(row.name)}
+    <CustomAvatar skin='light' color={row.avatarColor || 'primary'} {...rest}>
+      {getInitials(row.name || row)}
     </CustomAvatar>
   )
 }

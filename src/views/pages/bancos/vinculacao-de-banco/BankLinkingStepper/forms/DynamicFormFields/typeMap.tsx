@@ -1,9 +1,10 @@
-import { BBValues, InterValues, TypeMapEntry } from './dtos'
-import { StringInput, SensitiveInput, FileInput } from './inputs'
+import { BBValues, InterValues, OFXValues, TypeMapEntry } from './dtos'
+import { StringInput, SensitiveInput, FileInput, SelectInput } from './inputs'
 import { applyAccountNumberMask, applyAgencyNumberMask } from 'src/utils/inputs'
 
 export type BBFields = keyof BBValues
 export type InterFields = keyof InterValues
+export type OFXFields = keyof OFXValues
 
 const bbTypeMap: Record<BBFields, TypeMapEntry> = {
   bankClientId: {
@@ -41,4 +42,81 @@ const interTypeMap: Record<InterFields, TypeMapEntry> = {
   }
 }
 
-export { bbTypeMap, interTypeMap }
+const OFXTypeMap: Record<OFXFields, TypeMapEntry> = {
+  importedBank: {
+    Input: SelectInput,
+    inputProps: { label: 'Nome do Banco', required: true, placeholder: 'Selecione' },
+    options: [
+      {
+        value: 'BB',
+        label: 'Banco do Brasil'
+      },
+      {
+        value: 'ITAU',
+        label: 'Itaú'
+      },
+      {
+        value: 'SANTANDER',
+        label: 'Santander'
+      },
+      {
+        value: 'SAFRA',
+        label: 'Safra'
+      },
+      {
+        value: 'CAIXA',
+        label: 'Caixa Econômica Federal'
+      },
+      {
+        value: 'NUBANK',
+        label: 'Nubank'
+      },
+      {
+        value: 'C6',
+        label: 'C6 Bank'
+      },
+      {
+        value: 'INTER',
+        label: 'Banco Inter'
+      },
+      {
+        value: 'BRADESCO',
+        label: 'Bradesco'
+      },
+      {
+        value: 'QUORA',
+        label: 'Quora'
+      },
+      {
+        value: 'SICREDI',
+        label: 'Sicredi'
+      },
+      {
+        value: 'BTG',
+        label: 'BTG Pactual'
+      },
+      {
+        value: 'BANRISUL',
+        label: 'Banrisul'
+      },
+      {
+        value: 'PAN',
+        label: 'Banco Pan'
+      },
+      {
+        value: 'ABC',
+        label: 'ABC Brasil'
+      },
+      {
+        value: 'SICOOB',
+        label: 'Sicoob'
+      },
+      {
+        value: 'OTHER',
+        label: 'Outro'
+      }
+    ]
+  }
+}
+
+export { bbTypeMap, interTypeMap, OFXTypeMap }

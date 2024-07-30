@@ -28,6 +28,7 @@ export type BankAccountProps = {
   accountNumber: string
   agencyNumber: string
   bankId: string
+  importedBank: string
   clientId: string
   createdAt: Date
   status: 'ACTIVE' | 'INACTIVE'

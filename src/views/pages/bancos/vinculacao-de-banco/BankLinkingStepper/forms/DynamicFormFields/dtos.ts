@@ -13,6 +13,10 @@ export type InterValues = {
   files: File[]
 }
 
+export type OFXValues = {
+  importedBank: string | undefined
+}
+
 export interface TypeMapEntry extends Partial<ControllerRenderProps<FieldValues>> {
   Input: React.ElementType
   inputProps: {

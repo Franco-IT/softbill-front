@@ -5,9 +5,9 @@ const stepsOptions = [
     description: 'Visualize e confirme as informações do cliente para o qual o banco será vinculado.'
   },
   {
-    title: 'Banco',
-    subtitle: 'Configuração de Banco',
-    description: 'Escolha o banco e insira as informações necessárias para a vinculação.'
+    title: 'Operação e banco',
+    subtitle: 'Configuração de operação e banco',
+    description: 'Selecione o tipo de operação e o banco que deseja vincular ao cliente.'
   },
   {
     title: 'Vinculação',

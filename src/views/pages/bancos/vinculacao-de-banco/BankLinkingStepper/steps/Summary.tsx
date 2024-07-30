@@ -4,15 +4,7 @@ import CustomInfoField from 'src/components/CustomInfoField'
 
 import { ClientProps } from 'src/types/clients'
 import { applyCnpjMask } from 'src/utils/inputs'
-
-interface BankNameType {
-  [key: string]: string
-}
-
-const bankName: BankNameType = {
-  BB: 'Banco do Brasil',
-  INTER: 'Banco Inter'
-}
+import { bankName } from './utils'
 
 interface SummaryProps {
   client: ClientProps

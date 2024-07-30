@@ -18,3 +18,9 @@ export const INTER = {
   importedBank: 'INTER',
   files: []
 }
+
+export const OFX = {
+  clientId: '',
+  importedBank: '',
+  generatedBy: 'IMPORT'
+}

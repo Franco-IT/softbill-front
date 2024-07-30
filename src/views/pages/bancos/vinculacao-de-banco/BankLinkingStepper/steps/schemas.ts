@@ -7,3 +7,7 @@ export const baseValidationSchemaByStep = [
   }),
   yup.object()
 ]
+
+export const OFXValidationSchema = yup.object().shape({
+  importedBank: yup.string().required('Banco obrigatório')
+})

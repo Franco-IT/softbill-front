@@ -62,7 +62,7 @@ const Banks = () => {
     params: { page: page + 1, perPage: rowsPerPage, search: filter, withBanks: true }
   })
 
-  const handleRequestSort = (event: MouseEvent<unknown>, property: keyof BankAccountProps) => {
+  const handleRequestSort = (event: MouseEvent<unknown>, property: any) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
     setOrderBy(property)
@@ -114,7 +114,7 @@ const Banks = () => {
                     <TableRow hover tabIndex={-1} key={row._id}>
                       <TableCell component='th' id={labelId} scope='row' padding='none'>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          {renderInitials(row.bank, {
+                          {renderInitials(row?.bank || row.importedBank, {
                             sx: {
                               mr: 2.5,
                               width: 38,
@@ -132,7 +132,7 @@ const Banks = () => {
                                 color: 'text.secondary'
                               }}
                             >
-                              {formatName(row.bank.name)}
+                              {formatName(row?.bank?.name || row.importedBank)}
                             </Typography>
                           </Box>
                         </Box>
