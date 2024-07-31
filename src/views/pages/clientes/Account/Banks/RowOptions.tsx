@@ -28,8 +28,8 @@ const RowOptions = ({ data, refreshData }: RowOptionsProps) => {
 
   const handleStatement = () =>
     router.push({
-      pathname: '/clientes/bancos/extrato/[id]',
-      query: { id: data._id, slug: data.bank.slug, client: data.clientId }
+      pathname: '/clientes/banco/extrato/[id]',
+      query: { id: data._id, slug: data?.bank?.slug || data.importedBank, client: data.clientId }
     })
 
   const handleDelete = () => {

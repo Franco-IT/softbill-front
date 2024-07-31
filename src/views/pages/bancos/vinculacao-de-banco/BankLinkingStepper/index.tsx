@@ -33,12 +33,12 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
   const router = useRouter()
 
   const [activeStep, setActiveStep] = useState<number>(0)
+  const [formValues, setFormValues] = useState<Partial<Step1DefaultValues>>()
   const [operationType, setOperationType] = useState<string | null>(null)
   const [bank, setBank] = useState<{ _id: string; name: string }>({
     _id: '',
     name: ''
   })
-  const [formValues, setFormValues] = useState<Partial<Step1DefaultValues>>()
 
   const methods = useForm({
     defaultValues:
@@ -61,7 +61,9 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
 
     const objectKeysValues = Object.keys(values)
 
-    objectKeysValues.map(key => methods.setValue(key, key === 'files' ? undefined : ''))
+    objectKeysValues.map(key => {
+      methods.setValue(key, key === 'files' || key === 'importedBank' ? undefined : '')
+    })
   }
 
   const handleSetOperationType = (value: string | null) => {
@@ -142,13 +144,15 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
   const handleBack = () => {
     methods.clearErrors()
 
-    setActiveStep(prevActiveStep => prevActiveStep - 1)
-
     if (activeStep - 1 === 0) {
       if (operationType === 'INTEGRATION') setBank({ _id: '', name: '' })
 
+      setOperationType(null)
+
       methods.reset()
     }
+
+    setActiveStep(prevActiveStep => prevActiveStep - 1)
   }
 
   const handleFinalSubmit = (data: any) => {

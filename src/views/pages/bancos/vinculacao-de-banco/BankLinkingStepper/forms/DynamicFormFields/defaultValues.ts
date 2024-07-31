@@ -21,6 +21,6 @@ export const INTER = {
 
 export const OFX = {
   clientId: '',
-  importedBank: '',
+  importedBank: undefined,
   generatedBy: 'IMPORT'
 }

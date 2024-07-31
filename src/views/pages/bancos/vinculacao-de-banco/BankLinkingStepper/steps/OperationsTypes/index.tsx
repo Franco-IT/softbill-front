@@ -15,9 +15,10 @@ import {
 
 import Icon from 'src/@core/components/icon'
 
-import { UseFormReturn } from 'react-hook-form'
 import Banks from './operations/Banks'
 import OFX from './operations/OFX'
+
+import { UseFormReturn } from 'react-hook-form'
 
 const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   borderWidth: 1,
@@ -152,7 +153,7 @@ const OperationsTypes = ({ banksProps, methods, operationType, handleSetOperatio
         </Accordion>
       </Grid>
       <Grid item xs={12}>
-        <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')} disabled={!operationType}>
+        <Accordion expanded={!!operationType} onChange={handleChange('panel3')} disabled={!operationType}>
           <AccordionSummary
             expandIcon={<Icon icon='tabler:chevron-down' />}
             id='form-layouts-collapsible-header-2'

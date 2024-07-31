@@ -8,6 +8,8 @@ export const DynamicFormFields = ({ typeMap, fields }: { typeMap: Record<string,
     formState: { errors }
   } = useFormContext()
 
+  const dynamicFieldsLength = Object.keys(typeMap).length
+
   return (
     <Grid container spacing={5}>
       {fields.map(field => {
@@ -30,7 +32,7 @@ export const DynamicFormFields = ({ typeMap, fields }: { typeMap: Record<string,
         }
 
         return (
-          <Grid item xs={12} sm={6} key={field}>
+          <Grid item xs={12} sm={dynamicFieldsLength == 1 ? 12 : 6} key={field}>
             <Controller
               name={field}
               control={control}

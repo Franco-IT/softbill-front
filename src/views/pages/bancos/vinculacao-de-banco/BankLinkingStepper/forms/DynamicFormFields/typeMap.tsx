@@ -45,7 +45,7 @@ const interTypeMap: Record<InterFields, TypeMapEntry> = {
 const OFXTypeMap: Record<OFXFields, TypeMapEntry> = {
   importedBank: {
     Input: SelectInput,
-    inputProps: { label: 'Nome do Banco', required: true, placeholder: 'Selecione' },
+    inputProps: { label: 'Banco', required: true, placeholder: 'Selecione' },
     options: [
       {
         value: 'BB',
