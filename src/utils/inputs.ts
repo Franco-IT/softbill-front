@@ -31,6 +31,8 @@ enum StatesEnum {
 const applyCnpjMask = (value: string) => {
   if (!value) return value
 
+  value = value.slice(0, 18)
+
   value = value.replace(/\D/g, '')
 
   if (value.length > 12) {
@@ -49,6 +51,8 @@ const applyCnpjMask = (value: string) => {
 const applyCpfMask = (value: string) => {
   value = value.replace(/\D/g, '')
 
+  value = value.slice(0, 14)
+
   if (value.length > 9) {
     value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
   } else if (value.length > 6) {
@@ -63,9 +67,9 @@ const applyCpfMask = (value: string) => {
 const applyDocumentMask = (value: string, type: string) => {
   switch (type) {
     case 'CPF':
-      return applyCpfMask(value.slice(0, 14))
+      return applyCpfMask(value)
     case 'CNPJ':
-      return applyCnpjMask(value.slice(0, 18))
+      return applyCnpjMask(value)
     default:
       return value
   }

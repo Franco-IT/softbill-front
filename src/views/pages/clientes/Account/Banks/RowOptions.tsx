@@ -1,44 +1,35 @@
-import { useState, MouseEvent } from 'react'
-import { Button, IconButton, Menu, MenuItem, useMediaQuery, Box } from '@mui/material'
-import Icon from 'src/@core/components/icon'
-import { api } from 'src/services/api'
-import toast from 'react-hot-toast'
-import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
-import Edit from './Edit'
+import { useState } from 'react'
 import { useRouter } from 'next/router'
+
+import Icon from 'src/@core/components/icon'
+import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
+
+// import Edit from './Edit'
+import CustomBasicMenu from 'src/components/CustomBasicMenu'
+
+import { api } from 'src/services/api'
+
+import toast from 'react-hot-toast'
 
 interface RowOptionsProps {
   data: any
-  openEdit: boolean
-  setOpenEdit: (open: boolean) => void
   refreshData: () => void
 }
 
-const RowOptions = ({ data, refreshData, openEdit, setOpenEdit }: RowOptionsProps) => {
+const RowOptions = ({ data, refreshData }: RowOptionsProps) => {
   const router = useRouter()
-  const matches = useMediaQuery('(min-width:600px)')
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [open, setOpen] = useState(false)
+  // const [openEdit, setOpenEdit] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false)
 
-  const rowOptionsOpen = Boolean(anchorEl)
+  // const handleClickEdit = () => setOpenEdit(true)
 
-  const handleRowOptionsClick = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleRowOptionsClose = () => {
-    setAnchorEl(null)
-  }
-
-  const handleClickDelete = () => {
-    setOpen(true)
-  }
+  const handleClickDelete = () => setOpenDelete(true)
 
   const handleStatement = () =>
     router.push({
-      pathname: '/clientes/bancos/extrato/[id]',
-      query: { id: data._id, slug: data.bank.slug, client: data.clientId }
+      pathname: '/clientes/banco/extrato/[id]',
+      query: { id: data._id, slug: data?.bank?.slug || data.importedBank, client: data.clientId }
     })
 
   const handleDelete = () => {
@@ -46,62 +37,38 @@ const RowOptions = ({ data, refreshData, openEdit, setOpenEdit }: RowOptionsProp
       .delete(`/bankAccounts/${data._id}`)
       .then(() => refreshData())
       .catch(() => toast.error('Erro ao deletar banco'))
-      .finally(() => setOpen(false))
+      .finally(() => setOpenDelete(false))
   }
+
+  const menuItems = [
+    {
+      label: 'Extrato',
+      icon: <Icon icon='tabler:building-bank' fontSize={20} />,
+      action: handleStatement
+    },
+    {
+      label: 'Deletar',
+      icon: <Icon icon='tabler:trash' fontSize={20} />,
+      action: handleClickDelete
+    }
+  ]
 
   return (
     <>
-      {matches ? (
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 2,
-            padding: '0 8 0 0 '
-          }}
-        >
-          <Button size='small' variant='outlined' color='primary' onClick={handleStatement}>
-            Extrato
-          </Button>
-          <Button size='small' variant='outlined' color='primary' onClick={handleClickDelete}>
-            Deletar
-          </Button>
-        </Box>
-      ) : (
-        <>
-          <IconButton size='small' onClick={handleRowOptionsClick}>
-            <Icon icon='tabler:dots-vertical' />
-          </IconButton>
-          <Menu
-            keepMounted
-            anchorEl={anchorEl}
-            open={rowOptionsOpen}
-            onClose={handleRowOptionsClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            PaperProps={{ style: { minWidth: '8rem' } }}
-          >
-            <MenuItem onClick={handleStatement}>Extrato</MenuItem>
-            <MenuItem onClick={handleClickDelete}>Deletar</MenuItem>
-          </Menu>
-        </>
+      <CustomBasicMenu buttonLabel='Ações' menuItems={menuItems} />
+
+      {/* {openEdit && <Edit data={data} openEdit={openEdit} handleEditClose={() => setOpenEdit(false)} />} */}
+
+      {openDelete && (
+        <DialogAlert
+          id={data._id}
+          open={openDelete}
+          setOpen={setOpenDelete}
+          question={`Deseja realmente deletar este banco?`}
+          description='Essa ação não poderá ser desfeita.'
+          handleConfirmDelete={handleDelete}
+        />
       )}
-
-      <Edit data={data} openEdit={openEdit} handleEditClose={() => setOpenEdit(false)} />
-
-      <DialogAlert
-        id={data._id}
-        open={open}
-        setOpen={setOpen}
-        question={`Deseja realmente deletar este banco?`}
-        description='Essa ação não poderá ser desfeita.'
-        handleConfirmDelete={handleDelete}
-      />
     </>
   )
 }
