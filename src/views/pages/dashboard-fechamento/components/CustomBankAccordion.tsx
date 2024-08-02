@@ -1,36 +1,52 @@
-import Accordion from '@mui/material/Accordion'
-import Typography from '@mui/material/Typography'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import AccordionDetails from '@mui/material/AccordionDetails'
-
 import Icon from 'src/@core/components/icon'
-import { Avatar, Button } from '@mui/material'
+import CustomChip from 'src/@core/components/mui/chip'
 
-import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
-import TimelineDot from '@mui/lab/TimelineDot'
-import TimelineItem from '@mui/lab/TimelineItem'
-import TimelineContent from '@mui/lab/TimelineContent'
-import TimelineSeparator from '@mui/lab/TimelineSeparator'
-import TimelineConnector from '@mui/lab/TimelineConnector'
-import { bankProps } from '../types'
-import { statusColorsMUI } from '../utils'
 import GlowIcon from './GlowIcon'
+
+import {
+  Accordion,
+  Typography,
+  AccordionSummary,
+  AccordionDetails,
+  Avatar,
+  Button,
+  Box,
+  Divider,
+  useMediaQuery
+} from '@mui/material'
+import { TimelineDot, TimelineItem, TimelineContent, TimelineSeparator, TimelineConnector } from '@mui/lab'
+
+import { bankStatusLabel, formatNameBank, statusColorsMUI } from '../utils'
+
+import { bankProps } from '../types'
 
 interface CustomBankAccordionProps {
   bank: bankProps
 }
 
 const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
+  const isSmallerThan550 = useMediaQuery('(max-width:550px)')
+
   return (
     <Accordion>
       <AccordionSummary expandIcon={<Icon fontSize='1.25rem' icon='tabler:chevron-down' />}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Avatar src={bank.avatar} sx={{ width: '2rem', height: '2rem', mr: 2 }} />
           <Button variant='text' onClick={e => e.stopPropagation()}>
-            {bank.name}
+            {formatNameBank(bank.name)}
           </Button>
-          <GlowIcon status={bank.status} />
+          {isSmallerThan550 ? (
+            <GlowIcon status={bank.status} />
+          ) : (
+            <CustomChip
+              rounded
+              skin='light'
+              size='small'
+              label={bankStatusLabel[bank.status]}
+              color={statusColorsMUI[bank.status]}
+              sx={{ textTransform: 'capitalize', minWidth: 85 }}
+            />
+          )}
         </Box>
       </AccordionSummary>
       <AccordionDetails>

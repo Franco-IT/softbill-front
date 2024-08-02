@@ -14,6 +14,7 @@ import TimelineBank from './TimelineBank'
 import { statusColorsMUI } from '../utils'
 
 import { DataProps } from '../types'
+import { formatName } from 'src/utils/formatName'
 
 const Accordion = styled(MuiAccordion)<AccordionProps>(({ theme }) => ({
   margin: 0,
@@ -78,7 +79,7 @@ interface CustomUserAccordionProps {
 }
 
 const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
-  const isSmallerThan600 = useMediaQuery('(max-width:550px)')
+  const isSmallerThan550 = useMediaQuery('(max-width:550px)')
   const { avatar, banks, name, status } = data
 
   const [expanded, setExpanded] = useState<string | false>(false)
@@ -96,7 +97,7 @@ const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
         sx={{
           '& .MuiAccordionSummary-content': {
             gap: '1rem',
-            justifyContent: !isSmallerThan600 ? 'flex-start' : 'space-between'
+            justifyContent: !isSmallerThan550 ? 'flex-start' : 'space-between'
           }
         }}
       >
@@ -109,16 +110,16 @@ const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
             p: 0
           }}
         >
-          {name}
+          {formatName(name)}
         </Button>
         <GlowIcon status={status} />
         <Button
           variant='contained'
           onClick={e => e.stopPropagation()}
-          sx={{ mr: isSmallerThan600 ? 2 : 0, '& svg': { mr: !isSmallerThan600 ? 2 : 0 } }}
+          sx={{ mr: isSmallerThan550 ? 2 : 0, '& svg': { mr: !isSmallerThan550 ? 2 : 0 } }}
         >
           <Icon fontSize='1.125rem' icon='tabler:cloud-down' />
-          {isSmallerThan600 ? '' : 'Baixar Todos'}
+          {isSmallerThan550 ? '' : 'Baixar Todos'}
         </Button>
       </AccordionSummary>
       <AccordionDetails>

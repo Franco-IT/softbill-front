@@ -7,6 +7,12 @@ export const statusColorsMUI: { [key: string]: ColorType } = {
   PENDING: 'warning'
 }
 
+export const bankStatusLabel: { [key: string]: string } = {
+  APPROVED: 'Aprovado',
+  PENDING: 'Pendente',
+  ERROR: 'Erro'
+}
+
 export const monthName: { [key: string]: string } = {
   january: 'Janeiro',
   february: 'Fevereiro',
@@ -64,8 +70,8 @@ export const users: DataProps[] = [
         name: 'Banco do Brasil',
         extract: 'APPROVED',
         conciliation: 'APPROVED',
-        validation: 'ERROR',
-        status: 'ERROR'
+        validation: 'APPROVED',
+        status: 'APPROVED'
       },
       {
         avatar: 'https://cdn.iconscout.com/icon/free/png-256/apple-1868761-1583153.png',
@@ -80,8 +86,8 @@ export const users: DataProps[] = [
         name: 'Itaú',
         extract: 'APPROVED',
         conciliation: 'APPROVED',
-        validation: 'ERROR',
-        status: 'ERROR'
+        validation: 'PENDING',
+        status: 'PENDING'
       }
     ]
   },
@@ -115,5 +121,73 @@ export const users: DataProps[] = [
         status: 'ERROR'
       }
     ]
+  },
+  {
+    avatar: undefined,
+    name: 'Microsoft Inc.',
+    status: 'ERROR',
+    banks: [
+      {
+        avatar: 'https://cdn.iconscout.com/icon/free/png-256/apple-1868761-1583153.png',
+        name: 'Banco do Brasil',
+        extract: 'APPROVED',
+        conciliation: 'APPROVED',
+        validation: 'ERROR',
+        status: 'ERROR'
+      },
+      {
+        avatar: 'https://cdn.iconscout.com/icon/free/png-256/apple-1868761-1583153.png',
+        name: 'Bradesco',
+        extract: 'APPROVED',
+        conciliation: 'PENDING',
+        validation: 'PENDING',
+        status: 'PENDING'
+      },
+      {
+        avatar: 'https://cdn.iconscout.com/icon/free/png-256/apple-1868761-1583153.png',
+        name: 'Itaú',
+        extract: 'APPROVED',
+        conciliation: 'APPROVED',
+        validation: 'ERROR',
+        status: 'ERROR'
+      }
+    ]
+  },
+  {
+    avatar: undefined,
+    name: 'Amazon Inc.',
+    status: 'PENDING',
+    banks: [
+      {
+        avatar: 'https://cdn.iconscout.com/icon/free/png-256/apple-1868761-1583153.png',
+        name: 'Banco do Brasil',
+        extract: 'APPROVED',
+        conciliation: 'APPROVED',
+        validation: 'APPROVED',
+        status: 'APPROVED'
+      },
+      {
+        avatar: 'https://cdn.iconscout.com/icon/free/png-256/apple-1868761-1583153.png',
+        name: 'Bradesco',
+        extract: 'APPROVED',
+        conciliation: 'PENDING',
+        validation: 'PENDING',
+        status: 'PENDING'
+      },
+      {
+        avatar: 'https://cdn.iconscout.com/icon/free/png-256/apple-1868761-1583153.png',
+        name: 'Itaú',
+        extract: 'APPROVED',
+        conciliation: 'APPROVED',
+        validation: 'APPROVED',
+        status: 'APPROVED'
+      }
+    ]
   }
 ]
+
+export const formatNameBank = (name: string) => {
+  const nameArray = name.split(' ')
+
+  return nameArray[0].length > 15 ? `${nameArray[0].slice(0, 15)}...` : name
+}

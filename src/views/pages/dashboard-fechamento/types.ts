@@ -1,4 +1,4 @@
-export type StatusValue = 'ALL' | 'APPROVED' | 'CANCELLED' | 'PENDING'
+export type StatusValue = 'ALL' | 'APPROVED' | 'ERROR' | 'PENDING'
 
 export type ColorType = 'primary' | 'error' | 'success' | 'secondary' | 'info' | 'warning' | undefined
 

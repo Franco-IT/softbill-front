@@ -1,25 +1,91 @@
-import { useState } from 'react'
-
-import { Card, CardActions, CardContent, CardHeader, Grid, MenuItem } from '@mui/material'
+import { useEffect, useState } from 'react'
 
 import CustomTextField from 'src/@core/components/mui/text-field'
 import CardOptionHorizontal from 'src/@core/components/card-statistics/card-option-horizontal'
+
+import CustomUserAccordion from './components/CustomUserAccordion'
+
+import { Card, CardActions, CardContent, CardHeader, Grid, MenuItem } from '@mui/material'
 
 import { dateProvider } from 'src/shared/providers'
 
 import { monthsOptions, statusOptions, usersQuantiryOptions } from './options'
 
 import { monthName, statusColorsMUI, users } from './utils'
-import CustomUserAccordion from './components/CustomUserAccordion'
+
 import { StatusValue } from './types'
+import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
+import NoResultsCard from './components/NoResultsCard'
 
 const Dashboard = () => {
   const currentMonth = dateProvider.getCurrentMonth().toLowerCase()
 
+  const [loading, setLoading] = useState(false)
   const [onSearch, setOnSearch] = useState('')
   const [month, setMonth] = useState(currentMonth)
+  const [usersData, setUsersData] = useState(users)
   const [usersQuantity, setUsersQuantity] = useState('5')
   const [status, setStatus] = useState<StatusValue>('ALL')
+  const [dashboardData, setDashboardData] = useState({
+    totalUsers: 0,
+    totalApproved: 0,
+    totalPending: 0,
+    totalError: 0
+  })
+
+  const handleOnSearch = (value: string) => {
+    setLoading(true)
+
+    setOnSearch(value)
+
+    if (!value)
+      return setTimeout(() => {
+        setUsersData(users), setLoading(false)
+      }, 1500)
+
+    setTimeout(() => {
+      const filteredData = users.filter(user => user.name.toLowerCase().includes(value.toLowerCase()))
+      setUsersData(filteredData)
+      setLoading(false)
+    }, 1000)
+  }
+
+  const handleStatus = (status: StatusValue) => {
+    setLoading(true)
+
+    setStatus(status)
+
+    if (status === 'ALL')
+      return setTimeout(() => {
+        setUsersData(users), setLoading(false)
+      }, 1500)
+
+    setTimeout(() => {
+      const filteredData = users.filter(user => user.status === status)
+      setUsersData(filteredData)
+      setLoading(false)
+    }, 1000)
+  }
+
+  useEffect(() => {
+    setLoading(true)
+
+    setTimeout(() => {
+      const totalUsers = users.length
+      const totalApproved = users.filter(user => user.status === 'APPROVED').length
+      const totalPending = users.filter(user => user.status === 'PENDING').length
+      const totalError = users.filter(user => user.status === 'ERROR').length
+
+      setDashboardData({
+        totalUsers,
+        totalApproved,
+        totalPending,
+        totalError
+      })
+
+      setLoading(false)
+    }, 3000)
+  }, [])
 
   return (
     <Card>
@@ -45,7 +111,7 @@ const Dashboard = () => {
               label='Cliente'
               placeholder='Buscar Cliente'
               value={onSearch}
-              onChange={e => setOnSearch(e.target.value)}
+              onChange={e => handleOnSearch(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} md={3}>
@@ -93,7 +159,7 @@ const Dashboard = () => {
               label='Status'
               placeholder='Selecione Status'
               value={status || 'default'}
-              onChange={e => setStatus(e.target.value as StatusValue)}
+              onChange={e => handleStatus(e.target.value as StatusValue)}
               color={statusColorsMUI[status]}
               focused={!!statusColorsMUI[status]}
             >
@@ -112,11 +178,16 @@ const Dashboard = () => {
       <CardContent>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <CardOptionHorizontal title='10' subtitle='Total de Clientes' avatarColor='primary' icon='tabler:user' />
+            <CardOptionHorizontal
+              title={dashboardData.totalUsers}
+              subtitle='Total de Clientes'
+              avatarColor='primary'
+              icon='tabler:user'
+            />
           </Grid>
           <Grid item xs={12} md={6}>
             <CardOptionHorizontal
-              title='3'
+              title={dashboardData.totalApproved}
               subtitle='Clientes Aprovados'
               avatarColor='success'
               icon='tabler:user-check'
@@ -124,24 +195,44 @@ const Dashboard = () => {
           </Grid>
           <Grid item xs={12} md={6}>
             <CardOptionHorizontal
-              title='5'
+              title={dashboardData.totalPending}
               subtitle='Clientes Pendentes'
               avatarColor='warning'
               icon='tabler:user-exclamation'
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <CardOptionHorizontal title='2' subtitle='Clientes Cancelados' avatarColor='error' icon='tabler:user-x' />
+            <CardOptionHorizontal
+              title={dashboardData.totalError}
+              subtitle='Clientes Cancelados'
+              avatarColor='error'
+              icon='tabler:user-x'
+            />
           </Grid>
         </Grid>
       </CardContent>
       <CardContent>
         <Grid container spacing={3}>
-          {users.map((user, index) => (
-            <Grid item xs={12} key={index}>
-              <CustomUserAccordion data={user} />
+          {loading ? (
+            <Grid item xs={12}>
+              <LoadingCard
+                title='Carregando...'
+                subtitle='Aguarde um momento'
+                avatarColor='primary'
+                icon='tabler:loader-2'
+              />
             </Grid>
-          ))}
+          ) : usersData.length > 0 ? (
+            usersData.map((user, index) => (
+              <Grid item xs={12} key={index}>
+                <CustomUserAccordion data={user} />
+              </Grid>
+            ))
+          ) : (
+            <Grid item xs={12}>
+              <NoResultsCard />
+            </Grid>
+          )}
         </Grid>
       </CardContent>
     </Card>

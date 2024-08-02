@@ -14,8 +14,8 @@ export const statusOptions: SelectOptionsProps[] = [
     label: 'Aprovado'
   },
   {
-    value: 'CANCELLED',
-    label: 'Cancelado'
+    value: 'ERROR',
+    label: 'Error'
   }
 ]
 
