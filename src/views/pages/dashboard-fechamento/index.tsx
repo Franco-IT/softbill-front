@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react'
 import CustomTextField from 'src/@core/components/mui/text-field'
 import CardOptionHorizontal from 'src/@core/components/card-statistics/card-option-horizontal'
 
-import CustomUserAccordion from './components/CustomUserAccordion'
-
 import { Card, CardActions, CardContent, CardHeader, Grid, MenuItem } from '@mui/material'
 
 import { dateProvider } from 'src/shared/providers'
@@ -16,6 +14,7 @@ import { monthName, statusColorsMUI, users } from './utils'
 import { StatusValue } from './types'
 import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
 import NoResultsCard from './components/NoResultsCard'
+import BankCard from './components/BankCard'
 
 const Dashboard = () => {
   const currentMonth = dateProvider.getCurrentMonth().toLowerCase()
@@ -224,8 +223,8 @@ const Dashboard = () => {
             </Grid>
           ) : usersData.length > 0 ? (
             usersData.map((user, index) => (
-              <Grid item xs={12} key={index}>
-                <CustomUserAccordion data={user} />
+              <Grid item xs={12} md={4} xl={3} key={index}>
+                <BankCard user={user} />
               </Grid>
             ))
           ) : (
