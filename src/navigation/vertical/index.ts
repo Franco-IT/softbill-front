@@ -12,6 +12,14 @@ const navigation = (): VerticalNavItemsType => {
       icon: 'tabler:smart-home'
     },
     {
+      title: 'Dashboard Fechamento',
+      path: '/dashboard-fechamento',
+      auth: true,
+      action: 'read',
+      subject: ['ACCOUNTING', 'COUNTER'],
+      icon: 'tabler:calendar-check'
+    },
+    {
       title: 'Usuários',
       subtitle: 'Ver Usuários',
       path: '/usuarios',

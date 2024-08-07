@@ -14,4 +14,8 @@ export class DateProvider implements IDateProvider {
   getCurrentDate(): Date {
     return new Date()
   }
+
+  getCurrentMonth(): string {
+    return format(new Date(), 'MMMM')
+  }
 }
