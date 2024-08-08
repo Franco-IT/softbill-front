@@ -11,7 +11,6 @@ type DrawerContextType = {
     open: boolean,
     currentChildren: React.ReactNode
   ) => (event: React.KeyboardEvent | React.MouseEvent) => void
-  setDrawerChildren: (children: React.ReactNode) => void
   children: React.ReactNode | null
 }
 
@@ -19,7 +18,6 @@ const defaultProvider: DrawerContextType = {
   anchor: 'right',
   open: false,
   toggleDrawer: () => () => null,
-  setDrawerChildren: () => null,
   children: null
 }
 
@@ -48,16 +46,7 @@ const DrawerProvider = ({ children }: DrawerProviderProps) => {
       setState({ ...state, anchor, open, children: currentChildren })
     }
 
-  const setDrawerChildren = (currentChildren: React.ReactNode) => {
-    setState(prevState => ({
-      ...prevState,
-      currentChildren
-    }))
-  }
-
-  return (
-    <DrawerContext.Provider value={{ ...state, toggleDrawer, setDrawerChildren }}>{children}</DrawerContext.Provider>
-  )
+  return <DrawerContext.Provider value={{ ...state, toggleDrawer }}>{children}</DrawerContext.Provider>
 }
 
 export { DrawerProvider, DrawerContext }
