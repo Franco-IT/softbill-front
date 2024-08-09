@@ -1,6 +1,5 @@
-import { Box, Button, CardContent, Grid } from '@mui/material'
-import Avatar from 'src/@core/components/mui/avatar'
-import CustomStepper from '../CustomStepper'
+import { CardContent, Grid } from '@mui/material'
+import BankStepper from '../BankStepper'
 
 interface ContentProps {
   banks: any
@@ -23,42 +22,11 @@ const Content = ({ banks }: ContentProps) => {
       }}
     >
       <Grid container spacing={3}>
-        {banks.map((bank: any, index: number) => {
-          const CustomStepperProps = {
-            extract: bank.extract,
-            conciliation: bank.conciliation,
-            exportation: bank.validation
-          }
-
-          return (
-            <Grid item xs={12} key={index}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: {
-                    xs: 'column'
-                  },
-                  justifyContent: 'space-between',
-                  gap: 2
-                }}
-              >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2
-                  }}
-                >
-                  <Avatar src={bank.avatar} />
-                  <Button variant='text' color='inherit'>
-                    {bank.name}
-                  </Button>
-                </Box>
-                <CustomStepper {...CustomStepperProps} />
-              </Box>
-            </Grid>
-          )
-        })}
+        {banks.map((bank: any, index: number) => (
+          <Grid item xs={12} key={index}>
+            <BankStepper bank={bank} />
+          </Grid>
+        ))}
       </Grid>
     </CardContent>
   )

@@ -73,7 +73,7 @@ const Dashboard = () => {
       const totalUsers = users.length
       const totalApproved = users.filter(user => user.status === 'APPROVED').length
       const totalPending = users.filter(user => user.status === 'PENDING').length
-      const totalError = users.filter(user => user.status === 'ERROR').length
+      const totalError = users.filter(user => user.status === 'REJECTED').length
 
       setDashboardData({
         totalUsers,

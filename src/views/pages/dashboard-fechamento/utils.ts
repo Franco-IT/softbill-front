@@ -3,14 +3,14 @@ import { ColorType, DataProps } from './types'
 export const statusColorsMUI: { [key: string]: ColorType } = {
   ALL: undefined,
   APPROVED: 'success',
-  ERROR: 'error',
+  REJECTED: 'error',
   PENDING: 'warning'
 }
 
 export const bankStatusLabel: { [key: string]: string } = {
   APPROVED: 'Aprovado',
   PENDING: 'Pendente',
-  ERROR: 'Erro'
+  REJECTED: 'Rejeitado'
 }
 
 export const monthName: { [key: string]: string } = {
@@ -109,7 +109,7 @@ export const users: DataProps[] = [
   {
     avatar: undefined,
     name: 'Facebook Inc.',
-    status: 'ERROR',
+    status: 'REJECTED',
     banks: [
       {
         avatar:
@@ -117,8 +117,8 @@ export const users: DataProps[] = [
         name: 'Banco do Brasil',
         extract: 'APPROVED',
         conciliation: 'APPROVED',
-        validation: 'ERROR',
-        status: 'ERROR'
+        validation: 'REJECTED',
+        status: 'REJECTED'
       },
       {
         avatar:
@@ -135,15 +135,15 @@ export const users: DataProps[] = [
         name: 'Itaú',
         extract: 'APPROVED',
         conciliation: 'APPROVED',
-        validation: 'ERROR',
-        status: 'ERROR'
+        validation: 'REJECTED',
+        status: 'REJECTED'
       }
     ]
   },
   {
     avatar: undefined,
     name: 'Microsoft Inc.',
-    status: 'ERROR',
+    status: 'REJECTED',
     banks: [
       {
         avatar:
@@ -151,8 +151,8 @@ export const users: DataProps[] = [
         name: 'Banco do Brasil',
         extract: 'APPROVED',
         conciliation: 'APPROVED',
-        validation: 'ERROR',
-        status: 'ERROR'
+        validation: 'REJECTED',
+        status: 'REJECTED'
       },
       {
         avatar:
@@ -169,8 +169,8 @@ export const users: DataProps[] = [
         name: 'Itaú',
         extract: 'APPROVED',
         conciliation: 'APPROVED',
-        validation: 'ERROR',
-        status: 'ERROR'
+        validation: 'REJECTED',
+        status: 'REJECTED'
       }
     ]
   },
