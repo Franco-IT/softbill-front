@@ -65,33 +65,19 @@ const CustomStepperInteractive = ({ extract, conciliation, exportation }: Custom
 
         if (index === activeStep) {
           const status = statusMap[index]
-          if (status === 'ERROR') labelProps.error = true
+          if (status === 'REJECTED') labelProps.error = true
           if (status === 'APPROVED') (labelProps.completed = true), setActiveStep(index + 1)
         }
 
         return (
-          <Step
-            key={index}
-            sx={{
-              p: '0.5rem 0',
-              cursor: 'pointer'
-            }}
-          >
+          <Step key={index} sx={{ p: '0.5rem 0' }}>
             <StepLabel
               {...labelProps}
+              style={{ cursor: 'pointer' }}
               onClick={e => {
                 toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, drawerChildren[index])(e)
               }}
-              StepIconComponent={labelProps => (
-                <StepperCustomDot
-                  style={{
-                    cursor: 'pointer'
-                  }}
-                  {...labelProps}
-                  icon={step.icon}
-                  name={step.name}
-                />
-              )}
+              StepIconComponent={labelProps => <StepperCustomDot {...labelProps} icon={step.icon} name={step.name} />}
             ></StepLabel>
           </Step>
         )

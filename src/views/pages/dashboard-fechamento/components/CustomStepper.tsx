@@ -45,7 +45,7 @@ const CustomStepper = ({ extract, conciliation, exportation }: CustomStepperProp
 
         if (index === activeStep) {
           const status = statusMap[index]
-          if (status === 'ERROR') labelProps.error = true
+          if (status === 'REJECTED') labelProps.error = true
           if (status === 'APPROVED') (labelProps.completed = true), setActiveStep(index+1)
         }
 
