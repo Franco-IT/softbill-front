@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useEffect, useState, ReactNode, useCallback } from 'react'
 
 import { useRouter } from 'next/router'
 import { deleteCookie, getCookie, setCookie } from 'cookies-next'
@@ -32,6 +32,8 @@ const defaultProvider: AuthValuesType = {
 
 const AuthContext = createContext(defaultProvider)
 
+let authChannel: BroadcastChannel
+
 type Props = {
   children: ReactNode
 }
@@ -46,6 +48,29 @@ const AuthProvider = ({ children }: Props) => {
 
     return routes.includes(currentRoute)
   }
+
+  const handleLogout = useCallback(() => {
+    setUser(null)
+    authController.logout()
+    deleteCookie(authConfig.storageUserDataKeyName)
+    deleteCookie(`${authConfig.storageUserDataKeyName}-iv`)
+    deleteCookie(authConfig.storageTokenKeyName)
+    deleteCookie(`${authConfig.storageTokenKeyName}-iv`)
+    authChannel.postMessage('logout')
+    router.push('/login')
+  }, [router])
+
+  useEffect(() => {
+    authChannel = new BroadcastChannel('auth')
+
+    authChannel.onmessage = message => {
+      if (message.data === 'logout') handleLogout()
+    }
+
+    return () => {
+      authChannel.close()
+    }
+  }, [handleLogout])
 
   useEffect(() => {
     const initAuth = async (): Promise<void> => {
@@ -130,16 +155,6 @@ const AuthProvider = ({ children }: Props) => {
     } catch (error) {
       if (error instanceof AppError) toast.error(error.message)
     }
-  }
-
-  const handleLogout = () => {
-    setUser(null)
-    authController.logout()
-    deleteCookie(authConfig.storageUserDataKeyName)
-    deleteCookie(`${authConfig.storageUserDataKeyName}-iv`)
-    deleteCookie(authConfig.storageTokenKeyName)
-    deleteCookie(`${authConfig.storageTokenKeyName}-iv`)
-    router.push('/login')
   }
 
   const handleResetPassword = async (data: IUserResetPasswordDTO) => {
