@@ -19,24 +19,62 @@ import IconifyIcon from 'src/@core/components/icon'
 import BankStepperInteractive from '../components/BankStepperInteractive'
 import { useDrawer } from 'src/hooks/useDrawer'
 import Export from '../components/DrawerComponents/Export'
-import React from 'react'
+import React, { useEffect } from 'react'
+import StatementsTable from '../components/StatementsTable'
+import CustomChip from 'src/@core/components/mui/chip'
+import { useRouter } from 'next/router'
 
 const Closure = () => {
+  const router = useRouter()
+
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
+  const isSmallerThanSm = useMediaQuery((theme: any) => theme.breakpoints.down('sm'))
 
   const { toggleDrawer } = useDrawer()
 
   const [status, setStatus] = React.useState<any>('PENDING')
+  const [user, setUser] = React.useState<any>(null)
+  const [bank, setBank] = React.useState<any>(null)
+
+  useEffect(() => {
+    const getUser = async () => fetch(`http://localhost:3002/users/${router.query.id}`)
+
+    if (router.isReady) {
+      getUser()
+        .then(response => response.json())
+        .then(data => {
+          setUser(data)
+          setStatus(data.status)
+
+          const banks = data.banks
+
+          setBank(banks.filter((bank: any) => bank.id === router.query.bankId)[0])
+        })
+        .catch(error => console.error(error))
+    }
+  }, [router.isReady, router.query.bankId, router.query.id])
 
   return (
     <Card>
       <CardHeader
         title={
-          <Box display='flex' alignItems='center' gap={4}>
-            <Avatar src='/static/images/avatars/1.jpg' />
-            <Typography variant='h5'>Apple Inc.</Typography>
-            <GlowIcon status={status} />
-          </Box>
+          <Grid container spacing={4}>
+            <Grid item xs={12} sm={6}>
+              <Box display='flex' alignItems='center' gap={4}>
+                <Avatar src={user?.avatar} color={statusColorsMUI[status]} />
+                <Typography variant='h5'>{user?.name}</Typography>
+                <GlowIcon status={status} />
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Box display='flex' flexDirection={'column'} alignItems={isSmallerThanSm ? 'start' : 'end'}>
+                <Box display='flex' flexDirection={isSmallerThanSm ? 'row' : 'column'} alignItems={'center'} gap={2}>
+                  <Avatar src={bank?.avatar} />
+                  <CustomChip rounded skin='light' size='small' label='OFX' color='primary' />
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
         }
       />
       <CardActions>
@@ -118,10 +156,10 @@ const Closure = () => {
           </Grid>
         </Grid>
       </CardActions>
-
-      <CardContent>
-        <BankStepperInteractive bank={{ name: 'OFX', avatar: '/static/images/avatars/1.jpg' }} />
+      <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {bank && <BankStepperInteractive bank={bank} />}
       </CardContent>
+      <StatementsTable />
     </Card>
   )
 }

@@ -32,11 +32,11 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
       <AccordionSummary expandIcon={<Icon fontSize='1.25rem' icon='tabler:chevron-down' />}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Avatar src={bank.avatar} sx={{ width: '2rem', height: '2rem', mr: 2 }} />
-          <Button variant='text' onClick={e => e.stopPropagation()}>
+          <Button variant='text' color='inherit' onClick={e => e.stopPropagation()}>
             {formatNameBank(bank.name)}
           </Button>
           {isSmallerThan550 ? (
-            <GlowIcon status={bank.status} />
+            <GlowIcon status={bank.status as any} />
           ) : (
             <CustomChip
               rounded
@@ -73,9 +73,14 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
                   6th October
                 </Typography>
               </Box>
-              <Typography variant='body2'>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Possimus quos, voluptates voluptas rem.
-              </Typography>
+              <CustomChip
+                rounded
+                skin='light'
+                size='small'
+                label={bankStatusLabel[bank.extract]}
+                color={statusColorsMUI[bank.extract]}
+                sx={{ textTransform: 'capitalize', minWidth: 85 }}
+              />
               <Divider sx={{ borderStyle: 'dashed', my: theme => `${theme.spacing(3)} !important` }} />
             </TimelineContent>
           </TimelineItem>
@@ -101,9 +106,14 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
                   6th October
                 </Typography>
               </Box>
-              <Typography variant='body2'>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Possimus quos, voluptates voluptas rem.
-              </Typography>
+              <CustomChip
+                rounded
+                skin='light'
+                size='small'
+                label={bankStatusLabel[bank.conciliation]}
+                color={statusColorsMUI[bank.conciliation]}
+                sx={{ textTransform: 'capitalize', minWidth: 85 }}
+              />
               <Divider sx={{ borderStyle: 'dashed', my: theme => `${theme.spacing(3)} !important` }} />
             </TimelineContent>
           </TimelineItem>
@@ -129,9 +139,14 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
                   4th October
                 </Typography>
               </Box>
-              <Typography variant='body2' sx={{ mb: 2 }}>
-                Weekly review of freshly prepared design for our new application.
-              </Typography>
+              <CustomChip
+                rounded
+                skin='light'
+                size='small'
+                label={bankStatusLabel[bank.validation]}
+                color={statusColorsMUI[bank.validation]}
+                sx={{ textTransform: 'capitalize', minWidth: 85 }}
+              />
             </TimelineContent>
           </TimelineItem>
         </Box>

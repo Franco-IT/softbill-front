@@ -1,12 +1,15 @@
 import { Box, Button } from '@mui/material'
 import Avatar from 'src/@core/components/mui/avatar'
 import CustomStepper from './CustomStepper'
+import { useRouter } from 'next/router'
 
 interface BankStepperProps {
   bank: any
 }
 
 const BankStepper = ({ bank }: BankStepperProps) => {
+  const router = useRouter()
+
   const CustomStepperProps = {
     extract: bank.extract,
     conciliation: bank.conciliation,
@@ -32,7 +35,16 @@ const BankStepper = ({ bank }: BankStepperProps) => {
         }}
       >
         <Avatar src={bank.avatar} />
-        <Button variant='text' color='inherit'>
+        <Button
+          variant='text'
+          color='inherit'
+          onClick={() =>
+            router.push({
+              pathname: '/dashboard-fechamento/fechamento/[id]',
+              query: { id: bank.userId, bankId: bank.id }
+            })
+          }
+        >
           {bank.name}
         </Button>
       </Box>

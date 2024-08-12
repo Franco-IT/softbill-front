@@ -3,7 +3,17 @@ import { useEffect, useState } from 'react'
 import CustomTextField from 'src/@core/components/mui/text-field'
 import CardOptionHorizontal from 'src/@core/components/card-statistics/card-option-horizontal'
 
-import { Card, CardActions, CardContent, CardHeader, Grid, MenuItem } from '@mui/material'
+import {
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Grid,
+  MenuItem,
+  ToggleButton,
+  ToggleButtonGroup
+} from '@mui/material'
 
 import { dateProvider } from 'src/shared/providers'
 
@@ -11,18 +21,22 @@ import { monthsOptions, statusOptions, usersQuantiryOptions } from './options'
 
 import { monthName, statusColorsMUI, users } from './utils'
 
-import { StatusValue } from './types'
+import { DataProps, StatusValue } from './types'
 import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
 import NoResultsCard from './components/NoResultsCard'
 import BankCard from './components/BankCard'
+import IconifyIcon from 'src/@core/components/icon'
+import CustomUserAccordion from './components/CustomUserAccordion'
 
 const Dashboard = () => {
   const currentMonth = dateProvider.getCurrentMonth().toLowerCase()
 
+  const [showList, setShowList] = useState<'LIST' | 'GRID'>('GRID')
+
   const [loading, setLoading] = useState(false)
   const [onSearch, setOnSearch] = useState('')
   const [month, setMonth] = useState(currentMonth)
-  const [usersData, setUsersData] = useState(users)
+  const [usersData, setUsersData] = useState<DataProps[] | null>(null)
   const [usersQuantity, setUsersQuantity] = useState('5')
   const [status, setStatus] = useState<StatusValue>('ALL')
   const [dashboardData, setDashboardData] = useState({
@@ -66,14 +80,41 @@ const Dashboard = () => {
     }, 1000)
   }
 
+  const gridProps = {
+    LIST: {
+      xs: 12
+    },
+    GRID: {
+      xs: 12,
+      md: 4,
+      xl: 3
+    }
+  }
+
   useEffect(() => {
     setLoading(true)
 
-    setTimeout(() => {
-      const totalUsers = users.length
-      const totalApproved = users.filter(user => user.status === 'APPROVED').length
-      const totalPending = users.filter(user => user.status === 'PENDING').length
-      const totalError = users.filter(user => user.status === 'REJECTED').length
+    const getUsers = async () => {
+      try {
+        const response = await fetch('http://localhost:3002/users')
+        const data = await response.json()
+        setUsersData(data)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    getUsers()
+  }, [])
+
+  useEffect(() => {
+    if (usersData) {
+      const totalUsers = usersData.length
+      const totalApproved = usersData.filter(user => user.status === 'APPROVED').length
+      const totalPending = usersData.filter(user => user.status === 'PENDING').length
+      const totalError = usersData.filter(user => user.status === 'REJECTED').length
 
       setDashboardData({
         totalUsers,
@@ -81,10 +122,8 @@ const Dashboard = () => {
         totalPending,
         totalError
       })
-
-      setLoading(false)
-    }, 3000)
-  }, [])
+    }
+  }, [usersData])
 
   return (
     <Card>
@@ -212,6 +251,24 @@ const Dashboard = () => {
       </CardContent>
       <CardContent>
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
+              <ToggleButtonGroup
+                exclusive
+                size='small'
+                color='primary'
+                value={showList}
+                onChange={(e, newValue) => newValue !== null && setShowList(newValue)}
+              >
+                <ToggleButton value='GRID'>
+                  <IconifyIcon icon='tabler:layout-grid-filled' fontSize='1.5rem' />
+                </ToggleButton>
+                <ToggleButton value='LIST'>
+                  <IconifyIcon icon='tabler:layout-list-filled' fontSize='1.5rem' />
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          </Grid>
           {loading ? (
             <Grid item xs={12}>
               <LoadingCard
@@ -221,10 +278,10 @@ const Dashboard = () => {
                 icon='tabler:loader-2'
               />
             </Grid>
-          ) : usersData.length > 0 ? (
+          ) : usersData ? (
             usersData.map((user, index) => (
-              <Grid item xs={12} md={4} xl={3} key={index}>
-                <BankCard user={user} />
+              <Grid item {...gridProps[showList]} key={index}>
+                {showList === 'LIST' ? <CustomUserAccordion user={user} /> : <BankCard user={user} />}
               </Grid>
             ))
           ) : (
