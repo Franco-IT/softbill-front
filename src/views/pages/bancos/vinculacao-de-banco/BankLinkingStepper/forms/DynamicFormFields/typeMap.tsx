@@ -36,6 +36,16 @@ const interTypeMap: Record<InterFields, TypeMapEntry> = {
     Input: SensitiveInput,
     inputProps: { label: 'ID secreto do Cliente no Banco', required: true, placeholder: 'Ex: 123456' }
   },
+  accountNumber: {
+    Input: StringInput,
+    inputProps: { label: 'Número da Conta', required: false, placeholder: 'Ex: 12345678' },
+    mask: applyAccountNumberMask
+  },
+  agencyNumber: {
+    Input: StringInput,
+    inputProps: { label: 'Número da Agência', required: false, min: 4, placeholder: 'Ex: 1234' },
+    mask: applyAgencyNumberMask
+  },
   files: {
     Input: FileInput,
     inputProps: { label: 'Certificado Digital', required: true, bank: 'INTER' }
@@ -116,6 +126,16 @@ const OFXTypeMap: Record<OFXFields, TypeMapEntry> = {
         label: 'Outro'
       }
     ]
+  },
+  accountNumber: {
+    Input: StringInput,
+    inputProps: { label: 'Número da Conta', required: false, placeholder: 'Ex: 12345678' },
+    mask: applyAccountNumberMask
+  },
+  agencyNumber: {
+    Input: StringInput,
+    inputProps: { label: 'Número da Agência', required: false, min: 4, placeholder: 'Ex: 1234' },
+    mask: applyAgencyNumberMask
   }
 }
 
