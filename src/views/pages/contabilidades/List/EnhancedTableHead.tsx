@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Box, TableCell, TableHead, TableRow, TableSortLabel, useTheme } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
 import { HeadCellProps } from './HeadCells'
@@ -13,7 +14,7 @@ interface EnhancedTableProps {
   rowCount: number
 }
 
-const EnhancedTableHead = (props: EnhancedTableProps) => {
+const EnhancedTableHead = memo((props: EnhancedTableProps) => {
   const { order, orderBy, onRequestSort, headCells } = props
 
   const theme = useTheme()
@@ -53,6 +54,6 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
       </TableRow>
     </TableHead>
   )
-}
+})
 
 export default EnhancedTableHead

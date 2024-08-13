@@ -5,20 +5,21 @@ import { CardHeader, Grid, Box, Button } from '@mui/material'
 import CustomTextField from 'src/@core/components/mui/text-field'
 
 import Icon from 'src/@core/components/icon'
+import { memo, useCallback } from 'react'
 
 interface TableHeaderProps {
   value: string
   handleFilter: (val: string) => void
 }
 
-const TableHeader = (props: TableHeaderProps) => {
+const TableHeader = memo((props: TableHeaderProps) => {
   const router = useRouter()
 
   const { handleFilter, value } = props
 
-  const handleCreateBank = () => {
+  const handleCreateBank = useCallback(() => {
     router.push('/bancos')
-  }
+  }, [router])
 
   return (
     <Grid container gap={{ xs: 3, md: 0 }} paddingX={6} paddingY={4} justifyContent={'space-between'}>
@@ -52,6 +53,6 @@ const TableHeader = (props: TableHeaderProps) => {
       </Grid>
     </Grid>
   )
-}
+})
 
 export default TableHeader

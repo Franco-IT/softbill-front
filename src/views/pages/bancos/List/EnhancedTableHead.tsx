@@ -2,6 +2,7 @@ import { Box, TableCell, TableHead, TableRow, TableSortLabel, useTheme } from '@
 import { visuallyHidden } from '@mui/utils'
 import { HeadCellProps } from './HeadCells'
 import { BankProps } from 'src/types/banks'
+import { memo } from 'react'
 
 type Order = 'asc' | 'desc'
 
@@ -13,7 +14,7 @@ interface EnhancedTableProps {
   rowCount: number
 }
 
-const EnhancedTableHead = (props: EnhancedTableProps) => {
+const EnhancedTableHead = memo((props: EnhancedTableProps) => {
   const { order, orderBy, onRequestSort, headCells } = props
 
   const theme = useTheme()
@@ -53,6 +54,6 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
       </TableRow>
     </TableHead>
   )
-}
+})
 
 export default EnhancedTableHead

@@ -1,4 +1,4 @@
-import { Dispatch, Fragment, SetStateAction } from 'react'
+import { Dispatch, Fragment, memo, SetStateAction } from 'react'
 
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -16,7 +16,7 @@ interface DialogAlertProps {
   handleConfirmDelete: () => void
 }
 
-const DialogAlert = ({ open, setOpen, description, question, handleConfirmDelete }: DialogAlertProps) => {
+const DialogAlert = memo(({ open, setOpen, description, question, handleConfirmDelete }: DialogAlertProps) => {
   return (
     <Fragment>
       <Dialog
@@ -43,6 +43,6 @@ const DialogAlert = ({ open, setOpen, description, question, handleConfirmDelete
       </Dialog>
     </Fragment>
   )
-}
+})
 
 export default DialogAlert
