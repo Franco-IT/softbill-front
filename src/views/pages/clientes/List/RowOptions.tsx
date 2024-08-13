@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 
 import useClipBoard from 'src/hooks/useClipboard'
@@ -11,22 +11,22 @@ import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import { userController } from 'src/modules/users'
 import { AppError } from 'src/shared/errors/AppError'
 
-const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDelete: (id: string) => void }) => {
+const RowOptions = memo(({ id, handleConfirmDelete }: { id: string; handleConfirmDelete: (id: string) => void }) => {
   const router = useRouter()
 
   const { copyToClipboard } = useClipBoard()
 
   const [open, setOpen] = useState(false)
 
-  const handleViewProfileClick = () => {
+  const handleViewProfileClick = useCallback(() => {
     router.push(`/clientes/${id}`)
-  }
+  }, [id, router])
 
-  const handleDeleteProfileClick = () => {
+  const handleDeleteProfileClick = useCallback(() => {
     setOpen(true)
-  }
+  }, [])
 
-  const handleFirstAccessClick = async () => {
+  const handleFirstAccessClick = useCallback(async () => {
     try {
       const response = await userController.firstAccess({ id })
 
@@ -36,40 +36,45 @@ const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDele
     } catch (error) {
       if (error instanceof AppError) toast.error(error.message)
     }
-  }
+  }, [copyToClipboard, id])
 
-  const menuItems = [
-    {
-      label: 'Ver Perfil',
-      icon: <Icon icon='tabler:eye' fontSize={20} />,
-      action: handleViewProfileClick
-    },
-    {
-      label: 'Primeiro Acesso',
-      icon: <Icon icon='tabler:link' fontSize={20} />,
-      action: handleFirstAccessClick
-    },
-    {
-      label: 'Deletar',
-      icon: <Icon icon='tabler:trash' fontSize={20} />,
-      action: handleDeleteProfileClick
-    }
-  ]
+  const menuItems = useMemo(
+    () => [
+      {
+        label: 'Ver Perfil',
+        icon: <Icon icon='tabler:eye' fontSize={20} />,
+        action: handleViewProfileClick
+      },
+      {
+        label: 'Primeiro Acesso',
+        icon: <Icon icon='tabler:link' fontSize={20} />,
+        action: handleFirstAccessClick
+      },
+      {
+        label: 'Deletar',
+        icon: <Icon icon='tabler:trash' fontSize={20} />,
+        action: handleDeleteProfileClick
+      }
+    ],
+    [handleDeleteProfileClick, handleFirstAccessClick, handleViewProfileClick]
+  )
 
   return (
     <>
       <CustomBasicMenu buttonLabel='Ações' menuItems={menuItems} />
 
-      <DialogAlert
-        id={id}
-        open={open}
-        setOpen={setOpen}
-        question={'Você tem certeza que deseja deletar este cliente?'}
-        description={'Essa ação não poderá ser desfeita.'}
-        handleConfirmDelete={() => handleConfirmDelete(id)}
-      />
+      {open && (
+        <DialogAlert
+          id={id}
+          open={open}
+          setOpen={setOpen}
+          question={'Você tem certeza que deseja deletar este cliente?'}
+          description={'Essa ação não poderá ser desfeita.'}
+          handleConfirmDelete={() => handleConfirmDelete(id)}
+        />
+      )}
     </>
   )
-}
+})
 
 export default RowOptions
