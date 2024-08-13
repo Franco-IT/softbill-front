@@ -1,4 +1,4 @@
-import { useState, MouseEvent } from 'react'
+import { useState, MouseEvent, memo, useCallback } from 'react'
 
 import { useRouter } from 'next/router'
 
@@ -6,7 +6,7 @@ import { Button, IconButton, Menu, MenuItem, useMediaQuery, Box } from '@mui/mat
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import Icon from 'src/@core/components/icon'
 
-const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDelete: (id: string) => void }) => {
+const RowOptions = memo(({ id, handleConfirmDelete }: { id: string; handleConfirmDelete: (id: string) => void }) => {
   const router = useRouter()
 
   const matches = useMediaQuery('(min-width:600px)')
@@ -16,21 +16,21 @@ const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDele
 
   const rowOptionsOpen = Boolean(anchorEl)
 
-  const handleRowOptionsClick = (event: MouseEvent<HTMLElement>) => {
+  const handleRowOptionsClick = useCallback((event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
-  }
+  }, [])
 
-  const handleRowOptionsClose = () => {
+  const handleRowOptionsClose = useCallback(() => {
     setAnchorEl(null)
-  }
+  }, [])
 
-  const handleViewProfileClick = () => {
+  const handleViewProfileClick = useCallback(() => {
     router.push(`/usuarios/${id}`)
-  }
+  }, [id, router])
 
-  const handleDeleteProfileClick = () => {
+  const handleDeleteProfileClick = useCallback(() => {
     setOpen(true)
-  }
+  }, [])
 
   return (
     <>
@@ -81,16 +81,18 @@ const RowOptions = ({ id, handleConfirmDelete }: { id: string; handleConfirmDele
         </>
       )}
 
-      <DialogAlert
-        id={id}
-        open={open}
-        setOpen={setOpen}
-        question={'Você tem certeza que deseja deletar este usuário?'}
-        description={'Essa ação não poderá ser desfeita.'}
-        handleConfirmDelete={() => handleConfirmDelete(id)}
-      />
+      {open && (
+        <DialogAlert
+          id={id}
+          open={open}
+          setOpen={setOpen}
+          question={'Você tem certeza que deseja deletar este usuário?'}
+          description={'Essa ação não poderá ser desfeita.'}
+          handleConfirmDelete={() => handleConfirmDelete(id)}
+        />
+      )}
     </>
   )
-}
+})
 
 export default RowOptions

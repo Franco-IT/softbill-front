@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react'
 import { useRouter } from 'next/router'
 
 import { CardHeader, Grid, Box, Button } from '@mui/material'
@@ -11,14 +12,14 @@ interface TableHeaderProps {
   handleFilter: (val: string) => void
 }
 
-const TableHeader = (props: TableHeaderProps) => {
+const TableHeader = memo((props: TableHeaderProps) => {
   const router = useRouter()
 
   const { handleFilter, value } = props
 
-  const handleClickButtonCreateUser = () => {
+  const handleClickButtonCreateUser = useCallback(() => {
     router.push('/usuarios/criar-usuario')
-  }
+  }, [router])
 
   return (
     <Grid container gap={{ xs: 3, md: 0 }} paddingX={6} paddingY={4} justifyContent={'space-between'}>
@@ -52,6 +53,6 @@ const TableHeader = (props: TableHeaderProps) => {
       </Grid>
     </Grid>
   )
-}
+})
 
 export default TableHeader
