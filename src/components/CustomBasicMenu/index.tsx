@@ -14,7 +14,7 @@ interface CustomBasicMenuProps {
   menuItems: MenuItemProps[]
 }
 
-const CustomBasicMenu: React.FC<CustomBasicMenuProps> = ({ buttonLabel, menuItems }) => {
+const CustomBasicMenu: React.FC<CustomBasicMenuProps> = React.memo(({ buttonLabel, menuItems }) => {
   const matches = useMediaQuery('(min-width:600px)')
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
@@ -63,6 +63,6 @@ const CustomBasicMenu: React.FC<CustomBasicMenuProps> = ({ buttonLabel, menuItem
       </Menu>
     </div>
   )
-}
+})
 
 export default CustomBasicMenu
