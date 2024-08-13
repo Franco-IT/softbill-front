@@ -6,6 +6,7 @@ import CustomChip from 'src/@core/components/mui/chip'
 import HeadCells from './HeadCells'
 import RowOptions from './RowOptions'
 import TableHeader from './TableHeader'
+import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
 import { formatName } from 'src/utils/formatName'
@@ -19,7 +20,6 @@ import { UserListDataProps, UserProps } from 'src/types/users'
 import toast from 'react-hot-toast'
 import useGetDataApi from 'src/hooks/useGetDataApi'
 import { userController } from 'src/modules/users'
-import TablePagination from './TablePagination'
 
 interface ColorsType {
   [key: string]: ThemeColor
