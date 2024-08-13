@@ -1,4 +1,4 @@
-import { useState, MouseEvent } from 'react'
+import { useState, MouseEvent, memo, useCallback } from 'react'
 import { Button, IconButton, Menu, MenuItem, useMediaQuery, Box } from '@mui/material'
 import Icon from 'src/@core/components/icon'
 import { api } from 'src/services/api'
@@ -20,7 +20,7 @@ interface RowOptionsProps {
   refreshData: () => void
 }
 
-const RowOptions = ({ id, status, refreshData }: RowOptionsProps) => {
+const RowOptions = memo(({ id, status, refreshData }: RowOptionsProps) => {
   const matches = useMediaQuery('(min-width:600px)')
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -36,7 +36,15 @@ const RowOptions = ({ id, status, refreshData }: RowOptionsProps) => {
     setAnchorEl(null)
   }
 
-  const handleActiveOrInactive = () => {
+  const handleActionActiveOrInactive = useCallback(() => {
+    api
+      .put(`/banks/${id}`, { status: status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' })
+      .then(() => refreshData())
+      .catch(() => toast.error('Erro ao alterar status do banco'))
+      .finally(() => setOpen(false))
+  }, [id, refreshData, status])
+
+  const handleActiveOrInactive = useCallback(() => {
     switch (status) {
       case 'ACTIVE':
         setOpen(true)
@@ -47,15 +55,7 @@ const RowOptions = ({ id, status, refreshData }: RowOptionsProps) => {
       default:
         break
     }
-  }
-
-  const handleActionActiveOrInactive = () => {
-    api
-      .put(`/banks/${id}`, { status: status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' })
-      .then(() => refreshData())
-      .catch(() => toast.error('Erro ao alterar status do banco'))
-      .finally(() => setOpen(false))
-  }
+  }, [handleActionActiveOrInactive, status])
 
   return (
     <>
@@ -96,16 +96,18 @@ const RowOptions = ({ id, status, refreshData }: RowOptionsProps) => {
         </>
       )}
 
-      <DialogAlert
-        id={id}
-        open={open}
-        setOpen={setOpen}
-        question={`Deseja realmente ${status === 'ACTIVE' ? 'inativar' : 'ativar'} este banco?`}
-        description='Essa ação é irreversível, e todos os usuários vinculados a este banco serão afetados.'
-        handleConfirmDelete={handleActionActiveOrInactive}
-      />
+      {open && (
+        <DialogAlert
+          id={id}
+          open={open}
+          setOpen={setOpen}
+          question={`Deseja realmente ${status === 'ACTIVE' ? 'inativar' : 'ativar'} este banco?`}
+          description='Essa ação é irreversível, e todos os usuários vinculados a este banco serão afetados.'
+          handleConfirmDelete={handleActionActiveOrInactive}
+        />
+      )}
     </>
   )
-}
+})
 
 export default RowOptions
