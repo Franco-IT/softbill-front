@@ -12,6 +12,8 @@ export const BB = {
 export const INTER = {
   bankClientId: '',
   bankClientSecret: '',
+  accountNumber: '',
+  agencyNumber: '',
   bankId: '',
   clientId: '',
   generatedBy: 'API',
@@ -21,6 +23,8 @@ export const INTER = {
 
 export const OFX = {
   clientId: '',
+  accountNumber: '',
+  agencyNumber: '',
   importedBank: undefined,
   generatedBy: 'IMPORT'
 }

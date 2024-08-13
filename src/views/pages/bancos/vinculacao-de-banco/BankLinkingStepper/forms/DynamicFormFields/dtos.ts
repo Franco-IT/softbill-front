@@ -10,10 +10,14 @@ export type BBValues = {
 export type InterValues = {
   bankClientId: string | undefined
   bankClientSecret: string | undefined
+  accountNumber: string | undefined
+  agencyNumber: string | undefined
   files: File[]
 }
 
 export type OFXValues = {
+  accountNumber: string | undefined
+  agencyNumber: string | undefined
   importedBank: string | undefined
 }
 

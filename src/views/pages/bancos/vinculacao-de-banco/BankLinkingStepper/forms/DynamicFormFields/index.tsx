@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useFormContext, Controller } from 'react-hook-form'
 import { TypeMapEntry } from './dtos'
 import { Grid } from '@mui/material'
@@ -8,31 +9,27 @@ export const DynamicFormFields = ({ typeMap, fields }: { typeMap: Record<string,
     formState: { errors }
   } = useFormContext()
 
-  const dynamicFieldsLength = Object.keys(typeMap).length
+  const typeMapFieldsLength = Object.keys(typeMap).length
+
+  const calculateGridSize = useMemo(
+    () => (index: number, fieldsLength: number, field: string) => {
+      return (fieldsLength % 2 !== 0 && index === fieldsLength) || field === 'files'
+        ? { xs: 12, sm: 12 }
+        : { xs: 12, sm: 6 }
+    },
+    []
+  )
 
   return (
     <Grid container spacing={5}>
-      {fields.map(field => {
+      {fields.map((field, index) => {
         if (!typeMap[field]) return null
 
         const { Input, inputProps, options, startAdornment, endAdornment, mask } = typeMap[field]
-
-        if (field === 'files') {
-          return (
-            <Grid item xs={12} key={field}>
-              <Controller
-                name={field}
-                control={control}
-                render={({ field: controllerField }) => {
-                  return <Input {...controllerField} field={field} inputProps={inputProps} errors={errors} />
-                }}
-              />
-            </Grid>
-          )
-        }
+        const gridSize = calculateGridSize(index, typeMapFieldsLength, field)
 
         return (
-          <Grid item xs={12} sm={dynamicFieldsLength == 1 ? 12 : 6} key={field}>
+          <Grid item {...gridSize} key={field}>
             <Controller
               name={field}
               control={control}
