@@ -1,7 +1,8 @@
 import { AxiosError } from 'axios'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 
 import { api } from 'src/services/api'
+import equals from 'fast-deep-equal'
 
 interface GetDataApiProps {
   url: string
@@ -25,24 +26,19 @@ const useGetDataApi = <T,>({ url, params, callInit = true }: GetDataApiProps) =>
 
   useEffect(() => {
     if (callInit) {
-      if (JSON.stringify(paramsRef.current) !== JSON.stringify(params)) {
+      if (!equals(paramsRef.current, params)) {
         paramsRef.current = params
 
         setLoading(true)
 
         api
           .get(url, { params: paramsRef.current })
-          .then(response => {
-            setData(response.data)
-            setLoading(false)
-          })
-          .catch(error => {
-            setError(error)
-            setLoading(false)
-          })
+          .then(response => !equals(response.data, data) && setData(response.data))
+          .catch(error => setError(error))
+          .finally(() => setLoading(false))
       }
     }
-  }, [url, params, refresh, callInit])
+  }, [url, params, refresh, callInit, data])
 
   useEffect(() => {
     if (callInit) {
@@ -50,18 +46,16 @@ const useGetDataApi = <T,>({ url, params, callInit = true }: GetDataApiProps) =>
 
       api
         .get(url, { params: paramsRef.current })
-        .then(response => {
-          setData(response.data)
-          setLoading(false)
-        })
-        .catch(error => {
-          setError(error)
-          setLoading(false)
-        })
+        .then(response => setData(response.data))
+        .catch(error => setError(error))
+        .finally(() => setLoading(false))
     }
   }, [url, refresh, callInit])
 
-  return { data, loading, error, setRefresh, refresh, handleResetData }
+  return useMemo(
+    () => ({ data, loading, error, refresh, setRefresh, handleResetData }),
+    [data, loading, error, refresh, setRefresh, handleResetData]
+  )
 }
 
 export default useGetDataApi
