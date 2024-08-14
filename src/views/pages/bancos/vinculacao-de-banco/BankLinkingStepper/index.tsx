@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 
 import { Box, Step, Grid, Button, Divider, Stepper, StepLabel, Typography } from '@mui/material'
@@ -25,11 +25,27 @@ import { ClientProps } from 'src/types/clients'
 
 import { verifyObjectErrorsIsEmpty } from 'src/utils/verifyErrors'
 
+const BackButton = memo(({ activeStep, handleBack }: { activeStep: number; handleBack: () => void }) => {
+  return (
+    <Button variant='tonal' color='secondary' disabled={activeStep === 0} onClick={handleBack}>
+      Voltar
+    </Button>
+  )
+})
+
+const NextButton = memo(({ activeStep, stepsOptions }: { activeStep: number; stepsOptions: any[] }) => {
+  return (
+    <Button type='submit' variant='contained'>
+      {activeStep === stepsOptions.length - 1 ? 'Finalizar' : 'Próximo'}
+    </Button>
+  )
+})
+
 interface BankLinkingStepperProps {
   client: ClientProps
 }
 
-const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
+const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
   const router = useRouter()
 
   const [activeStep, setActiveStep] = useState<number>(0)
@@ -56,92 +72,104 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
     )
   })
 
-  const handleResetData = (values: any) => {
-    methods.clearErrors()
+  const handleResetData = useCallback(
+    (values: any) => {
+      methods.clearErrors()
 
-    const objectKeysValues = Object.keys(values)
+      const objectKeysValues = Object.keys(values)
 
-    objectKeysValues.map(key => {
-      methods.setValue(key, key === 'files' || key === 'importedBank' ? undefined : '')
-    })
-  }
+      objectKeysValues.map(key => {
+        methods.setValue(key, key === 'files' || key === 'importedBank' ? undefined : '')
+      })
+    },
+    [methods]
+  )
 
-  const handleSetOperationType = (value: string | null) => {
-    const values = methods.getValues()
+  const handleSetOperationType = useCallback(
+    (value: string | null) => {
+      const values = methods.getValues()
 
-    handleResetData(values)
+      handleResetData(values)
 
-    if (value === 'IMPORT') {
-      setBank({ _id: '', name: '' })
+      if (value === 'IMPORT') {
+        setBank({ _id: '', name: '' })
 
-      const defaultValue = defaultValuesByStep[1]['OFX' as keyof Step1DefaultValues]
+        const defaultValue = defaultValuesByStep[1]['OFX' as keyof Step1DefaultValues]
+
+        setFormValues(() => {
+          return {
+            OFX: {
+              ...defaultValue,
+              clientId: client._id
+            }
+          }
+        })
+      }
+
+      setOperationType(value)
+    },
+    [client._id, handleResetData, methods]
+  )
+
+  const handleSelectBank = useCallback(
+    (value: string, banks: any[]) => {
+      const values = methods.getValues()
+
+      handleResetData(values)
+
+      const bank = banks.find((bank: any) => bank._id === value)
+
+      setBank(bank)
 
       setFormValues(() => {
-        return {
-          OFX: {
-            ...defaultValue,
-            clientId: client._id
+        const bankValues = defaultValuesByStep[1][bank.name as keyof Step1DefaultValues]
+
+        const newValues = Object.assign(bankValues, {
+          ...values,
+          bankId: bank._id,
+          clientId: client._id
+        })
+
+        return bank.name && { [bank.name]: newValues }
+      })
+    },
+    [client._id, handleResetData, methods]
+  )
+
+  const handleNext = useCallback(
+    (data: any) => {
+      if (activeStep === 1) {
+        if (!operationType) return toast.error('Selecione o tipo de operação')
+
+        setFormValues(prevValues => {
+          if (!prevValues) return prevValues
+
+          if (operationType === 'INTEGRATION') {
+            const bankKey = bank.name as keyof Step1DefaultValues
+
+            return {
+              [bankKey]: {
+                ...(prevValues[bankKey] as any),
+                ...data
+              }
+            }
           }
-        }
-      })
-    }
-
-    setOperationType(value)
-  }
-
-  const handleSelectBank = (value: string, banks: any[]) => {
-    const values = methods.getValues()
-
-    handleResetData(values)
-
-    const bank = banks.find((bank: any) => bank._id === value)
-
-    setBank(bank)
-
-    setFormValues(() => {
-      const bankValues = defaultValuesByStep[1][bank.name as keyof Step1DefaultValues]
-
-      const newValues = Object.assign(bankValues, {
-        ...values,
-        bankId: bank._id,
-        clientId: client._id
-      })
-
-      return bank.name && { [bank.name]: newValues }
-    })
-  }
-
-  const handleNext = (data: any) => {
-    if (activeStep === 1) {
-      if (!operationType) return toast.error('Selecione o tipo de operação')
-
-      setFormValues(prevValues => {
-        if (!prevValues) return prevValues
-
-        if (operationType === 'INTEGRATION') {
-          const bankKey = bank.name as keyof Step1DefaultValues
 
           return {
-            [bankKey]: {
-              ...(prevValues[bankKey] as any),
+            OFX: {
+              ...prevValues['OFX'],
               ...data
             }
           }
-        }
+        })
+      }
 
-        return {
-          OFX: {
-            ...prevValues['OFX'],
-            ...data
-          }
-        }
-      })
-    }
+      setActiveStep(prevActiveStep => prevActiveStep + 1)
+    },
+    [activeStep, bank.name, operationType]
+  )
 
-    setActiveStep(prevActiveStep => prevActiveStep + 1)
-  }
-
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     methods.clearErrors()
 
     if (activeStep - 1 === 0) {
@@ -153,73 +181,104 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
     }
 
     setActiveStep(prevActiveStep => prevActiveStep - 1)
-  }
+  }, [activeStep, methods, operationType])
 
-  const handleFinalSubmit = (data: any) => {
-    const dataKeys = Object.keys(data)
+  const handleFinalSubmit = useCallback(
+    (data: any) => {
+      const dataKeys = Object.keys(data)
 
-    const formData = new FormData()
+      const formData = new FormData()
 
-    dataKeys.map(key => {
-      if (data[key]) {
-        if (key === 'files') {
-          data[key].map((file: any) => formData.append(key, file))
-        } else {
-          formData.append(key, data[key])
+      dataKeys.map(key => {
+        if (data[key]) {
+          if (key === 'files') {
+            data[key].map((file: any) => formData.append(key, file))
+          } else {
+            formData.append(key, data[key])
+          }
         }
+      })
+
+      api
+        .post('/bankAccounts', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        .then(response => {
+          if (response.status === 201) {
+            toast.success('Banco vinculado com sucesso!')
+            router.push(`/clientes/${client._id}`)
+          }
+        })
+        .catch(() => {
+          toast.error('Erro ao vincular banco, tente novamente mais tarde')
+        })
+    },
+    [client._id, router]
+  )
+
+  const onSubmit = useCallback(
+    (data: any) => {
+      if (activeStep === stepsOptions.length - 1) {
+        const key = bank.name || 'OFX'
+        handleFinalSubmit(formValues?.[key as keyof Step1DefaultValues])
+      } else {
+        handleNext(data)
       }
-    })
+    },
+    [activeStep, bank.name, formValues, handleFinalSubmit, handleNext]
+  )
 
-    api
-      .post('/bankAccounts', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      .then(response => {
-        if (response.status === 201) {
-          toast.success('Banco vinculado com sucesso!')
-          router.push(`/clientes/${client._id}`)
-        }
-      })
-      .catch(() => {
-        toast.error('Erro ao vincular banco, tente novamente mais tarde')
-      })
-  }
+  const banksProps = useMemo(
+    () => ({
+      handleSelectBank,
+      bank
+    }),
+    [handleSelectBank, bank]
+  )
 
-  const onSubmit = (data: any) => {
-    if (activeStep === stepsOptions.length - 1) {
-      const key = bank.name || 'OFX'
-      handleFinalSubmit(formValues?.[key as keyof Step1DefaultValues])
-    } else {
-      handleNext(data)
-    }
-  }
+  const operationsTypesProps = useMemo(
+    () => ({
+      methods,
+      operationType,
+      handleSetOperationType,
+      banksProps
+    }),
+    [methods, operationType, handleSetOperationType, banksProps]
+  )
 
-  const banksProps = {
-    handleSelectBank,
-    bank
-  }
+  const getStepContent = useCallback(
+    (step: number) => {
+      switch (step) {
+        case 0:
+          return <Client client={client} />
+        case 1:
+          return <OperationsTypes {...operationsTypesProps} />
+        case 2:
+          return <Summary client={client} payload={formValues?.[(bank.name || 'OFX') as keyof Step1DefaultValues]} />
+        default:
+          return null
+      }
+    },
+    [bank.name, client, formValues, operationsTypesProps]
+  )
 
-  const operationsTypesProps = {
-    methods,
-    operationType,
-    handleSetOperationType,
-    banksProps
-  }
+  const backButtonProps = useMemo(
+    () => ({
+      activeStep,
+      handleBack
+    }),
+    [activeStep, handleBack]
+  )
 
-  const getStepContent = (step: number) => {
-    switch (step) {
-      case 0:
-        return <Client client={client} />
-      case 1:
-        return <OperationsTypes {...operationsTypesProps} />
-      case 2:
-        return <Summary client={client} payload={formValues?.[(bank.name || 'OFX') as keyof Step1DefaultValues]} />
-      default:
-        return null
-    }
-  }
+  const NextButtonProps = useMemo(
+    () => ({
+      activeStep,
+      stepsOptions
+    }),
+    [activeStep]
+  )
 
   const renderContent = () => {
     return (
@@ -238,12 +297,8 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
               {getStepContent(activeStep)}
             </Grid>
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Button variant='tonal' color='secondary' disabled={activeStep === 0} onClick={handleBack}>
-                Voltar
-              </Button>
-              <Button type='submit' variant='contained'>
-                {activeStep === stepsOptions.length - 1 ? 'Finalizar' : 'Próximo'}
-              </Button>
+              <BackButton {...backButtonProps} />
+              <NextButton {...NextButtonProps} />
             </Grid>
           </Grid>
         </form>
@@ -295,6 +350,6 @@ const BankLinkingStepper = ({ client }: BankLinkingStepperProps) => {
       {renderContent()}
     </Box>
   )
-}
+})
 
 export default BankLinkingStepper

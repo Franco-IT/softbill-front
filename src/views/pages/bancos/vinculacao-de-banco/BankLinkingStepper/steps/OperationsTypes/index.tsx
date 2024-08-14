@@ -1,4 +1,4 @@
-import { SyntheticEvent, useState } from 'react'
+import { SyntheticEvent, useCallback, useMemo, useState } from 'react'
 
 import {
   Grid,
@@ -52,48 +52,66 @@ interface OperationsTypesProps {
 const OperationsTypes = ({ banksProps, methods, operationType, handleSetOperationType }: OperationsTypesProps) => {
   const [expanded, setExpanded] = useState<string | false>('panel1')
 
-  const handleChange = (panel: string) => (event: SyntheticEvent, isExpanded: boolean) => {
-    setExpanded(isExpanded ? panel : false)
-  }
+  const handleChange = useCallback(
+    (panel: string) => (event: SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : false)
+    },
+    []
+  )
 
-  const handleSelectOperationType = (value: string) => {
-    if (operationType === value) return null
+  const handleSelectOperationType = useCallback(
+    (value: string) => {
+      if (operationType === value) return null
 
-    switch (value) {
-      case 'INTEGRATION':
-        handleSetOperationType('INTEGRATION')
-        break
-      case 'IMPORT':
-        handleSetOperationType('IMPORT')
-        break
-      default:
-        handleSetOperationType(null)
-    }
-  }
+      switch (value) {
+        case 'INTEGRATION':
+          handleSetOperationType('INTEGRATION')
+          break
+        case 'IMPORT':
+          handleSetOperationType('IMPORT')
+          break
+        default:
+          handleSetOperationType(null)
+      }
+    },
+    [handleSetOperationType, operationType]
+  )
 
-  const handleCheckOperationType = (operationType: string | null) => {
-    if (!operationType) return null
+  const handleCheckOperationType = useMemo(
+    () => (operationType: string | null) => {
+      if (!operationType) return null
 
-    return operationType === 'INTEGRATION' ? 'Integração' : 'Importação'
-  }
+      return operationType === 'INTEGRATION' ? 'Integração' : 'Importação'
+    },
+    []
+  )
 
-  const handleCheckOperationTypeSelected = (operationType: string | null) => {
-    if (!operationType) return null
+  const handleCheckOperationTypeSelected = useMemo(
+    () => (operationType: string | null) => {
+      if (!operationType) return null
 
-    return operationType === 'INTEGRATION'
-      ? 'Selecione o banco desejado para a vinculação de conta'
-      : 'Selecione o banco desejado para a vinculação via OFX'
-  }
+      return operationType === 'INTEGRATION'
+        ? 'Selecione o banco desejado para a vinculação de conta'
+        : 'Selecione o banco desejado para a vinculação via OFX'
+    },
+    []
+  )
 
-  const bankProps = {
-    bank: banksProps.bank,
-    handleSelectBank: banksProps.handleSelectBank,
-    methods
-  }
+  const bankProps = useMemo(
+    () => ({
+      bank: banksProps.bank,
+      handleSelectBank: banksProps.handleSelectBank,
+      methods
+    }),
+    [banksProps.bank, banksProps.handleSelectBank, methods]
+  )
 
-  const OFXProps = {
-    operationType
-  }
+  const OFXProps = useMemo(
+    () => ({
+      operationType
+    }),
+    [operationType]
+  )
 
   return (
     <Grid container pb={4} justifyContent={'space-between'}>
