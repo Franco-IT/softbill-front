@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import Grid from '@mui/material/Grid'
 
 import CustomInfoField from 'src/components/CustomInfoField'
@@ -9,7 +10,7 @@ interface ClientProps {
   client: ClientDataProps
 }
 
-const Client = ({ client }: ClientProps) => {
+const Client = memo(({ client }: ClientProps) => {
   return (
     <Grid container spacing={5}>
       <Grid item xs={12} sm={6}>
@@ -26,6 +27,6 @@ const Client = ({ client }: ClientProps) => {
       </Grid>
     </Grid>
   )
-}
+})
 
 export default Client

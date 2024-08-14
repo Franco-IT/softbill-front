@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 
 import { IconButton, InputAdornment, MenuItem } from '@mui/material'
 
@@ -25,8 +25,8 @@ interface InputProps extends TypeMapEntry {
   field: string
 }
 
-export const NumberInput = React.forwardRef(
-  ({ field, errors, onChange, inputProps, onBlur, value, startAdornment }: InputProps, ref) => {
+export const NumberInput = memo(
+  React.forwardRef(({ field, errors, onChange, inputProps, onBlur, value, startAdornment }: InputProps, ref) => {
     return (
       <CustomTextField
         ref={ref}
@@ -44,11 +44,11 @@ export const NumberInput = React.forwardRef(
         }}
       />
     )
-  }
+  })
 )
 
-export const SelectInput = React.forwardRef(
-  ({ field, errors, options, onChange, inputProps, onBlur, value }: InputProps, ref) => {
+export const SelectInput = memo(
+  React.forwardRef(({ field, errors, options, onChange, inputProps, onBlur, value }: InputProps, ref) => {
     const selectedValue = value !== undefined ? value : 'default'
 
     return (
@@ -76,11 +76,11 @@ export const SelectInput = React.forwardRef(
           ))}
       </CustomTextField>
     )
-  }
+  })
 )
 
-export const StringInput = React.forwardRef(
-  ({ field, errors, inputProps, endAdornment, mask, value, onChange, onBlur }: InputProps, ref) => {
+export const StringInput = memo(
+  React.forwardRef(({ field, errors, inputProps, endAdornment, mask, value, onChange, onBlur }: InputProps, ref) => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       let newValue = event.target.value
 
@@ -105,11 +105,11 @@ export const StringInput = React.forwardRef(
         }}
       />
     )
-  }
+  })
 )
 
-export const SensitiveInput = React.forwardRef(
-  ({ field, errors, inputProps, onChange, onBlur, value }: InputProps, ref) => {
+export const SensitiveInput = memo(
+  React.forwardRef(({ field, errors, inputProps, onChange, onBlur, value }: InputProps, ref) => {
     const [showSensitiveText, setShowSensitiveText] = React.useState(false)
 
     return (
@@ -139,29 +139,31 @@ export const SensitiveInput = React.forwardRef(
         }}
       />
     )
-  }
+  })
 )
 
-export const FileInput = React.forwardRef(({ field, errors, inputProps, onChange, value }: InputProps, ref) => {
-  const handleOnChange = (files: any) => {
-    onChange && onChange(files)
-  }
+export const FileInput = memo(
+  React.forwardRef(({ field, errors, inputProps, onChange, value }: InputProps, ref) => {
+    const handleOnChange = (files: any) => {
+      onChange && onChange(files)
+    }
 
-  return (
-    <DropzoneWrapper
-      ref={ref}
-      style={{
-        border: !!errors[field] ? '1px solid #ea5455' : 'none'
-      }}
-    >
-      <FileUploaderRestrictions
-        accept={filesTypesBanks[inputProps.bank as string]}
-        onChange={handleOnChange}
-        value={value || []}
-        inputProps={inputProps}
-        onError={!!errors[field]}
-        error={errors[field]?.message}
-      />
-    </DropzoneWrapper>
-  )
-})
+    return (
+      <DropzoneWrapper
+        ref={ref}
+        style={{
+          border: !!errors[field] ? '1px solid #ea5455' : 'none'
+        }}
+      >
+        <FileUploaderRestrictions
+          accept={filesTypesBanks[inputProps.bank as string]}
+          onChange={handleOnChange}
+          value={value || []}
+          inputProps={inputProps}
+          onError={!!errors[field]}
+          error={errors[field]?.message}
+        />
+      </DropzoneWrapper>
+    )
+  })
+)

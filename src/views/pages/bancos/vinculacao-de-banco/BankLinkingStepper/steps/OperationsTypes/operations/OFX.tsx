@@ -2,6 +2,7 @@ import { AccordionDetails } from '@mui/material'
 import { DynamicFormFields } from '../../../forms/DynamicFormFields'
 import { OFXTypeMap } from '../../../forms/DynamicFormFields/typeMap'
 import { defaultValuesByStep, Step1DefaultValues } from '../../defaultValues'
+import { memo } from 'react'
 
 const formComponents: { [key: string]: any } = {
   IMPORT: OFXTypeMap
@@ -11,7 +12,7 @@ interface OFXProps {
   operationType: string | null
 }
 
-const OFX = ({ operationType }: OFXProps) => {
+const OFX = memo(({ operationType }: OFXProps) => {
   return (
     <AccordionDetails sx={{ py: 4 }}>
       {operationType && formComponents[operationType] ? (
@@ -22,6 +23,6 @@ const OFX = ({ operationType }: OFXProps) => {
       ) : null}
     </AccordionDetails>
   )
-}
+})
 
 export default OFX

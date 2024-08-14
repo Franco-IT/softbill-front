@@ -1,4 +1,4 @@
-// ** MUI Imports
+import { memo } from 'react'
 import MuiBox, { BoxProps } from '@mui/material/Box'
 import { StepIconProps } from '@mui/material/StepIcon'
 import { styled, useTheme } from '@mui/material/styles'
@@ -15,7 +15,7 @@ const Box = styled(MuiBox)<BoxProps>(() => ({
   borderStyle: 'solid'
 }))
 
-const StepperCustomDot = (props: StepIconProps) => {
+const StepperCustomDot = memo((props: StepIconProps) => {
   const { active, completed, error } = props
 
   const theme = useTheme()
@@ -39,6 +39,6 @@ const StepperCustomDot = (props: StepIconProps) => {
       />
     )
   }
-}
+})
 
 export default StepperCustomDot
