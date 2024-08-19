@@ -8,12 +8,14 @@ export type SelectOptionsProps = {
 }
 
 export type bankProps = {
+  id: string
   avatar: string | undefined
   name: string
   status: string
   extract: string
   conciliation: string
   validation: string
+  userId: string
 }
 
 export type DataProps = {

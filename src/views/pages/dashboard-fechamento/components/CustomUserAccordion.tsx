@@ -1,6 +1,6 @@
 import { SyntheticEvent, useState } from 'react'
 
-import { Button, useMediaQuery, styled } from '@mui/material'
+import { Button, useMediaQuery, styled, IconButton } from '@mui/material'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary'
 import MuiAccordionDetails, { AccordionDetailsProps } from '@mui/material/AccordionDetails'
@@ -75,12 +75,12 @@ const AccordionDetails = styled(MuiAccordionDetails)<AccordionDetailsProps>(({ t
 }))
 
 interface CustomUserAccordionProps {
-  data: DataProps
+  user: DataProps
 }
 
-const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
+const CustomUserAccordion = ({ user }: CustomUserAccordionProps) => {
   const isSmallerThan550 = useMediaQuery('(max-width:550px)')
-  const { avatar, banks, name, status } = data
+  const { avatar, banks, name, status } = user
 
   const [expanded, setExpanded] = useState<string | false>(false)
 
@@ -112,15 +112,12 @@ const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
         >
           {formatName(name)}
         </Button>
-        <GlowIcon status={status} />
-        <Button
-          variant='contained'
-          onClick={e => e.stopPropagation()}
-          sx={{ mr: isSmallerThan550 ? 2 : 0, '& svg': { mr: !isSmallerThan550 ? 2 : 0 } }}
-        >
-          <Icon fontSize='1.125rem' icon='tabler:cloud-down' />
-          {isSmallerThan550 ? '' : 'Baixar Todos'}
-        </Button>
+        <GlowIcon status={status as any} />
+        {user.status === 'APPROVED' && (
+          <IconButton>
+            <Icon icon='tabler:download' fontSize='1.5rem' />
+          </IconButton>
+        )}
       </AccordionSummary>
       <AccordionDetails>
         {banks.map(bank => (

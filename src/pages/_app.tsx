@@ -40,6 +40,7 @@ import Spinner from 'src/@core/components/spinner'
 
 // ** Contexts
 import { AuthProvider } from 'src/context/AuthContext'
+import { DrawerProvider } from 'src/context/DrawerContext'
 import { AutoSaveProvider } from 'src/context/AutoSaveContext'
 import { SettingsConsumer, SettingsProvider } from 'src/@core/context/settingsContext'
 
@@ -134,13 +135,15 @@ const App = (props: ExtendedAppProps) => {
                     <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard} authGuard={authGuard}>
                       <DynamicSEO defaultTitle={themeConfig.templateName} />
                       <AutoSaveProvider>
-                        <Provider store={store}>
-                          {getLayout(
-                            <ErrorBoundary>
-                              <Component {...pageProps} />
-                            </ErrorBoundary>
-                          )}
-                        </Provider>
+                        <DrawerProvider>
+                          <Provider store={store}>
+                            {getLayout(
+                              <ErrorBoundary>
+                                <Component {...pageProps} />
+                              </ErrorBoundary>
+                            )}
+                          </Provider>
+                        </DrawerProvider>
                       </AutoSaveProvider>
                     </AclGuard>
                   </Guard>

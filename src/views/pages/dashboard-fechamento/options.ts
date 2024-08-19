@@ -14,8 +14,8 @@ export const statusOptions: SelectOptionsProps[] = [
     label: 'Aprovado'
   },
   {
-    value: 'ERROR',
-    label: 'Error'
+    value: 'REJECTED',
+    label: 'Rejeitado'
   }
 ]
 
@@ -94,5 +94,28 @@ export const monthsOptions: SelectOptionsProps[] = [
   {
     value: 'dezember',
     label: 'Dezembro'
+  }
+]
+
+export const banksOptions: SelectOptionsProps[] = [
+  {
+    value: 'BANCO_DO_BRASIL',
+    label: 'Banco do Brasil'
+  },
+  {
+    value: 'BRADESCO',
+    label: 'Bradesco'
+  },
+  {
+    value: 'ITAU',
+    label: 'Itaú'
+  },
+  {
+    value: 'SANTANDER',
+    label: 'Santander'
+  },
+  {
+    value: 'CAIXA',
+    label: 'Caixa Econômica Federal'
   }
 ]
