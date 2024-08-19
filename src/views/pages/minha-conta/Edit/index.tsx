@@ -1,24 +1,27 @@
+import { memo } from 'react'
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
+  DialogActions,
   Grid,
   InputAdornment,
   MenuItem,
-  DialogActions,
   Button
 } from '@mui/material'
 
-import CustomTextField from 'src/@core/components/mui/text-field'
-
-import * as yup from 'yup'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 
-import { UserProps } from 'src/types/users'
-import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
+import { useMutation, useQueryClient } from 'react-query'
+
+import CustomTextField from 'src/@core/components/mui/text-field'
+
+import { api } from 'src/services/api'
+import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
 
 const schema = yup.object().shape({
   name: yup.string().required('Nome obrigatório'),
@@ -35,12 +38,12 @@ interface FormData {
 interface EditProps {
   openEdit: boolean
   handleEditClose: () => void
-  data: UserProps
-  refresh: boolean
-  setRefresh: (value: boolean) => void
+  data: IUserDTO
 }
 
-const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProps) => {
+const Edit = memo(({ openEdit, handleEditClose, data }: EditProps) => {
+  const queryClient = useQueryClient()
+
   const {
     control,
     handleSubmit,
@@ -51,25 +54,31 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProp
     resolver: yupResolver(schema)
   })
 
-  const onSubmit = ({ name, email, status }: FormData) => {
-    api
-      .put(`/users/${data._id}`, {
+  const handleEditProfile = useMutation(
+    async ({ name, email, status }: FormData) => {
+      return api.put(`/users/${data._id}`, {
         name: name,
         email: email,
         status: status
       })
-      .then(response => {
+    },
+    {
+      onSuccess: response => {
         if (response.status === 200) {
+          queryClient.invalidateQueries(['profile'])
+
           handleEditClose()
           toast.success('Conta atualizada com sucesso!')
-          setRefresh(!refresh)
         }
-      })
-      .catch(() => {
+      },
+      onError: () => {
         handleEditClose()
         toast.error('Erro ao atualizar conta, tente novamente mais tarde')
-      })
-  }
+      }
+    }
+  )
+
+  const onSubmit = (data: FormData) => handleEditProfile.mutate(data)
 
   return (
     <Dialog
@@ -184,6 +193,6 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProp
       </DialogActions>
     </Dialog>
   )
-}
+})
 
 export default Edit

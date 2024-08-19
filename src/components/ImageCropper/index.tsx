@@ -6,6 +6,7 @@ import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop, type Crop } 
 
 import BasicModal from './Modal'
 import InputFileUpload from '../InputFileUpload'
+import { AxiosResponse } from 'axios'
 
 interface PixelCrop {
   x: number
@@ -57,7 +58,7 @@ const dataURLtoFile = (dataUrl: string, filename: string): File => {
 interface ImageCropperProps {
   open: boolean
   onClose: () => void
-  onSubmit: (file: any) => Promise<void>
+  onSubmit: (file: any) => Promise<AxiosResponse | undefined>
 }
 
 const ASPECT_RATIO = Number(process.env.NEXT_PUBLIC_ASPECT_RATIO) || 1

@@ -3,17 +3,20 @@ import { ICreateCounterDTO } from '../dtos/ICreateCounterDTO'
 import { ICreateUserDTO } from '../dtos/ICreateUserDTO'
 import { IDeleteUserDTO } from '../dtos/IDeleteUserDTO'
 import { IFirstAccessUserDTO } from '../dtos/IFirstAccessUserDTO'
+import { IGetUserDTO } from '../dtos/IGetUserDTO'
 import { ISetUserAvatarDTO } from '../dtos/ISetUserAvatarDTO'
 import { IUpdateCounterDTO } from '../dtos/IUpdateCounterDTO'
 import { ChangePasswordUseCase } from '../useCases/ChangePasswordUseCase'
 import { CreateCounterUseCase } from '../useCases/CreateCounterUseCase'
 import { CreateUserUseCase } from '../useCases/CreateUserUseCase'
 import { DeleteUserUseCase } from '../useCases/DeleteUserUseCase'
+import { FindByIDUseCase } from '../useCases/FindByIDUseCase'
 import { FirstAccessUserUseCase } from '../useCases/FirstAccessUserUseCase'
 import { SetUserAvatarUseCase } from '../useCases/SetUserAvatarUseCase'
 import { UpdateCounterUseCase } from '../useCases/UpdateCounterUseCase'
 
 export class UserController {
+  private findByIDUseCase: FindByIDUseCase
   private createUserUseCase: CreateUserUseCase
   private createCounterUseCase: CreateCounterUseCase
   private updateCounterUseCase: UpdateCounterUseCase
@@ -23,6 +26,7 @@ export class UserController {
   private firstAccessUserUseCase: FirstAccessUserUseCase
 
   constructor(
+    findByIDUseCase: FindByIDUseCase,
     createUserUseCase: CreateUserUseCase,
     createCounterUseCase: CreateCounterUseCase,
     updateCounterUseCase: UpdateCounterUseCase,
@@ -31,13 +35,18 @@ export class UserController {
     setUserAvatarUseCase: SetUserAvatarUseCase,
     firstAccessUserUseCase: FirstAccessUserUseCase
   ) {
-    this.createUserUseCase = createUserUseCase
-    this.createCounterUseCase = createCounterUseCase
-    ;(this.updateCounterUseCase = updateCounterUseCase),
-      (this.deleteUserUseCase = deleteUserUseCase),
-      (this.changePasswordUseCase = changePasswordUseCase),
-      (this.setUserAvatarUseCase = setUserAvatarUseCase),
-      (this.firstAccessUserUseCase = firstAccessUserUseCase)
+    this.findByIDUseCase = findByIDUseCase,
+    this.createUserUseCase = createUserUseCase,
+    this.createCounterUseCase = createCounterUseCase,
+    this.updateCounterUseCase = updateCounterUseCase,
+    this.deleteUserUseCase = deleteUserUseCase,
+    this.changePasswordUseCase = changePasswordUseCase,
+    this.setUserAvatarUseCase = setUserAvatarUseCase,
+    this.firstAccessUserUseCase = firstAccessUserUseCase
+  }
+
+  async findByID(data: IGetUserDTO) {
+    return await this.findByIDUseCase.execute(data)
   }
 
   async create(data: ICreateUserDTO) {

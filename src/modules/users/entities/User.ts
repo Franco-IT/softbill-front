@@ -1,7 +1,7 @@
 import { IUserDTO } from '../dtos/IUserDTO'
 
 export class User implements IUserDTO {
-  id: string
+  _id: string
   name: string
   email: string
   phone: string
@@ -14,7 +14,7 @@ export class User implements IUserDTO {
   createdAt: Date
 
   constructor(user: IUserDTO) {
-    this.id = user.id
+    this._id = user._id
     this.name = user.name
     this.email = user.email
     this.phone = user.phone
@@ -28,7 +28,7 @@ export class User implements IUserDTO {
   }
 
   public getId(): string {
-    return this.id
+    return this._id
   }
 
   public getName(): string {
