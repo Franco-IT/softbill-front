@@ -30,7 +30,9 @@ interface TableHeaderProps {
   clientBanksProps: ClientBanksProps
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TableHeader = ({ filterProps, clientProps, paginationProps, clientBanksProps }: TableHeaderProps) => {
+  
   return (
     <Grid container gap={4} paddingX={6} paddingY={5} justifyContent={'space-between'}>
       <Box display='flex'>
