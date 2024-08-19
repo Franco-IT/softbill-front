@@ -44,6 +44,11 @@ import { DrawerProvider } from 'src/context/DrawerContext'
 import { AutoSaveProvider } from 'src/context/AutoSaveContext'
 import { SettingsConsumer, SettingsProvider } from 'src/@core/context/settingsContext'
 
+// ** React Query
+import { queryClient } from 'src/services/queryClient'
+import { ReactQueryDevtools } from 'react-query/devtools'
+import { QueryClientProvider } from 'react-query'
+
 // ** Redux Imports
 import { store } from 'src/store'
 import { Provider } from 'react-redux'
@@ -125,37 +130,40 @@ const App = (props: ExtendedAppProps) => {
   return (
     <CacheProvider value={emotionCache}>
       <DefaultSeo title={themeConfig.templateName} description={themeConfig.templateName} />
-      <AuthProvider>
-        <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
-          <SettingsConsumer>
-            {({ settings }) => {
-              return (
-                <ThemeComponent settings={settings}>
-                  <Guard authGuard={authGuard} guestGuard={guestGuard}>
-                    <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard} authGuard={authGuard}>
-                      <DynamicSEO defaultTitle={themeConfig.templateName} />
-                      <AutoSaveProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
+            <SettingsConsumer>
+              {({ settings }) => {
+                return (
+                  <ThemeComponent settings={settings}>
+                    <Guard authGuard={authGuard} guestGuard={guestGuard}>
+                      <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard} authGuard={authGuard}>
+                        <DynamicSEO defaultTitle={themeConfig.templateName} />
+                        <AutoSaveProvider>
                         <DrawerProvider>
-                          <Provider store={store}>
-                            {getLayout(
-                              <ErrorBoundary>
-                                <Component {...pageProps} />
-                              </ErrorBoundary>
-                            )}
-                          </Provider>
-                        </DrawerProvider>
-                      </AutoSaveProvider>
-                    </AclGuard>
-                  </Guard>
-                  <ReactHotToast>
-                    <Toaster position={settings.toastPosition} toastOptions={{ className: 'react-hot-toast' }} />
-                  </ReactHotToast>
-                </ThemeComponent>
-              )
-            }}
-          </SettingsConsumer>
-        </SettingsProvider>
-      </AuthProvider>
+                            <Provider store={store}>
+                              {getLayout(
+                                <ErrorBoundary>
+                                  <Component {...pageProps} />
+                                </ErrorBoundary>
+                              )}
+                            </Provider>
+                          </DrawerProvider>
+                        </AutoSaveProvider>
+                      </AclGuard>
+                    </Guard>
+                    <ReactHotToast>
+                      <Toaster position={settings.toastPosition} toastOptions={{ className: 'react-hot-toast' }} />
+                    </ReactHotToast>
+                  </ThemeComponent>
+                )
+              }}
+            </SettingsConsumer>
+          </SettingsProvider>
+        </AuthProvider>
+        {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+      </QueryClientProvider>
     </CacheProvider>
   )
 }
