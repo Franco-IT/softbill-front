@@ -8,7 +8,7 @@ export type ErrCallbackType = (err: { [key: string]: string }) => void
 
 export type AuthValuesType = {
   loading: boolean
-  login: (params: IUserLoginDTO) => Promise<void>
+  login: (params: IUserLoginDTO) => Promise<IUserLoggedDTO>
   logout: () => void
   resetPassword: (params: IUserResetPasswordDTO) => Promise<void>
   emailResetPassword: (params: IUserEmailResetPasswordDTO) => Promise<void>

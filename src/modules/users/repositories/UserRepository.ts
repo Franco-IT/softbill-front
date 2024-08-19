@@ -8,8 +8,13 @@ import { IUpdateCounterDTO } from '../dtos/IUpdateCounterDTO'
 import { IChangeUserPasswordDTO } from '../dtos/IChangeUserPasswordDTO'
 import { IFirstAccessUserDTO } from '../dtos/IFirstAccessUserDTO'
 import { ISetUserAvatarDTO } from '../dtos/ISetUserAvatarDTO'
+import { IGetUserDTO } from '../dtos/IGetUserDTO'
 
 export class UserRepository implements IUserRepository {
+  async findByID(data: IGetUserDTO): Promise<AxiosResponse<any, any>> {
+    return await api.get(`/users/${data.id}`)
+  }
+
   async create(data: ICreateUserDTO | ICreateCounterDTO): Promise<AxiosResponse<any, any>> {
     return await api.post('/users', data)
   }

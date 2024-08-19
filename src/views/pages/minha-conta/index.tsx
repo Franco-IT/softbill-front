@@ -1,30 +1,35 @@
-import { Suspense, useState } from 'react'
+import { memo, Suspense, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useMutation, useQueryClient } from 'react-query'
 import { Grid, Card, CardContent, Typography, Divider, CardActions, Button, Box } from '@mui/material'
+
+import toast from 'react-hot-toast'
 
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import Chip from 'src/@core/components/mui/chip'
+import CustomBadge from 'src/components/CustomBadge'
+import Icon from 'src/@core/components/icon'
+import ImageCropper from 'src/components/ImageCropper'
 
-import Edit from './Edit'
+import { useAuth } from 'src/hooks/useAuth'
 
 import { ThemeColor } from 'src/@core/layouts/types'
-import { UserProps } from 'src/types/users'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
-import { api } from 'src/services/api'
-import toast from 'react-hot-toast'
+import { formatDate } from 'src/@core/utils/format'
+
 import { delay } from 'src/utils/delay'
-import { useRouter } from 'next/router'
 import { formatName } from 'src/utils/formatName'
 import verifyDataValue from 'src/utils/verifyDataValue'
 import { applyPhoneMask } from 'src/utils/inputs'
-import { formatDate } from 'src/@core/utils/format'
+import { renderInitials, renderUser } from 'src/utils/list'
+
 import { ISetUserAvatarDTO } from 'src/modules/users/dtos/ISetUserAvatarDTO'
+import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
+
 import { userController } from 'src/modules/users'
 import { AppError } from 'src/shared/errors/AppError'
-import CustomBadge from 'src/components/CustomBadge'
-import Icon from 'src/@core/components/icon'
-import { renderInitials, renderUser } from 'src/utils/list'
-import ImageCropper from 'src/components/ImageCropper'
-import { useAuth } from 'src/hooks/useAuth'
+
+import Edit from './Edit'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -43,14 +48,13 @@ const statusColors: ColorsType = {
 }
 
 interface MyAccountProps {
-  data: UserProps
-  refresh: boolean
-  setRefresh: (value: boolean) => void
+  data: IUserDTO
 }
 
-const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
+const MyAccount = memo(({ data }: MyAccountProps) => {
   const router = useRouter()
   const { setUser, user } = useAuth()
+  const queryClient = useQueryClient()
 
   const [openEdit, setOpenEdit] = useState<boolean>(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
@@ -59,49 +63,61 @@ const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
   const handleEditClickOpen = () => setOpenEdit(true)
   const handleEditClose = () => setOpenEdit(false)
 
-  const handleConfirmDeleteProfile = (id: string) => {
-    api
-      .delete(`/users/${id}`)
-      .then(response => {
-        if (response.status === 200) {
-          setDeleteDialogOpen(false)
+  const handleConfirmDeleteProfile = useMutation(
+    async (id: string) => {
+      return userController.delete({ id })
+    },
+    {
+      onSuccess: response => {
+        if (response?.status === 200) {
           toast.success('Conta deletada com sucesso!')
+          queryClient.invalidateQueries(['profile'])
           delay(2000).then(() => {
             router.reload()
           })
         }
-      })
-      .catch(() => {
+      },
+      onError: error => {
+        if (error instanceof AppError) toast.error(error.message)
+      },
+      onSettled: () => {
         setDeleteDialogOpen(false)
-        toast.error('Erro ao deletar sua conta, tente novamente mais tarde.')
-      })
-  }
-
-  const onSubmit = async (file: File) => {
-    const formData: ISetUserAvatarDTO = {
-      file,
-      userId: data._id,
-      uploadType: data.type != 'ACCOUNTING' ? 'PROFILE' : 'LOGO'
-    }
-
-    try {
-      const response = await userController.setAvatar(formData)
-
-      if (response) {
-        const responseData = response.data
-
-        if (response.status === 201) {
-          setRefresh(!refresh)
-          user && setUser({ ...user, avatar: responseData.data.url })
-          toast.success('Imagem alterada com sucesso!')
-        }
       }
-    } catch (error) {
-      if (error instanceof AppError) toast.error(error.message)
-    } finally {
-      setOpenImageCropper(false)
     }
-  }
+  )
+
+  const handleSetAvatar = useMutation(
+    async (file: File) => {
+      const formData: ISetUserAvatarDTO = {
+        file,
+        userId: data._id,
+        uploadType: data.type != 'ACCOUNTING' ? 'PROFILE' : 'LOGO'
+      }
+
+      return await userController.setAvatar(formData)
+    },
+    {
+      onSuccess: response => {
+        if (response) {
+          const responseData = response.data
+
+          if (response.status === 201) {
+            queryClient.invalidateQueries(['profile'])
+            user && setUser({ ...user, avatar: responseData.data.url })
+            toast.success('Imagem alterada com sucesso!')
+          }
+        }
+      },
+      onError: error => {
+        if (error instanceof AppError) toast.error(error.message)
+      },
+      onSettled: () => {
+        setOpenImageCropper(false)
+      }
+    }
+  )
+
+  const onSubmit = async (file: File) => await handleSetAvatar.mutateAsync(file)
 
   return (
     <Grid container spacing={6}>
@@ -221,25 +237,21 @@ const MyAccount = ({ data, refresh, setRefresh }: MyAccountProps) => {
             </Button>
           </CardActions>
 
-          <Edit
-            data={data}
-            handleEditClose={handleEditClose}
-            openEdit={openEdit}
-            refresh={refresh}
-            setRefresh={setRefresh}
-          />
+          {openEdit && <Edit data={data} handleEditClose={handleEditClose} openEdit={openEdit} />}
 
-          <DialogAlert
-            open={deleteDialogOpen}
-            setOpen={setDeleteDialogOpen}
-            question={'Você tem certeza que deseja deletar sua conta?'}
-            description={'Essa ação não poderá ser desfeita.'}
-            handleConfirmDelete={() => handleConfirmDeleteProfile(data._id)}
-          />
+          {deleteDialogOpen && (
+            <DialogAlert
+              open={deleteDialogOpen}
+              setOpen={setDeleteDialogOpen}
+              question={'Você tem certeza que deseja deletar sua conta?'}
+              description={'Essa ação não poderá ser desfeita.'}
+              handleConfirmDelete={() => handleConfirmDeleteProfile.mutateAsync(data._id)}
+            />
+          )}
         </Card>
       </Grid>
     </Grid>
   )
-}
+})
 
 export default MyAccount

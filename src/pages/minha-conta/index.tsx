@@ -1,31 +1,42 @@
 import { Grid, LinearProgress } from '@mui/material'
-import { useAuth } from 'src/hooks/useAuth'
-import useGetDataApi from 'src/hooks/useGetDataApi'
-import { UserProps } from 'src/types/users'
-import MyAccountContent from 'src/views/pages/minha-conta'
-import Tabs from 'src/views/pages/minha-conta/Tabs'
 
-interface UseGetDataApiProps {
-  data: UserProps
-}
+import Tabs from 'src/views/pages/minha-conta/Tabs'
+import Error from 'src/components/FeedbackAPIs/Error'
+import MyAccountContent from 'src/views/pages/minha-conta'
+
+import { useQuery } from 'react-query'
+import { useAuth } from 'src/hooks/useAuth'
+
+import { userController } from 'src/modules/users'
 
 const MyAccount = () => {
   const { user } = useAuth()
 
-  const { data, loading, refresh, setRefresh } = useGetDataApi<UseGetDataApiProps>({ url: `/users/${user?.id}` })
-
-  if (loading) {
-    return <LinearProgress />
+  const getUserProps = {
+    id: user?.id || ''
   }
 
-  if (data) {
+  const {
+    data: userData,
+    isLoading,
+    isError
+  } = useQuery(['profile', user?.id], () => userController.findByID(getUserProps), {
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 5
+  })
+
+  if (isLoading) return <LinearProgress />
+
+  if (isError) return <Error />
+
+  if (userData) {
     return (
       <Grid container spacing={6}>
         <Grid item xs={12} xl={4}>
-          <MyAccountContent data={data.data} refresh={refresh} setRefresh={setRefresh} />
+          <MyAccountContent data={userData.data} />
         </Grid>
         <Grid item xs={12} xl={8}>
-          <Tabs data={data.data} />
+          <Tabs data={userData.data} />
         </Grid>
       </Grid>
     )

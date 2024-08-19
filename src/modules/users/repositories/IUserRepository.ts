@@ -6,8 +6,10 @@ import { IDeleteUserDTO } from '../dtos/IDeleteUserDTO'
 import { IChangeUserPasswordDTO } from '../dtos/IChangeUserPasswordDTO'
 import { IFirstAccessUserDTO } from '../dtos/IFirstAccessUserDTO'
 import { ISetUserAvatarDTO } from '../dtos/ISetUserAvatarDTO'
+import { IGetUserDTO } from '../dtos/IGetUserDTO'
 
 export interface IUserRepository {
+  findByID(data: IGetUserDTO): Promise<AxiosResponse>
   create(data: ICreateUserDTO | ICreateCounterDTO): Promise<AxiosResponse>
   update(data: IUpdateCounterDTO): Promise<AxiosResponse>
   delete(data: IDeleteUserDTO): Promise<AxiosResponse>
