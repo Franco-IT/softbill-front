@@ -111,7 +111,7 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
     const ivToken = getCookie(`${authConfig.storageTokenKeyName}-iv`)
     const ivUserId = getCookie(`${authConfig.storageUserDataKeyName}-iv`)
 
-    if ((!encryptedToken || !encryptedUserId || !ivToken || !ivUserId) && !guestGuard) return handleLogout()
+    if (!encryptedToken || !encryptedUserId || !ivToken || !ivUserId) return guestGuard ? null : handleLogout()
 
     const token = cryptoProvider.decrypt(encryptedToken as string, ivToken as string)
     const userId = cryptoProvider.decrypt(encryptedUserId as string, ivUserId as string)
