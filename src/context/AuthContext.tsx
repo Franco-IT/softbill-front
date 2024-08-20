@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode, useEffect, useCallback } from 'react'
+import { createContext, useState, ReactNode, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import { deleteCookie, getCookie, setCookie } from 'cookies-next'
 import toast from 'react-hot-toast'
@@ -35,68 +35,14 @@ let authChannel: BroadcastChannel
 
 type Props = {
   children: ReactNode
+  guestGuard?: boolean
 }
 
-const AuthProvider = ({ children }: Props) => {
+const AuthProvider = ({ children, guestGuard }: Props) => {
   const router = useRouter()
   const queryClient = useQueryClient()
   const [user, setUser] = useState<IUserLoggedDTO | null>(defaultProvider.user)
   const [loading, setLoading] = useState<boolean>(defaultProvider.loading)
-
-  const handleCheckRoutes = (currentRoute: string) => {
-    const routes = ['/primeiro-acesso', '/redefinir-senha', '/esqueceu-a-senha']
-
-    return routes.includes(currentRoute)
-  }
-
-  const fetchAuthUser = async () => {
-    const encryptedToken = getCookie(authConfig.storageTokenKeyName)
-    const encryptedUserId = getCookie(authConfig.storageUserDataKeyName)
-
-    if (!encryptedToken || !encryptedUserId) {
-      !handleCheckRoutes(router.pathname) && handleLogout()
-
-      return null
-    }
-
-    const ivToken = getCookie(`${authConfig.storageTokenKeyName}-iv`)
-    const ivUserId = getCookie(`${authConfig.storageUserDataKeyName}-iv`)
-
-    if (!ivToken || !ivUserId) {
-      !handleCheckRoutes(router.pathname) && handleLogout()
-
-      return null
-    }
-
-    const token = cryptoProvider.decrypt(encryptedToken as string, ivToken as string)
-    const userId = cryptoProvider.decrypt(encryptedUserId as string, ivUserId as string)
-
-    if (!token || !userId) {
-      toast.error('Sua sessão expirou, faça login novamente.')
-      !handleCheckRoutes(router.pathname) && handleLogout()
-
-      return null
-    }
-
-    api.defaults.headers['Authorization'] = `Bearer ${token}`
-
-    return authController.getAuthUser(userId as string)
-  }
-
-  const { refetch: refetchAuthUser } = useQuery(['auth-user'], fetchAuthUser, {
-    onSuccess: (data: IUserLoggedDTO) => {
-      if (data) setUser(data)
-    },
-    onError: (error: any) => {
-      handleLogout()
-      if (error instanceof AppError) toast.error(error.message)
-    },
-    onSettled: () => {
-      setLoading(false)
-    },
-    enabled: false,
-    staleTime: 1000 * 60 * 20
-  })
 
   const loginMutation = useMutation(
     async (params: IUserLoginDTO) => {
@@ -159,44 +105,90 @@ const AuthProvider = ({ children }: Props) => {
 
   const handleLogout = useCallback(() => logoutMutation.mutate(), [logoutMutation])
 
-  const handleResetPassword = async (data: IUserResetPasswordDTO) => {
-    try {
-      const response = await authController.resetPassword(data)
-      if (response && response.status === 200) {
-        toast.success('Senha redefinida com sucesso')
-        router.push('/login')
-      }
-    } catch (error) {
-      if (error instanceof AppError) toast.error(error.message)
-      router.push('/esqueceu-a-senha')
-    }
-  }
+  const fetchAuthUser = useCallback(async () => {
+    const encryptedToken = getCookie(authConfig.storageTokenKeyName)
+    const encryptedUserId = getCookie(authConfig.storageUserDataKeyName)
+    const ivToken = getCookie(`${authConfig.storageTokenKeyName}-iv`)
+    const ivUserId = getCookie(`${authConfig.storageUserDataKeyName}-iv`)
 
-  const handleEmailResetPassword = async (data: IUserEmailResetPasswordDTO) => {
-    try {
-      const response = await authController.emailResetPassword(data)
-      if (response && response.status === 200) {
-        toast.success('E-mail enviado com sucesso.')
-        router.push('/login')
-      }
-    } catch (error) {
-      if (error instanceof AppError) toast.error(error.message)
-      router.push('/esqueceu-a-senha')
-    }
-  }
+    if ((!encryptedToken || !encryptedUserId || !ivToken || !ivUserId) && !guestGuard) return handleLogout()
 
-  const handleFirstAccess = async (data: IUserFirstAccessDTO) => {
-    try {
-      const response = await authController.firstAccess(data)
-      if (response?.status === 200) {
-        toast.success('Senha redefinida com sucesso')
+    const token = cryptoProvider.decrypt(encryptedToken as string, ivToken as string)
+    const userId = cryptoProvider.decrypt(encryptedUserId as string, ivUserId as string)
+
+    if ((!token || !userId) && !guestGuard) {
+      toast.error('Sua sessão expirou, faça login novamente.')
+
+      return handleLogout()
+    }
+
+    api.defaults.headers['Authorization'] = `Bearer ${token}`
+
+    return authController.getAuthUser(userId as string)
+  }, [guestGuard, handleLogout])
+
+  const { refetch: refetchAuthUser } = useQuery(['auth-user'], fetchAuthUser, {
+    onSuccess: (data: IUserLoggedDTO) => {
+      if (data) setUser(data)
+    },
+    onError: (error: any) => {
+      handleLogout()
+      if (error instanceof AppError) toast.error(error.message)
+    },
+    onSettled: () => {
+      setLoading(false)
+    },
+    enabled: false,
+    staleTime: 1000 * 60 * 20
+  })
+
+  const handleResetPassword = useCallback(
+    async (data: IUserResetPasswordDTO) => {
+      try {
+        const response = await authController.resetPassword(data)
+        if (response && response.status === 200) {
+          toast.success('Senha redefinida com sucesso')
+          router.push('/login')
+        }
+      } catch (error) {
+        if (error instanceof AppError) toast.error(error.message)
+        router.push('/esqueceu-a-senha')
+      }
+    },
+    [router]
+  )
+
+  const handleEmailResetPassword = useCallback(
+    async (data: IUserEmailResetPasswordDTO) => {
+      try {
+        const response = await authController.emailResetPassword(data)
+        if (response && response.status === 200) {
+          toast.success('E-mail enviado com sucesso.')
+          router.push('/login')
+        }
+      } catch (error) {
+        if (error instanceof AppError) toast.error(error.message)
+        router.push('/esqueceu-a-senha')
+      }
+    },
+    [router]
+  )
+
+  const handleFirstAccess = useCallback(
+    async (data: IUserFirstAccessDTO) => {
+      try {
+        const response = await authController.firstAccess(data)
+        if (response?.status === 200) {
+          toast.success('Senha redefinida com sucesso')
+          router.push('/login')
+        }
+      } catch (error) {
+        if (error instanceof AppError) toast.error(error.message)
         router.push('/login')
       }
-    } catch (error) {
-      if (error instanceof AppError) toast.error(error.message)
-      router.push('/login')
-    }
-  }
+    },
+    [router]
+  )
 
   useEffect(() => {
     refetchAuthUser()
@@ -214,17 +206,20 @@ const AuthProvider = ({ children }: Props) => {
     }
   }, [handleLogout])
 
-  const values = {
-    user,
-    loading,
-    setUser,
-    setLoading,
-    login: handleLogin,
-    logout: handleLogout,
-    resetPassword: handleResetPassword,
-    emailResetPassword: handleEmailResetPassword,
-    firstAccess: handleFirstAccess
-  }
+  const values = useMemo(
+    () => ({
+      user,
+      loading,
+      setUser,
+      setLoading,
+      login: handleLogin,
+      logout: handleLogout,
+      resetPassword: handleResetPassword,
+      emailResetPassword: handleEmailResetPassword,
+      firstAccess: handleFirstAccess
+    }),
+    [handleEmailResetPassword, handleFirstAccess, handleLogin, handleLogout, handleResetPassword, loading, user]
+  )
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>
 }
