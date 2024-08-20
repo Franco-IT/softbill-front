@@ -1,6 +1,6 @@
 import { Card, CardHeader, IconButton, Typography, Box, CardContent, CardActions, Grid, Button } from '@mui/material'
 import IconifyIcon from 'src/@core/components/icon'
-import GlowIcon from '../GlowIcon'
+import GlowIcon from 'src/components/GlowIcon'
 import CustomChip from 'src/@core/components/mui/chip'
 import { statusColorsMUI } from '../../utils'
 import { useDrawer } from 'src/hooks/useDrawer'
