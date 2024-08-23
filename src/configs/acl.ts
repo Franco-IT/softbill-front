@@ -1,7 +1,16 @@
 import { AbilityBuilder, AbilityClass, MongoAbility, MongoQuery, createMongoAbility } from '@casl/ability'
 
 export type Subjects = string
-export type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete'
+export type Actions =
+  | 'manage'
+  | 'create'
+  | 'read'
+  | 'update'
+  | 'delete'
+  | 'client:read'
+  | 'client:update'
+  | 'client:delete'
+  | 'client:create'
 
 export type AppAbility = MongoAbility<[Actions, Subjects], MongoQuery>
 export const AppAbility = createMongoAbility as unknown as AbilityClass<AppAbility>
@@ -30,7 +39,7 @@ const defineRulesFor = (role: string, subject: string | string[]) => {
       case 'COUNTER':
         return ['read', 'create', 'update']
       case 'CLIENT':
-        return ['read', 'update']
+        return ['client:read', 'client:update', 'client:delete', 'client:create']
       default:
         return []
     }
@@ -54,7 +63,7 @@ export const canAny = (ability: AppAbility, actions: Actions[], subject: Subject
 }
 
 export const defaultACLObj: ACLObj = {
-  action: 'read',
+  action: ['read', 'client:read'],
   subject: 'all'
 }
 

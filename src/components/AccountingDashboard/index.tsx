@@ -24,7 +24,7 @@ const AccountingDashboard = ({ data, lastUpdate }: AccountingDashboardProps) => 
             <Icon icon={sale.icon} fontSize='1.5rem' />
           </CustomAvatar>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography variant='h5'>{sale.stats}</Typography>
+            <Typography variant='h5'>{sale.status}</Typography>
             <Typography variant='body2'>{sale.title}</Typography>
           </Box>
         </Box>

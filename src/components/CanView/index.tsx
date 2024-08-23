@@ -1,10 +1,11 @@
 import { ReactNode } from 'react'
+import { Actions as ActionsACL } from 'src/configs/acl'
 import { useAuth } from 'src/hooks/useAuth'
 import { Can } from 'src/layouts/components/acl/Can'
 
 interface CamViewProps {
   children: ReactNode
-  actions: string
+  actions: ActionsACL
 }
 
 const CanView = ({ children, actions }: CamViewProps) => {

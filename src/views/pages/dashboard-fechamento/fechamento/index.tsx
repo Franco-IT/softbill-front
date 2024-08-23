@@ -10,7 +10,7 @@ import {
   useMediaQuery
 } from '@mui/material'
 import { Box } from '@mui/system'
-import GlowIcon from '../components/GlowIcon'
+import GlowIcon from 'src/components/GlowIcon'
 import Avatar from 'src/@core/components/mui/avatar'
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { banksOptions, monthsOptions } from '../options'

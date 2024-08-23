@@ -7,7 +7,7 @@ import { Box, List, Button, ListItem, Typography, IconButton } from '@mui/materi
 import toast from 'react-hot-toast'
 import { useDropzone } from 'react-dropzone'
 
-interface FileProp {
+interface FileProps {
   name: string
   type: string
   size: number
@@ -52,7 +52,7 @@ const FileUploaderRestrictions = ({
     }
   })
 
-  const renderFilePreview = (file: FileProp) => {
+  const renderFilePreview = (file: FileProps) => {
     if (file.type.startsWith('image'))
       return <img width={38} height={38} alt={file.name} src={URL.createObjectURL(file as any)} />
 
@@ -61,9 +61,9 @@ const FileUploaderRestrictions = ({
 
   const handleRemoveAllFiles = () => onChange([])
 
-  const handleRemoveFile = (file: FileProp) => onChange(files.filter((i: File) => i.name !== file.name))
+  const handleRemoveFile = (file: FileProps) => onChange(files.filter((i: File) => i.name !== file.name))
 
-  const fileList = files.map((file: FileProp) => (
+  const fileList = files.map((file: FileProps) => (
     <ListItem key={file.name}>
       <div className='file-details'>
         <div className='file-preview'>{renderFilePreview(file)}</div>

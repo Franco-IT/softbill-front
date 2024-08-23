@@ -44,7 +44,7 @@ const MyAccount = () => {
 }
 
 MyAccount.acl = {
-  action: ['read', 'update', 'delete'],
+  action: ['read', 'update', 'delete', 'client:read', 'client:update', 'client:delete'],
   subject: ['ADMIN', 'ACCOUNTING', 'COUNTER', 'CLIENT']
 }
 

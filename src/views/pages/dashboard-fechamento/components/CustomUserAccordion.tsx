@@ -8,7 +8,7 @@ import MuiAccordionDetails, { AccordionDetailsProps } from '@mui/material/Accord
 import Icon from 'src/@core/components/icon'
 import Avatar from 'src/@core/components/mui/avatar'
 
-import GlowIcon from './GlowIcon'
+import GlowIcon from 'src/components/GlowIcon'
 import TimelineBank from './TimelineBank'
 
 import { statusColorsMUI } from '../utils'

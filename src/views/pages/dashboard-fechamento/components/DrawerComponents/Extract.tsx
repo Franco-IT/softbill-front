@@ -3,12 +3,12 @@ import { useState } from 'react'
 import IconifyIcon from 'src/@core/components/icon'
 import DropzoneWrapper from 'src/@core/styles/libs/react-dropzone'
 import FileUploaderRestrictions from 'src/components/FileUploaderRestrictions'
-import GlowIcon from '../GlowIcon'
 import CustomChip from 'src/@core/components/mui/chip'
 import { dateProvider } from 'src/shared/providers'
 import { useDrawer } from 'src/hooks/useDrawer'
 import useToast from 'src/hooks/useToast'
 import { statusColorsMUI } from '../../utils'
+import GlowIcon from 'src/components/GlowIcon'
 
 const Extract = () => {
   const { formatDate } = dateProvider

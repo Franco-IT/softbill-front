@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactNode } from 'react'
+import { ReactNode, useMemo } from 'react'
 
 // ** Next Imports
 import { Router } from 'next/router'
@@ -127,11 +127,18 @@ const App = (props: ExtendedAppProps) => {
 
   const aclAbilities = Component.acl ?? defaultACLObj
 
+  const authProviderProps = useMemo(
+    () => ({
+      guestGuard
+    }),
+    [guestGuard]
+  )
+
   return (
     <CacheProvider value={emotionCache}>
       <DefaultSeo title={themeConfig.templateName} description={themeConfig.templateName} />
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
+        <AuthProvider {...authProviderProps}>
           <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
             <SettingsConsumer>
               {({ settings }) => {
@@ -141,7 +148,7 @@ const App = (props: ExtendedAppProps) => {
                       <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard} authGuard={authGuard}>
                         <DynamicSEO defaultTitle={themeConfig.templateName} />
                         <AutoSaveProvider>
-                        <DrawerProvider>
+                          <DrawerProvider>
                             <Provider store={store}>
                               {getLayout(
                                 <ErrorBoundary>

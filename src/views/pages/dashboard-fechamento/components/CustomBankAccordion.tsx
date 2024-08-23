@@ -1,7 +1,7 @@
 import Icon from 'src/@core/components/icon'
+import GlowIcon from 'src/components/GlowIcon'
 import CustomChip from 'src/@core/components/mui/chip'
 
-import GlowIcon from './GlowIcon'
 
 import {
   Accordion,

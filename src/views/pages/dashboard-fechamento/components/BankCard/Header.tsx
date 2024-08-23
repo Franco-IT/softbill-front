@@ -3,9 +3,8 @@ import Avatar from 'src/@core/components/mui/avatar'
 
 import { Box, Button, CardHeader, IconButton } from '@mui/material'
 
-import GlowIcon from '../GlowIcon'
-
 import { statusColorsMUI } from '../../utils'
+import GlowIcon from 'src/components/GlowIcon'
 
 interface HeaderProps {
   user: any

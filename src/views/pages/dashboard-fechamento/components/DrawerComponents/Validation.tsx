@@ -1,5 +1,5 @@
 import { Box, Card, CardActions, CardContent, CardHeader, MenuItem, Typography } from '@mui/material'
-import GlowIcon from '../GlowIcon'
+import GlowIcon from 'src/components/GlowIcon'
 import React from 'react'
 import CustomChip from 'src/@core/components/mui/chip'
 import { statusColorsMUI } from '../../utils'
