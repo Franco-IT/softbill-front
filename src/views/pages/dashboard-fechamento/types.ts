@@ -19,6 +19,7 @@ export type bankProps = {
 }
 
 export type DataProps = {
+  id: string
   avatar: string | undefined
   name: string
   status: string

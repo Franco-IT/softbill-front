@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next/types'
 
 import { Grid } from '@mui/material'
 
@@ -7,18 +8,21 @@ import CardOptionHorizontal from 'src/@core/components/card-statistics/card-opti
 
 import { NavLink, ThemeColor } from 'src/@core/layouts/types'
 import navigation from 'src/navigation/vertical'
+
 import CanViewNavLink from 'src/layouts/components/acl/CanViewNavLink'
 import CanView from 'src/components/CanView'
 import AccountingDashboard from 'src/components/AccountingDashboard'
+import Client from 'src/views/pages/Home/components/Clients'
 
 import authConfig from 'src/configs/auth'
 
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next/types'
 import { cryptoProvider, dateProvider } from 'src/shared/providers'
 import { UserProps } from 'src/types/users'
 
+import { useAuth } from 'src/hooks/useAuth'
+
 export type DashboardProps = {
-  stats: string
+  status: string
   title: string
   color: ThemeColor
   icon: string
@@ -93,25 +97,25 @@ export const getServerSideProps: GetServerSideProps<{
 
   const dashboardData: DashboardProps[] = [
     {
-      stats: `${total}`,
+      status: `${total}`,
       color: 'info',
       title: 'Total',
       icon: 'tabler:users-group'
     },
     {
-      stats: `${totalActive}`,
+      status: `${totalActive}`,
       title: 'Ativos',
       color: 'success',
       icon: 'tabler:user-check'
     },
     {
-      stats: `${totalInactive}`,
+      status: `${totalInactive}`,
       color: 'secondary',
       title: 'Inátivos',
       icon: 'tabler:user-x'
     },
     {
-      stats: `${totalBlocked}`,
+      status: `${totalBlocked}`,
       color: 'error',
       title: 'Bloqueados',
       icon: 'tabler:user-cancel'
@@ -129,6 +133,8 @@ export const getServerSideProps: GetServerSideProps<{
 }
 
 const Home = ({ data, lastUpdate }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const { user } = useAuth()
+
   return (
     <ApexChartWrapper>
       <Grid container spacing={6}>
@@ -137,24 +143,33 @@ const Home = ({ data, lastUpdate }: InferGetServerSidePropsType<typeof getServer
             {data && lastUpdate && <AccountingDashboard data={data} lastUpdate={new Date(lastUpdate)} />}
           </Grid>
         </CanView>
-        {navigation().map((item: NavLink, index) => {
-          if (item.path === '/home') return null
+        {user?.role === 'CLIENT' && (
+          <CanView actions='client:update'>
+            <Grid item xs={12}>
+              <Client />
+            </Grid>
+          </CanView>
+        )}
+        <CanView actions='read'>
+          {navigation().map((item: NavLink, index) => {
+            if (item.path === '/home') return null
 
-          return (
-            <CanViewNavLink key={index} navLink={item}>
-              <Grid item xs={12} sm={6} lg={6}>
-                <Link
-                  href={item.path as string}
-                  style={{
-                    textDecoration: 'none'
-                  }}
-                >
-                  <CardOptionHorizontal {...item} />
-                </Link>
-              </Grid>
-            </CanViewNavLink>
-          )
-        })}
+            return (
+              <CanViewNavLink key={index} navLink={item}>
+                <Grid item xs={12} sm={6} lg={6}>
+                  <Link
+                    href={item.path as string}
+                    style={{
+                      textDecoration: 'none'
+                    }}
+                  >
+                    <CardOptionHorizontal {...item} />
+                  </Link>
+                </Grid>
+              </CanViewNavLink>
+            )
+          })}
+        </CanView>
       </Grid>
     </ApexChartWrapper>
   )

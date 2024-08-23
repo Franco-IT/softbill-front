@@ -33,7 +33,7 @@ const Dashboard = () => {
 
   const [showList, setShowList] = useState<'LIST' | 'GRID'>('GRID')
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [onSearch, setOnSearch] = useState('')
   const [month, setMonth] = useState(currentMonth)
   const [usersData, setUsersData] = useState<DataProps[] | null>(null)
@@ -92,13 +92,15 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    setLoading(true)
-
     const getUsers = async () => {
       try {
-        const response = await fetch('http://localhost:3002/users')
-        const data = await response.json()
-        setUsersData(data)
+        new Promise<void>(resolve => {
+          setTimeout(() => {
+            setUsersData(users)
+
+            resolve()
+          }, 1500)
+        })
       } catch (error) {
         console.error(error)
       } finally {

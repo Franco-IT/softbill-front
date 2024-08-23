@@ -6,7 +6,7 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Home',
       path: '/home',
-      action: 'read',
+      action: ['read', 'client:read'],
       auth: true,
       subject: ['ADMIN', 'ACCOUNTING', 'COUNTER', 'CLIENT'],
       icon: 'tabler:smart-home'
