@@ -10,9 +10,15 @@ import { IFirstAccessUserDTO } from '../dtos/IFirstAccessUserDTO'
 import { ISetUserAvatarDTO } from '../dtos/ISetUserAvatarDTO'
 import { IGetUserDTO } from '../dtos/IGetUserDTO'
 import { IGetUsersDTO } from '../dtos/IGetUsersDTO'
+import { IGetClientsDTO } from '../dtos/IGetClientsDTO'
+import { ICreateClientDTO } from '../dtos/ICreateClientDTO'
 
 export class UserRepository implements IUserRepository {
   async getUsers(params: IGetUsersDTO): Promise<AxiosResponse> {
+    return api.get('/users', { params })
+  }
+
+  async getClients(params: IGetClientsDTO): Promise<AxiosResponse> {
     return api.get('/users', { params })
   }
 
@@ -21,6 +27,10 @@ export class UserRepository implements IUserRepository {
   }
 
   async create(data: ICreateUserDTO | ICreateCounterDTO): Promise<AxiosResponse<any, any>> {
+    return await api.post('/users', data)
+  }
+
+  async createClient(data: ICreateClientDTO): Promise<AxiosResponse> {
     return await api.post('/users', data)
   }
 
