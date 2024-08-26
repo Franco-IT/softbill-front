@@ -30,7 +30,7 @@ const navigation = (): VerticalNavItemsType => {
       avatarColor: 'primary'
     },
     {
-      title: 'Contabilidade',
+      title: 'Contabilidades',
       subtitle: 'Ver Usuários Contabilidade',
       path: '/contabilidades',
       action: 'manage',

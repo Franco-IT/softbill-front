@@ -26,7 +26,7 @@ interface FormData {
   documentNumber: string
 }
 
-const CreateUser = () => {
+const CreateAccounting = () => {
   const router = useRouter()
   const queryClient = useQueryClient()
 
@@ -252,9 +252,9 @@ const CreateUser = () => {
   )
 }
 
-CreateUser.acl = {
+CreateAccounting.acl = {
   action: 'manage',
   subject: 'ADMIN'
 }
 
-export default CreateUser
+export default CreateAccounting
