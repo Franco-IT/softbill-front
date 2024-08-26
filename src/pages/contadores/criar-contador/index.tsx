@@ -1,21 +1,27 @@
-import { Box, Button, Card, CardContent, CardHeader, Grid, IconButton, InputAdornment, MenuItem } from '@mui/material'
-import CustomTextField from 'src/@core/components/mui/text-field'
+import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useState } from 'react'
-import Icon from 'src/@core/components/icon'
-import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
+import toast from 'react-hot-toast'
+import { useMutation, useQueryClient } from 'react-query'
+import { Box, Button, Card, CardContent, CardHeader, Grid, IconButton, InputAdornment, MenuItem } from '@mui/material'
+
+import CustomTextField from 'src/@core/components/mui/text-field'
+import Icon from 'src/@core/components/icon'
+
 import { applyDocumentMask } from 'src/utils/inputs'
-import { createUserSchema } from 'src/services/yup/schemas/users/createUserSchema'
-import { userController } from 'src/modules/users'
+import { createCounterSchema } from 'src/services/yup/schemas/counters/createCounterSchema'
 import { AppError } from 'src/shared/errors/AppError'
+import { userController } from 'src/modules/users'
+
 import { ICreateCounterDTO } from 'src/modules/users/dtos/ICreateCounterDTO'
 import { useAuth } from 'src/hooks/useAuth'
 
-const CreateUser = () => {
+
+const CreateCounter = () => {
   const router = useRouter()
   const { user } = useAuth()
+  const queryClient = useQueryClient()
 
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
@@ -33,33 +39,38 @@ const CreateUser = () => {
       status: 'ACTIVE',
       password: '',
       confirmPassword: '',
+      accountingId: user?.id,
       type: 'COUNTER'
     } as ICreateCounterDTO,
     mode: 'onBlur',
-    resolver: yupResolver(createUserSchema)
+    resolver: yupResolver(createCounterSchema)
   })
 
-  const onSubmit = async (data: ICreateCounterDTO) => {
-    Object.assign(data, { accountingId: user?.id })
+  const handleCreateCounter = useMutation(
+    (data: ICreateCounterDTO) => {
+      return userController.createCounter(data)
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['counters'])
+        toast.success('Contador adicionado com sucesso!')
+        router.push('/contadores')
+      },
+      onError: error => {
+        if (error instanceof AppError) {
+          if (error.statusCode === 409) {
+            setError('email', { type: 'manual', message: 'E-mail já cadastrado' })
 
-    userController
-      .createCounter(data)
-      .then(response => {
-        if (response?.status === 201) {
-          toast.success('Contador adicionado com sucesso!')
-          router.push('/contadores')
+            toast.error('E-mail já cadastrado')
+          } else {
+            toast.error(error.message)
+          }
         }
-      })
-      .catch(error => {
-        if (error.status === 409) {
-          setError('email', { type: 'manual', message: 'E-mail já cadastrado' })
+      }
+    }
+  )
 
-          return toast.error('E-mail já cadastrado')
-        }
-
-        if (error instanceof AppError) toast.error(error.message)
-      })
-  }
+  const onSubmit = async (data: ICreateCounterDTO) => await handleCreateCounter.mutateAsync(data)
 
   return (
     <Card>
@@ -233,9 +244,9 @@ const CreateUser = () => {
   )
 }
 
-CreateUser.acl = {
+CreateCounter.acl = {
   action: 'create',
   subject: 'ACCOUNTING'
 }
 
-export default CreateUser
+export default CreateCounter

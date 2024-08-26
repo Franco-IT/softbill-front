@@ -51,7 +51,7 @@ const CreateClient = () => {
     {
       onSuccess: response => {
         if (response?.status === 201) {
-          queryClient.invalidateQueries(['users'])
+          queryClient.invalidateQueries(['clients'])
           toast.success('Cliente adicionado com sucesso!')
           router.push('/usuarios')
         }
