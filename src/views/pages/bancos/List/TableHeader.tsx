@@ -1,11 +1,9 @@
+import { memo, useCallback } from 'react'
 import { useRouter } from 'next/router'
-
 import { CardHeader, Grid, Box, Button } from '@mui/material'
 
 import CustomTextField from 'src/@core/components/mui/text-field'
-
 import Icon from 'src/@core/components/icon'
-import { memo, useCallback } from 'react'
 
 interface TableHeaderProps {
   value: string
@@ -44,7 +42,7 @@ const TableHeader = memo((props: TableHeaderProps) => {
           </Grid>
 
           <Grid item xs={12} md={4} xl={3}>
-            <Button fullWidth variant='contained' sx={{ '& svg': { mr: 2 } }} onClick={handleCreateBank}>
+            <Button fullWidth variant='contained' sx={{ '& svg': { mr: 2 } }} onClick={handleCreateBank} disabled>
               <Icon fontSize='1.125rem' icon='tabler:plus' />
               Adicionar Banco
             </Button>

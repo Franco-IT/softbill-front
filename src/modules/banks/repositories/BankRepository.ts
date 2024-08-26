@@ -1,17 +1,29 @@
 import { IBankRepository } from './IBankRepository'
+import { IGetBanksDTO } from '../dtos/IGetBanksDTO'
 import { ILinkingBankDTO } from '../dtos/ILinkingBankDTO'
+import { IChangeBankStatusDTO } from '../dtos/IChangeBankStatusDTO'
 import { IGetBanksByClientIdDTO } from '../dtos/IGetBanksByClientIdDTO'
 
 import { AxiosResponse } from 'axios'
 import { api } from 'src/services/api'
 
 export class BankRepository implements IBankRepository {
+  async getBanks(params: IGetBanksDTO): Promise<AxiosResponse> {
+    return api.get('/banks', { params })
+  }
+
   async getBanksByClientId(data: IGetBanksByClientIdDTO): Promise<AxiosResponse> {
     const { id, params } = data
 
     return api.get(`/bankAccounts/by-client/${id}`, {
       params
     })
+  }
+
+  async changeBankStatus(data: IChangeBankStatusDTO): Promise<AxiosResponse> {
+    const { id, status } = data
+
+    return api.put(`/banks/${id}`, { status })
   }
 
   async linkingBank(data: ILinkingBankDTO): Promise<AxiosResponse> {

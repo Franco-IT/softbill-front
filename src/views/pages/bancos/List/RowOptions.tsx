@@ -1,9 +1,13 @@
 import { useState, MouseEvent, memo, useCallback } from 'react'
 import { Button, IconButton, Menu, MenuItem, useMediaQuery, Box } from '@mui/material'
-import Icon from 'src/@core/components/icon'
-import { api } from 'src/services/api'
+import { useMutation, useQueryClient } from 'react-query'
 import toast from 'react-hot-toast'
+
+import Icon from 'src/@core/components/icon'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
+
+import { bankController } from 'src/modules/banks'
+import { AppError } from 'src/shared/errors/AppError'
 
 interface BankStatusType {
   [key: string]: string
@@ -17,10 +21,10 @@ const banckStatus: BankStatusType = {
 interface RowOptionsProps {
   id: string
   status: string
-  refreshData: () => void
 }
 
-const RowOptions = memo(({ id, status, refreshData }: RowOptionsProps) => {
+const RowOptions = memo(({ id, status }: RowOptionsProps) => {
+  const queryClient = useQueryClient()
   const matches = useMediaQuery('(min-width:600px)')
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -36,26 +40,40 @@ const RowOptions = memo(({ id, status, refreshData }: RowOptionsProps) => {
     setAnchorEl(null)
   }
 
-  const handleActionActiveOrInactive = useCallback(() => {
-    api
-      .put(`/banks/${id}`, { status: status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' })
-      .then(() => refreshData())
-      .catch(() => toast.error('Erro ao alterar status do banco'))
-      .finally(() => setOpen(false))
-  }, [id, refreshData, status])
-
-  const handleActiveOrInactive = useCallback(() => {
-    switch (status) {
-      case 'ACTIVE':
-        setOpen(true)
-        break
-      case 'INACTIVE':
-        handleActionActiveOrInactive()
-        break
-      default:
-        break
+  const handleActionActiveOrInactive = useMutation(
+    ({ id, status }: { id: string; status: string }) => {
+      return bankController.changeBankStatus({ id, status })
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['banks'])
+        toast.success('Status alterado com sucesso!')
+      },
+      onError: (error: any) => {
+        if (error instanceof AppError) toast.error(error.message)
+      },
+      onSettled: () => setOpen(false)
     }
-  }, [handleActionActiveOrInactive, status])
+  )
+
+  const handleActiveOrInactive = useCallback(
+    (status: string, id: string) => {
+      switch (status) {
+        case 'ACTIVE':
+          setOpen(true)
+          break
+        case 'INACTIVE':
+          handleActionActiveOrInactive.mutateAsync({
+            id,
+            status: 'ACTIVE'
+          })
+          break
+        default:
+          break
+      }
+    },
+    [handleActionActiveOrInactive]
+  )
 
   return (
     <>
@@ -67,7 +85,7 @@ const RowOptions = memo(({ id, status, refreshData }: RowOptionsProps) => {
             padding: '0 8 0 0 '
           }}
         >
-          <Button size='small' variant='outlined' color='primary' onClick={handleActiveOrInactive}>
+          <Button size='small' variant='outlined' color='primary' onClick={() => handleActiveOrInactive(status, id)}>
             {banckStatus[status]}
           </Button>
         </Box>
@@ -91,7 +109,7 @@ const RowOptions = memo(({ id, status, refreshData }: RowOptionsProps) => {
             }}
             PaperProps={{ style: { minWidth: '8rem' } }}
           >
-            <MenuItem onClick={handleActiveOrInactive}>{banckStatus[status]}</MenuItem>
+            <MenuItem onClick={() => handleActiveOrInactive(status, id)}>{banckStatus[status]}</MenuItem>
           </Menu>
         </>
       )}
@@ -102,8 +120,10 @@ const RowOptions = memo(({ id, status, refreshData }: RowOptionsProps) => {
           open={open}
           setOpen={setOpen}
           question={`Deseja realmente ${status === 'ACTIVE' ? 'inativar' : 'ativar'} este banco?`}
-          description='Essa ação é irreversível, e todos os usuários vinculados a este banco serão afetados.'
-          handleConfirmDelete={handleActionActiveOrInactive}
+          description='Todos os usuários vinculados a este banco serão afetados.'
+          handleConfirmDelete={() =>
+            handleActionActiveOrInactive.mutateAsync({ id, status: status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' })
+          }
         />
       )}
     </>
