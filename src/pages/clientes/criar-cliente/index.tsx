@@ -1,55 +1,24 @@
 import { useRouter } from 'next/router'
-
 import { Box, Button, Card, CardContent, CardHeader, Grid } from '@mui/material'
-import CustomTextField from 'src/@core/components/mui/text-field'
-
-import { useAuth } from 'src/hooks/useAuth'
-
-import * as yup from 'yup'
-import { applyDocumentMask, applyPhoneMask } from 'src/utils/inputs'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-
-import { api } from 'src/services/api'
-import { delay } from 'src/utils/delay'
-
 import toast from 'react-hot-toast'
+import { useMutation, useQueryClient } from 'react-query'
 
-const schema = yup.object().shape({
-  name: yup.string().required('Nome obrigatório'),
-  email: yup.string().email('E-mail inválido').required('E-mail obrigatório'),
-  documentNumber: yup
-    .string()
-    .required('Número do CNPJ obrigatório')
-    .matches(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido')
-    .max(18, 'CNPJ inválido'),
-  collaboratorName: yup.string().required('Nome do colaborador obrigatório'),
-  clientCompanyPhone: yup
-    .string()
-    .required('Telefone da empresa obrigatório')
-    .matches(/^(\(?\d{2}\)?\s)?(\d{4,5}\-?\d{4})$/, 'Telefone inválido'),
-  financialResponsible: yup.string().required('Responsável financeiro obrigatório'),
-  fantasyName: yup.string().required('Nome fantasia obrigatório'),
-  observations: yup.string()
-})
+import CustomTextField from 'src/@core/components/mui/text-field'
+import { useAuth } from 'src/hooks/useAuth'
 
-interface FormData {
-  name: string
-  email: string
-  documentNumber: string
-  collaboratorName: string
-  clientCompanyPhone: string
-  financialResponsible: string
-  fantasyName: string
-  observations: string
-  status: 'ACTIVE'
-  accountingId: string
-  documentType: 'CNPJ'
-}
+import { applyDocumentMask, applyPhoneMask } from 'src/utils/inputs'
+import { userController } from 'src/modules/users'
+import { AppError } from 'src/shared/errors/AppError'
+
+import { createClientSchema } from 'src/services/yup/schemas/clients/createClientSchema'
+import { ICreateClientDTO } from 'src/modules/users/dtos/ICreateClientDTO'
 
 const CreateClient = () => {
   const router = useRouter()
   const { user } = useAuth()
+  const queryClient = useQueryClient()
 
   const {
     control,
@@ -70,26 +39,30 @@ const CreateClient = () => {
       accountingId: user?.id,
       documentType: 'CNPJ',
       type: 'CLIENT'
-    } as FormData,
+    } as ICreateClientDTO,
     mode: 'onBlur',
-    resolver: yupResolver(schema)
+    resolver: yupResolver(createClientSchema)
   })
 
-  const onSubmit = (data: FormData) => {
-    api
-      .post('/users', data)
-      .then(response => {
-        if (response.status === 201) {
+  const handleCreateClient = useMutation(
+    (data: ICreateClientDTO) => {
+      return userController.createClient(data)
+    },
+    {
+      onSuccess: response => {
+        if (response?.status === 201) {
+          queryClient.invalidateQueries(['clients'])
           toast.success('Cliente adicionado com sucesso!')
-          delay(2000).then(() => {
-            router.push('/clientes')
-          })
+          router.push('/usuarios')
         }
-      })
-      .catch(() => {
-        toast.error('Erro ao adicionar cliente!')
-      })
-  }
+      },
+      onError: error => {
+        if (error instanceof AppError) toast.error(error.message)
+      }
+    }
+  )
+
+  const onSubmit = async (data: ICreateClientDTO) => await handleCreateClient.mutateAsync(data)
 
   return (
     <Card>

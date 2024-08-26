@@ -14,8 +14,10 @@ import { formatDate } from 'src/@core/utils/format'
 import { Loading, Order, getComparator, renderInitials, stableSort } from 'src/utils/list'
 
 import { ThemeColor } from 'src/@core/layouts/types'
-import { BankListDataProps, BankProps } from 'src/types/banks'
-import useGetDataApi from 'src/hooks/useGetDataApi'
+import { IBankDTO } from 'src/modules/banks/dtos/IBankDTO'
+import { bankController } from 'src/modules/banks'
+import { useQuery } from 'react-query'
+import Error from 'src/components/FeedbackAPIs/Error'
 
 interface BankStatusColor {
   [key: string]: ThemeColor
@@ -37,23 +39,25 @@ const banckStatus: BankStatusType = {
 
 const List = () => {
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof BankProps>('createdAt')
+  const [orderBy, setOrderBy] = useState<keyof IBankDTO>('createdAt')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [filter, setFilter] = useState('')
-  const [banks, setBanks] = useState<BankProps[]>([])
+  const [banks, setBanks] = useState<IBankDTO[]>([])
+
+  const params = useMemo(() => ({ page: page + 1, perPage: rowsPerPage, search: filter }), [page, rowsPerPage, filter])
 
   const {
     data: rows,
-    loading: loadingRows,
-    setRefresh
-  } = useGetDataApi<BankListDataProps>({
-    url: '/banks',
-    params: { page: page + 1, perPage: rowsPerPage, search: filter }
+    isLoading,
+    isError
+  } = useQuery(['banks', params], async () => bankController.getBanks(params), {
+    staleTime: 1000 * 60 * 5,
+    keepPreviousData: true
   })
 
   const handleRequestSort = useCallback(
-    (event: MouseEvent<unknown>, property: keyof BankProps) => {
+    (event: MouseEvent<unknown>, property: keyof IBankDTO) => {
       const isAsc = orderBy === property && order === 'asc'
       setOrder(isAsc ? 'desc' : 'asc')
       setOrderBy(property)
@@ -87,6 +91,8 @@ const List = () => {
     }
   }, [rows?.total, rowsPerPage, page, handleChangePage, handleChangeRowsPerPage])
 
+  if (isError) return <Error />
+
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -102,7 +108,7 @@ const List = () => {
             />
             <Suspense fallback={<Loading />}>
               <TableBody>
-                {loadingRows ? (
+                {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={6}>
                       <Typography noWrap variant='h6' sx={{ color: 'text.secondary' }}>
@@ -171,7 +177,6 @@ const List = () => {
                           <RowOptions
                             id={String(row._id)}
                             status={row.status}
-                            refreshData={() => setRefresh(current => !current)}
                           />
                         </TableCell>
                       </TableRow>

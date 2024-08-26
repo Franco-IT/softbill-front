@@ -1,14 +1,16 @@
 import { memo } from 'react'
+
 import { Box, TableCell, TableHead, TableRow, TableSortLabel, useTheme } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
+
 import { HeadCellProps } from './HeadCells'
-import { ClientProps } from 'src/types/clients'
+import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
 
 type Order = 'asc' | 'desc'
 
 interface EnhancedTableProps {
   headCells: HeadCellProps[]
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ClientProps) => void
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof IClientDTO) => void
   order: Order
   orderBy: string
   rowCount: number
@@ -19,7 +21,7 @@ const EnhancedTableHead = memo((props: EnhancedTableProps) => {
 
   const theme = useTheme()
 
-  const createSortHandler = (property: keyof ClientProps) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof IClientDTO) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property)
   }
 
@@ -40,7 +42,7 @@ const EnhancedTableHead = memo((props: EnhancedTableProps) => {
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id as keyof ClientProps)}
+              onClick={createSortHandler(headCell.id as keyof IClientDTO)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (

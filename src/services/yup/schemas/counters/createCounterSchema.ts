@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-export const createUserSchema = yup.object().shape({
+export const createCounterSchema = yup.object().shape({
   name: yup.string().required('Nome obrigatório'),
   email: yup.string().email('E-mail inválido').required('E-mail obrigatório'),
   status: yup.string().required('Status obrigatório'),

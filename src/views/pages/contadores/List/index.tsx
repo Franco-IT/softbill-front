@@ -1,8 +1,11 @@
 import { Suspense, useEffect, useState, ChangeEvent, MouseEvent, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
-import CustomChip from 'src/@core/components/mui/chip'
+import toast from 'react-hot-toast'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 
+import CustomChip from 'src/@core/components/mui/chip'
+import Error from 'src/components/FeedbackAPIs/Error'
 import HeadCells from './HeadCells'
 import RowOptions from './RowOptions'
 import TableHeader from './TableHeader'
@@ -12,13 +15,11 @@ import EnhancedTableHead from './EnhancedTableHead'
 import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
-import { Loading, Order, getComparator, removeRowFromList, renderUser, stableSort } from 'src/utils/list'
+import { Loading, Order, getComparator, renderUser, stableSort } from 'src/utils/list'
 
 import { ThemeColor } from 'src/@core/layouts/types'
-import { UserListDataProps, UserProps } from 'src/types/users'
-
-import toast from 'react-hot-toast'
-import useGetDataApi from 'src/hooks/useGetDataApi'
+import { ICounterDTO } from 'src/modules/users/dtos/ICounterDTO'
+import { AppError } from 'src/shared/errors/AppError'
 import { userController } from 'src/modules/users'
 
 interface ColorsType {
@@ -39,20 +40,31 @@ const userStatusObj: UserStatusType = {
 }
 
 const List = () => {
+  const queryClient = useQueryClient()
+
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof UserProps>('createdAt')
+  const [orderBy, setOrderBy] = useState<keyof ICounterDTO>('createdAt')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [filter, setFilter] = useState('')
-  const [users, setUsers] = useState<UserProps[]>([])
+  const [users, setUsers] = useState<ICounterDTO[]>([])
 
-  const { data: rows, loading: loadingRows } = useGetDataApi<UserListDataProps>({
-    url: '/users?type=COUNTER',
-    params: { page: page + 1, perPage: rowsPerPage, search: filter }
+  const params = useMemo(
+    () => ({ type: 'COUNTER', page: page + 1, perPage: rowsPerPage, search: filter }),
+    [page, rowsPerPage, filter]
+  )
+
+  const {
+    data: rows,
+    isLoading,
+    isError
+  } = useQuery(['counters', params], async () => userController.getUsers(params), {
+    staleTime: 1000 * 60 * 5,
+    keepPreviousData: true
   })
 
   const handleRequestSort = useCallback(
-    (event: MouseEvent<unknown>, property: keyof UserProps) => {
+    (event: MouseEvent<unknown>, property: keyof ICounterDTO) => {
       const isAsc = orderBy === property && order === 'asc'
       setOrder(isAsc ? 'desc' : 'asc')
       setOrderBy(property)
@@ -77,20 +89,21 @@ const List = () => {
     return stableSort(users, getComparator(order, orderBy))
   }, [order, orderBy, users])
 
-  const handleConfirmDelete = useCallback(
+  const handleConfirmDelete = useMutation(
     (id: string) => {
-      userController
-        .delete({ id })
-        .then(response => {
-          if (response?.status === 200) {
-            const updatedListUsers = removeRowFromList(id, users, '_id')
-            setUsers(updatedListUsers)
-            toast.success('Contador deletado com sucesso!')
-          }
-        })
-        .catch(() => toast.error('Erro ao deletar Contador!'))
+      return userController.delete({ id })
     },
-    [users]
+    {
+      onSuccess: response => {
+        if (response?.status === 200) {
+          queryClient.invalidateQueries(['counters'])
+          toast.success('Contador deletado com sucesso!')
+        }
+      },
+      onError: error => {
+        if (error instanceof AppError) toast.error(error.message)
+      }
+    }
   )
 
   const paginationProps = useMemo(() => {
@@ -103,6 +116,8 @@ const List = () => {
       handleChangeRowsPerPage
     }
   }, [rows?.total, rowsPerPage, page, handleChangePage, handleChangeRowsPerPage])
+
+  if (isError) return <Error />
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -119,7 +134,7 @@ const List = () => {
             />
             <Suspense fallback={<Loading />}>
               <TableBody>
-                {loadingRows ? (
+                {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={6}>
                       <Typography noWrap variant='h6' sx={{ color: 'text.secondary' }}>
@@ -202,7 +217,10 @@ const List = () => {
                           />
                         </TableCell>
                         <TableCell align='left'>
-                          <RowOptions id={String(row._id)} handleConfirmDelete={() => handleConfirmDelete(row._id)} />
+                          <RowOptions
+                            id={String(row._id)}
+                            handleConfirmDelete={() => handleConfirmDelete.mutateAsync(row._id)}
+                          />
                         </TableCell>
                       </TableRow>
                     )

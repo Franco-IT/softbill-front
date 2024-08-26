@@ -12,14 +12,16 @@ import EnhancedTableHead from './EnhancedTableHead'
 import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
-import { Loading, Order, getComparator, removeRowFromList, renderUser, stableSort } from 'src/utils/list'
+import { Loading, Order, getComparator, renderUser, stableSort } from 'src/utils/list'
 
 import { ThemeColor } from 'src/@core/layouts/types'
-import { UserListDataProps, UserProps } from 'src/types/users'
 
 import toast from 'react-hot-toast'
-import { api } from 'src/services/api'
-import useGetDataApi from 'src/hooks/useGetDataApi'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { userController } from 'src/modules/users'
+import Error from 'src/components/FeedbackAPIs/Error'
+import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
+import { AppError } from 'src/shared/errors/AppError'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -39,20 +41,31 @@ const userStatusObj: UserStatusType = {
 }
 
 const List = () => {
+  const queryClient = useQueryClient()
+
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof UserProps>('createdAt')
+  const [orderBy, setOrderBy] = useState<keyof IUserDTO>('createdAt')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [filter, setFilter] = useState('')
-  const [users, setUsers] = useState<UserProps[]>([])
+  const [users, setUsers] = useState<IUserDTO[]>([])
 
-  const { data: rows, loading: loadingRows } = useGetDataApi<UserListDataProps>({
-    url: '/users?type=ADMIN',
-    params: { page: page + 1, perPage: rowsPerPage, search: filter }
+  const params = useMemo(
+    () => ({ type: 'ADMIN', page: page + 1, perPage: rowsPerPage, search: filter }),
+    [page, rowsPerPage, filter]
+  )
+
+  const {
+    data: rows,
+    isLoading,
+    isError
+  } = useQuery(['users', page, rowsPerPage, filter], async () => userController.getUsers(params), {
+    staleTime: 1000 * 60 * 5,
+    keepPreviousData: true
   })
 
   const handleRequestSort = useCallback(
-    (event: MouseEvent<unknown>, property: keyof UserProps) => {
+    (event: MouseEvent<unknown>, property: keyof IUserDTO) => {
       const isAsc = orderBy === property && order === 'asc'
       setOrder(isAsc ? 'desc' : 'asc')
       setOrderBy(property)
@@ -71,22 +84,21 @@ const List = () => {
 
   const visibleRows = useMemo(() => stableSort(users, getComparator(order, orderBy)), [order, orderBy, users])
 
-  const handleConfirmDelete = useCallback(
-    (id: string) => {
-      api
-        .delete(`/users/${id}`)
-        .then(response => {
-          if (response.status === 200) {
-            const updatedListUsers = removeRowFromList(id, users, '_id')
-            setUsers(updatedListUsers)
-            toast.success('Usuário deletado com sucesso!')
-          }
-        })
-        .catch(() => {
-          toast.error('Erro ao deletar usuário!')
-        })
+  const handleConfirmDelete = useMutation(
+    async (id: string) => {
+      return userController.delete({ id })
     },
-    [users]
+    {
+      onSuccess: response => {
+        if (response?.status === 200) {
+          queryClient.invalidateQueries(['users'])
+          toast.success('Usuário deletado com sucesso!')
+        }
+      },
+      onError: error => {
+        if (error instanceof AppError) toast.error(error.message)
+      }
+    }
   )
 
   useEffect(() => {
@@ -104,6 +116,8 @@ const List = () => {
     }
   }, [rows?.total, rowsPerPage, page, handleChangePage, handleChangeRowsPerPage])
 
+  if (isError) return <Error />
+
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -119,7 +133,7 @@ const List = () => {
             />
             <Suspense fallback={<Loading />}>
               <TableBody>
-                {loadingRows ? (
+                {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={6}>
                       <Typography noWrap variant='h6' sx={{ color: 'text.secondary' }}>
@@ -202,7 +216,10 @@ const List = () => {
                           />
                         </TableCell>
                         <TableCell align='left'>
-                          <RowOptions id={String(row._id)} handleConfirmDelete={() => handleConfirmDelete(row._id)} />
+                          <RowOptions
+                            id={String(row._id)}
+                            handleConfirmDelete={() => handleConfirmDelete.mutateAsync(row._id)}
+                          />
                         </TableCell>
                       </TableRow>
                     )

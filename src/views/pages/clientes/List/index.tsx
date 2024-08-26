@@ -1,7 +1,12 @@
 import { Suspense, useEffect, useState, ChangeEvent, MouseEvent, useMemo, useCallback } from 'react'
 import Link from 'next/link'
+
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
+
+import toast from 'react-hot-toast'
+
 import CustomChip from 'src/@core/components/mui/chip'
+import Error from 'src/components/FeedbackAPIs/Error'
 
 import HeadCells from './HeadCells'
 import RowOptions from './RowOptions'
@@ -12,15 +17,16 @@ import EnhancedTableHead from './EnhancedTableHead'
 import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
-import { Loading, Order, getComparator, removeRowFromList, renderUser, stableSort } from 'src/utils/list'
+import { Loading, Order, getComparator, renderUser, stableSort } from 'src/utils/list'
 
 import { ThemeColor } from 'src/@core/layouts/types'
-import { ClientProps, ClientsListProps } from 'src/types/clients'
 
-import toast from 'react-hot-toast'
-import { api } from 'src/services/api'
 import { useAuth } from 'src/hooks/useAuth'
-import useGetDataApi from 'src/hooks/useGetDataApi'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+
+import { userController } from 'src/modules/users'
+import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
+import { AppError } from 'src/shared/errors/AppError'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -41,20 +47,31 @@ const clientStatusObj: ClientStatusType = {
 
 const List = () => {
   const { user } = useAuth()
+  const queryClient = useQueryClient()
+
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof ClientProps>('createdAt')
+  const [orderBy, setOrderBy] = useState<keyof IClientDTO>('createdAt')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [filter, setFilter] = useState('')
-  const [clients, setClients] = useState<ClientProps[]>([])
+  const [clients, setClients] = useState<IClientDTO[]>([])
 
-  const { data: rows, loading: loadingRows } = useGetDataApi<ClientsListProps>({
-    url: `/users?accountingId=${user?.id}&type=CLIENT`,
-    params: { page: page + 1, perPage: rowsPerPage, search: filter }
+  const params = useMemo(
+    () => ({ accountingId: user?.id || '', type: 'CLIENT', page: page + 1, perPage: rowsPerPage, search: filter }),
+    [user?.id, page, rowsPerPage, filter]
+  )
+
+  const {
+    data: rows,
+    isLoading,
+    isError
+  } = useQuery(['clients', page, rowsPerPage, filter], async () => userController.getClients(params), {
+    staleTime: 1000 * 60 * 5,
+    keepPreviousData: true
   })
 
   const handleRequestSort = useCallback(
-    (event: MouseEvent<unknown>, property: keyof ClientProps) => {
+    (event: MouseEvent<unknown>, property: keyof IClientDTO) => {
       const isAsc = orderBy === property && order === 'asc'
       setOrder(isAsc ? 'desc' : 'asc')
       setOrderBy(property)
@@ -73,22 +90,21 @@ const List = () => {
 
   const visibleRows = useMemo(() => stableSort(clients, getComparator(order, orderBy)), [order, orderBy, clients])
 
-  const handleConfirmDelete = useCallback(
+  const handleConfirmDelete = useMutation(
     (id: string) => {
-      api
-        .delete(`/users/${id}`)
-        .then(response => {
-          if (response.status === 200) {
-            const updatedListClients = removeRowFromList(id, clients, '_id')
-            setClients(updatedListClients)
-            toast.success('Cliente deletado com sucesso!')
-          }
-        })
-        .catch(() => {
-          toast.error('Erro ao deletar cliente!')
-        })
+      return userController.delete({ id })
     },
-    [clients]
+    {
+      onSuccess: response => {
+        if (response?.status === 200) {
+          queryClient.invalidateQueries(['clients'])
+          toast.success('Cliente deletado com sucesso!')
+        }
+      },
+      onError: error => {
+        if (error instanceof AppError) toast.error(error.message)
+      }
+    }
   )
 
   useEffect(() => {
@@ -106,6 +122,8 @@ const List = () => {
     }
   }, [rows?.total, rowsPerPage, page, handleChangePage, handleChangeRowsPerPage])
 
+  if (isError) return <Error />
+
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -121,7 +139,7 @@ const List = () => {
             />
             <Suspense fallback={<Loading />}>
               <TableBody>
-                {loadingRows ? (
+                {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={6}>
                       <Typography noWrap variant='h6' sx={{ color: 'text.secondary' }}>
@@ -204,7 +222,10 @@ const List = () => {
                           />
                         </TableCell>
                         <TableCell align='left'>
-                          <RowOptions id={String(row._id)} handleConfirmDelete={() => handleConfirmDelete(row._id)} />
+                          <RowOptions
+                            id={String(row._id)}
+                            handleConfirmDelete={() => handleConfirmDelete.mutateAsync(row._id)}
+                          />
                         </TableCell>
                       </TableRow>
                     )
