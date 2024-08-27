@@ -7,7 +7,7 @@ import CustomTextField from 'src/@core/components/mui/text-field'
 import GlowIcon from 'src/components/GlowIcon'
 
 const Conciliation = (props: any) => {
-  const { onSubmit, handleCancel, type, cc, cd, description, value } = props
+  const { onSubmit, handleCancel, type, cc, cd, description, value } = props.item
 
   const status: any = 'PENDING'
 

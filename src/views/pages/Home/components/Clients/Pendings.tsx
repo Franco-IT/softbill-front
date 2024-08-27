@@ -1,7 +1,9 @@
 import { Button, Card, CardContent, CardHeader, List } from '@mui/material'
 import CardPending from './CardPending'
+import { useRouter } from 'next/router'
 
 const Pendings = () => {
+  const router = useRouter()
   const monthPending = ['february', 'august']
 
   return (
@@ -9,7 +11,7 @@ const Pendings = () => {
       <CardHeader
         title='Conciliações Pendentes'
         action={
-          <Button variant='contained' color='primary'>
+          <Button variant='contained' color='primary' onClick={() =>router.push('conciliacao-bancaria-cliente')}>
             Ver Todos
           </Button>
         }

@@ -23,8 +23,54 @@ const CardPending = (props: any) => {
   const month = props.month
 
   const pendingValue: any = {
-    february: ['Item 1', 'Item 2', 'Item 3'],
-    august: ['Item 4', 'Item 5', 'Item 6']
+    february: [
+      {
+        _id: 'asdnasijdioajdioas',
+        bank: 'Banco do Brasil',
+        cc: '1234567-8',
+        cd: '1234567-8',
+        description: 'Transferência PIX',
+        value: 'R$ 100,00',
+        origin: null,
+        type: 'DEBIT',
+        createdAt: '2021-10-10T00:00:00.000Z'
+      },
+      {
+        _id: 'anfniaosndioansdnas',
+        bank: 'Banco do Brasil',
+        cc: '1234567-8',
+        cd: '1234567-8',
+        value: 'R$ 1000,00',
+        description: 'Lojas Americanas',
+        origin: null,
+        type: 'CREDIT',
+        createdAt: '2021-10-10T00:00:00.000Z'
+      }
+    ],
+    august: [
+      {
+        _id: 'asdnasijdioajdioas',
+        bank: 'Banco do Brasil',
+        cc: '1234567-8',
+        cd: '1234567-8',
+        description: 'Transferência PIX',
+        value: 'R$ 100,00',
+        origin: null,
+        type: 'DEBIT',
+        createdAt: '2021-10-10T00:00:00.000Z'
+      },
+      {
+        _id: 'anfniaosndioansdnas',
+        bank: 'Banco do Brasil',
+        cc: '1234567-8',
+        cd: '1234567-8',
+        value: 'R$ 1000,00',
+        description: 'Lojas Americanas',
+        origin: null,
+        type: 'CREDIT',
+        createdAt: '2021-10-10T00:00:00.000Z'
+      }
+    ]
   }
 
   const monthsValue: any = {
@@ -68,16 +114,26 @@ const CardPending = (props: any) => {
   return (
     <Fragment>
       <ListSubheader>{`Pendências ${monthsValue[month]}`}</ListSubheader>
-      {pendingValue[month].map((item: any, index: number) => (
-        <ListItemButton
-          key={`item-${index}-${item}`}
-          onClick={e => {
-            toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Conciliation {...conciliationProps} />)(e)
-          }}
-        >
-          <ListItemText primary={`Item ${item}`} />
-        </ListItemButton>
-      ))}
+      {pendingValue[month].map((item: any, index: number) => {
+        const itemProps = {
+          ...item
+        }
+
+        return (
+          <ListItemButton
+            key={`item-${index}-${item}`}
+            onClick={e => {
+              toggleDrawer(
+                isSmallerThanMd ? 'bottom' : 'right',
+                true,
+                <Conciliation {...conciliationProps} {...itemProps} />
+              )(e)
+            }}
+          >
+            <ListItemText primary={`${item.description}: ${item.value}`} />
+          </ListItemButton>
+        )
+      })}
       <DrawerAnchor {...drawerProps} />
     </Fragment>
   )
