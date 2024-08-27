@@ -80,6 +80,17 @@ const navigation = (): VerticalNavItemsType => {
       avatarColor: 'warning'
     },
     {
+      title: 'Conciliação Bancária',
+      subtitle: 'Ver Conciliação Bancária',
+      action: ['client:read', 'client:update'],
+      auth: true,
+      subject: ['CLIENT'],
+      path: '/conciliacao-bancaria-cliente',
+      icon: 'tabler:input-check',
+      avatarColor: 'success'
+    },
+
+    {
       title: 'Minha Conta',
       path: '/minha-conta',
       action: ['read', 'update', 'delete'],
