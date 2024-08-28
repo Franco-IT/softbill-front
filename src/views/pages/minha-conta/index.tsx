@@ -64,7 +64,7 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
   const handleEditClose = () => setOpenEdit(false)
 
   const handleConfirmDeleteProfile = useMutation(
-    async (id: string) => {
+    (id: string) => {
       return userController.delete({ id })
     },
     {
@@ -87,14 +87,14 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
   )
 
   const handleSetAvatar = useMutation(
-    async (file: File) => {
+    (file: File) => {
       const formData: ISetUserAvatarDTO = {
         file,
         userId: data.id,
         uploadType: data.type != 'ACCOUNTING' ? 'PROFILE' : 'LOGO'
       }
 
-      return await userController.setAvatar(formData)
+      return userController.setAvatar(formData)
     },
     {
       onSuccess: response => {

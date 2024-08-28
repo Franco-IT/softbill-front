@@ -1,9 +1,10 @@
 import * as yup from 'yup'
 
-export const resetPasswordSchema = yup.object().shape({
+export const changePasswordAuthUserSchema = yup.object().shape({
+  oldPassword: yup.string().required('Senha obrigatória'),
   newPassword: yup
     .string()
-    .required('Senha obrigatória')
+    .required('Nova senha obrigatória')
     .min(8, 'A senha deve ter no mínimo 8 caracteres')
     .matches(
       /^(?=.*[0-9])(?=.*[!@#$%^&])[a-zA-Z0-9!@#$%^&]{8,20}$/,
@@ -11,6 +12,6 @@ export const resetPasswordSchema = yup.object().shape({
     ),
   confirmPassword: yup
     .string()
-    .required('Confirmação de senha obrigatória')
+    .required('Confirmação de nova senha obrigatória')
     .equals([yup.ref('newPassword')], 'As senhas não coincidem')
 })

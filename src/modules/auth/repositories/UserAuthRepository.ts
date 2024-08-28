@@ -4,6 +4,7 @@ import { IGetAuthUserDTO } from '../dtos/IGetAuthUserDTO'
 import { IUserAuthRepository } from './IUserAuthRepository'
 import { IUserFirstAccessDTO } from '../dtos/IUserFirstAccessDTO'
 import { IUserResetPasswordDTO } from '../dtos/IUserResetPasswordDTO'
+import { IChangePasswordAuthUserDTO } from '../dtos/IChangePasswordAuthUserDTO'
 import { IUserLoginDTO, IUserLoginResponseDTO } from '../dtos/IUserLoginDTO'
 import { IUserEmailResetPasswordDTO } from '../dtos/IUserEmailResetPasswordDTO'
 
@@ -39,8 +40,12 @@ export class UserAuthRepository implements IUserAuthRepository {
     return user
   }
 
+  async changePassword(data: IChangePasswordAuthUserDTO): Promise<AxiosResponse> {
+    return api.put('/auth/change-password', data)
+  }
+
   async firtsAccess({ newPassword, confirmPassword, token }: IUserFirstAccessDTO): Promise<AxiosResponse<any, any>> {
-    return await api.post(
+    return api.post(
       '/auth/reset-password',
       { newPassword, confirmPassword },
       {
@@ -52,7 +57,7 @@ export class UserAuthRepository implements IUserAuthRepository {
   }
 
   async emailResetPassword(data: IUserEmailResetPasswordDTO): Promise<AxiosResponse<any, any>> {
-    return await api.post('/auth/email-reset-password', data)
+    return api.post('/auth/email-reset-password', data)
   }
 
   async resetPassword({
@@ -60,7 +65,7 @@ export class UserAuthRepository implements IUserAuthRepository {
     confirmPassword,
     token
   }: IUserResetPasswordDTO): Promise<AxiosResponse<any, any>> {
-    return await api.post(
+    return api.post(
       '/auth/reset-password',
       {
         newPassword,

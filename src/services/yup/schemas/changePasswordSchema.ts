@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-export const resetPasswordSchema = yup.object().shape({
+export const changePasswordSchema = yup.object().shape({
   newPassword: yup
     .string()
     .required('Senha obrigatória')
@@ -11,6 +11,6 @@ export const resetPasswordSchema = yup.object().shape({
     ),
   confirmPassword: yup
     .string()
-    .required('Confirmação de senha obrigatória')
+    .required('Confirmação de nova senha obrigatória')
     .equals([yup.ref('newPassword')], 'As senhas não coincidem')
 })

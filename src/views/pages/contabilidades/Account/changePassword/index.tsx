@@ -1,7 +1,6 @@
 // ** React Imports
 import { useState } from 'react'
 
-import * as yup from 'yup'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
@@ -19,22 +18,12 @@ import Icon from 'src/@core/components/icon'
 
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { Box } from '@mui/system'
-import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
-import { verifyChangePasswordAdminErrors } from 'src/utils/verifyErrors'
+import { changePasswordSchema } from 'src/services/yup/schemas/changePasswordSchema'
+import { userController } from 'src/modules/users'
+import { AppError } from 'src/shared/errors/AppError'
+import { IChangeUserPasswordDTO } from 'src/modules/users/dtos/IChangeUserPasswordDTO'
 
-const schema = yup.object().shape({
-  newPassword: yup.string().min(8, 'minino de 8 caracteres').required('Senha obrigatória'),
-  confirmPassword: yup
-    .string()
-    .required('Confirmação de senha obrigatória')
-    .equals([yup.ref('newPassword')], 'As senhas não coincidem')
-})
-
-interface FormData {
-  newPassword: string
-  confirmPassword: string
-}
 interface ChangePasswordProps {
   id: string
 }
@@ -50,25 +39,19 @@ const ChangePassword = ({ id }: ChangePasswordProps) => {
     formState: { errors }
   } = useForm({
     defaultValues: {
+      id,
       newPassword: '',
       confirmPassword: ''
     },
     mode: 'onBlur',
-    resolver: yupResolver(schema)
+    resolver: yupResolver(changePasswordSchema)
   })
 
-  const onSubmit = (data: FormData) => {
-    api
-      .put(`/auth/change-auth-password/${id}`, data)
-      .then(response => {
-        if (response.status === 200) {
-          toast.success('Senha alterada com sucesso')
-          reset()
-        }
-      })
-      .catch(error => {
-        verifyChangePasswordAdminErrors(error.response.status, error.response.data.message)
-      })
+  const onSubmit = (data: IChangeUserPasswordDTO) => {
+    userController
+      .changePassword(data)
+      .then(response => response?.status === 200 && (toast.success('Senha alterada com sucesso'), reset()))
+      .catch(error => error instanceof AppError && toast.error(error.message))
   }
 
   return (

@@ -22,7 +22,7 @@ import toast from 'react-hot-toast'
 
 import { userController } from 'src/modules/users'
 import { AppError } from 'src/shared/errors/AppError'
-import { resetPasswordSchema } from 'src/services/yup/schemas/resetPasswordSchema'
+import { changePasswordSchema } from 'src/services/yup/schemas/changePasswordSchema'
 import { IChangeUserPasswordDTO } from 'src/modules/users/dtos/IChangeUserPasswordDTO'
 
 interface ChangePasswordProps {
@@ -45,7 +45,7 @@ const ChangePassword = ({ id }: ChangePasswordProps) => {
       confirmPassword: ''
     },
     mode: 'onBlur',
-    resolver: yupResolver(resetPasswordSchema)
+    resolver: yupResolver(changePasswordSchema)
   })
 
   const onSubmit = (data: IChangeUserPasswordDTO) => {
