@@ -81,7 +81,7 @@ const ReconciliationTable = memo(
       setSelected(newSelected)
 
       const item = visibleRows.filter((item: any) => {
-        return item._id === newSelected[0]
+        return item.id === newSelected[0]
       })[0]
 
       const conciliationProps = {
@@ -150,7 +150,7 @@ const ReconciliationTable = memo(
                   </TableRow>
                 ) : (
                   visibleRows.map((row: any, index: number) => {
-                    const isItemSelected = isSelected(row._id)
+                    const isItemSelected = isSelected(row.id)
                     const labelId = `enhanced-table-checkbox-${index}`
 
                     const handleRowClick = (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, id: string) => {
@@ -161,8 +161,8 @@ const ReconciliationTable = memo(
                       <TableRow
                         hover
                         tabIndex={-1}
-                        key={row._id}
-                        onClick={event => handleRowClick(event, row._id)}
+                        key={row.id}
+                        onClick={event => handleRowClick(event, row.id)}
                         selected={isItemSelected}
                       >
                         <TableCell component='th' id={labelId} scope='row' padding='none'>
@@ -180,7 +180,7 @@ const ReconciliationTable = memo(
                               <Typography
                                 noWrap
                                 component={Link}
-                                href={`/usuarios/${row._id}`}
+                                href={`/usuarios/${row.id}`}
                                 sx={{
                                   fontWeight: 500,
                                   textDecoration: 'none',

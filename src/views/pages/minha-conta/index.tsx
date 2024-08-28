@@ -90,7 +90,7 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
     async (file: File) => {
       const formData: ISetUserAvatarDTO = {
         file,
-        userId: data._id,
+        userId: data.id,
         uploadType: data.type != 'ACCOUNTING' ? 'PROFILE' : 'LOGO'
       }
 
@@ -245,7 +245,7 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
               setOpen={setDeleteDialogOpen}
               question={'Você tem certeza que deseja deletar sua conta?'}
               description={'Essa ação não poderá ser desfeita.'}
-              handleConfirmDelete={() => handleConfirmDeleteProfile.mutateAsync(data._id)}
+              handleConfirmDelete={() => handleConfirmDeleteProfile.mutateAsync(data.id)}
             />
           )}
         </Card>

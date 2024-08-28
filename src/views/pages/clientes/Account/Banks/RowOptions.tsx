@@ -29,12 +29,12 @@ const RowOptions = ({ data, refreshData }: RowOptionsProps) => {
   const handleStatement = () =>
     router.push({
       pathname: '/clientes/banco/extrato/[id]',
-      query: { id: data._id, slug: data?.bank?.slug || data.importedBank, client: data.clientId }
+      query: { id: data.id, slug: data?.bank?.slug || data.importedBank, client: data.clientId }
     })
 
   const handleDelete = () => {
     api
-      .delete(`/bankAccounts/${data._id}`)
+      .delete(`/bankAccounts/${data.id}`)
       .then(() => refreshData())
       .catch(() => toast.error('Erro ao deletar banco'))
       .finally(() => setOpenDelete(false))
@@ -61,7 +61,7 @@ const RowOptions = ({ data, refreshData }: RowOptionsProps) => {
 
       {openDelete && (
         <DialogAlert
-          id={data._id}
+          id={data.id}
           open={openDelete}
           setOpen={setOpenDelete}
           question={`Deseja realmente deletar este banco?`}

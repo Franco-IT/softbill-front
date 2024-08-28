@@ -38,7 +38,7 @@ const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
 }))
 
 interface BanksProps {
-  bank: { _id: string; name: string }
+  bank: { id: string; name: string }
   handleSelectBank: (bankId: string, banks: any) => void
 }
 

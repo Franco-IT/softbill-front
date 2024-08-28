@@ -31,7 +31,7 @@ const RowOptions = ({ data }: RowOptionsProps) => {
 
   const handleDelete = () => {
     api
-      .delete(`/bankAccounts/${data._id}`)
+      .delete(`/bankAccounts/${data.id}`)
       .catch(() => toast.error('Erro ao deletar banco'))
       .finally(() => setOpen(false))
   }
@@ -80,7 +80,7 @@ const RowOptions = ({ data }: RowOptionsProps) => {
       )}
 
       <DialogAlert
-        id={data._id}
+        id={data.id}
         open={open}
         setOpen={setOpen}
         question={`Deseja realmente deletar este banco?`}

@@ -15,7 +15,7 @@ const formComponents: { [key: string]: any } = {
 
 interface BanksProps {
   methods: UseFormReturn<any, any>
-  bank: { _id: string; name: string }
+  bank: { id: string; name: string }
   handleSelectBank: (bankId: string, banks: any) => void
 }
 
@@ -44,7 +44,7 @@ const Banks = ({ handleSelectBank, methods, bank }: BanksProps) => {
           fullWidth
           label='Banco'
           required
-          value={bank._id || 'default'}
+          value={bank.id || 'default'}
           onChange={e => handleSelectBank(e.target.value, banks?.data)}
           error={Boolean(methods.formState.errors?.bankId)}
           {...(methods.formState.errors.bankId && { helperText: methods.formState.errors.bankId.message as any })}
@@ -54,7 +54,7 @@ const Banks = ({ handleSelectBank, methods, bank }: BanksProps) => {
           </MenuItem>
           {handleCheckBanksAvailable(banks?.data, userBanks?.data)}
         </CustomTextField>
-        {bank._id && formComponents[bank.name] ? (
+        {bank.id && formComponents[bank.name] ? (
           <DynamicFormFields
             typeMap={formComponents[bank.name]}
             fields={Object.keys(defaultValuesByStep[1][bank.name as keyof Step1DefaultValues])}

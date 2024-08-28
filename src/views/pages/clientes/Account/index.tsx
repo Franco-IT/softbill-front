@@ -165,7 +165,7 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
             setOpen={setDeleteDialogOpen}
             question={'Você tem certeza que deseja deletar este cliente?'}
             description={'Essa ação não poderá ser desfeita.'}
-            handleConfirmDelete={() => handleConfirmDeleteClient(data._id)}
+            handleConfirmDelete={() => handleConfirmDeleteClient(data.id)}
           />
         </Card>
       </Grid>

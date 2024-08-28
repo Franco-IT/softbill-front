@@ -102,7 +102,7 @@ const List = () => {
     ({ file, data }: { file: File; data: IBankDTO }) => {
       const formData: ISetBankLogoDTO = {
         file,
-        bankId: data._id,
+        bankId: data.id,
         uploadType: 'BANK_LOGO'
       }
 
@@ -185,7 +185,7 @@ const List = () => {
                     const labelId = `enhanced-table-checkbox-${index}`
 
                     return (
-                      <TableRow hover tabIndex={-1} key={row._id}>
+                      <TableRow hover tabIndex={-1} key={row.id}>
                         <TableCell component='th' id={labelId} scope='row' padding='none'>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <CustomBadgeAvatar
@@ -204,7 +204,7 @@ const List = () => {
                               <Typography
                                 noWrap
                                 component={Link}
-                                href={`/usuarios/${row._id}`}
+                                href={`/usuarios/${row.id}`}
                                 sx={{
                                   fontWeight: 500,
                                   textDecoration: 'none',
@@ -233,7 +233,7 @@ const List = () => {
                           />
                         </TableCell>
                         <TableCell align='left'>
-                          <RowOptions id={String(row._id)} status={row.status} />
+                          <RowOptions id={String(row.id)} status={row.status} />
                         </TableCell>
                       </TableRow>
                     )

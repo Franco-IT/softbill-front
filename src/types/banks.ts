@@ -1,5 +1,5 @@
 export type BankProps = {
-  _id: string
+  id: string
   name: string
   slug: string
   status: 'ACTIVE' | 'INACTIVE'
@@ -22,7 +22,7 @@ export type BankDataProps = {
 }
 
 export type BankAccountProps = {
-  _id: string
+  id: string
   bankClientId: string
   bankClientSecret: string
   accountNumber: string

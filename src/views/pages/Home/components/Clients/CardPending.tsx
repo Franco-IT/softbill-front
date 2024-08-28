@@ -25,7 +25,7 @@ const CardPending = (props: any) => {
   const pendingValue: any = {
     february: [
       {
-        _id: 'asdnasijdioajdioas',
+        id: 'asdnasijdioajdioas',
         bank: 'Banco do Brasil',
         cc: '1234567-8',
         cd: '1234567-8',
@@ -36,7 +36,7 @@ const CardPending = (props: any) => {
         createdAt: '2021-10-10T00:00:00.000Z'
       },
       {
-        _id: 'anfniaosndioansdnas',
+        id: 'anfniaosndioansdnas',
         bank: 'Banco do Brasil',
         cc: '1234567-8',
         cd: '1234567-8',
@@ -49,7 +49,7 @@ const CardPending = (props: any) => {
     ],
     august: [
       {
-        _id: 'asdnasijdioajdioas',
+        id: 'asdnasijdioajdioas',
         bank: 'Banco do Brasil',
         cc: '1234567-8',
         cd: '1234567-8',
@@ -60,7 +60,7 @@ const CardPending = (props: any) => {
         createdAt: '2021-10-10T00:00:00.000Z'
       },
       {
-        _id: 'anfniaosndioansdnas',
+        id: 'anfniaosndioansdnas',
         bank: 'Banco do Brasil',
         cc: '1234567-8',
         cd: '1234567-8',

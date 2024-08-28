@@ -53,7 +53,7 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProp
 
   const onSubmit = ({ name, email, status }: FormData) => {
     api
-      .put(`/users/${data._id}`, {
+      .put(`/users/${data.id}`, {
         name: name,
         email: email,
         status: status

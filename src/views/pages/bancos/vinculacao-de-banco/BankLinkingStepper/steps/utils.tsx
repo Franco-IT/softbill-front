@@ -48,7 +48,7 @@ export const handleCheckBanksAvailable = (banks: any[], userBanks: any[]) => {
     )
 
   const banksAvailable = banks.filter((bank: any) => {
-    return !userBanks.find((userBank: any) => userBank.bankId === bank._id)
+    return !userBanks.find((userBank: any) => userBank.bankId === bank.id)
   })
 
   if (banksAvailable.length === 0)
@@ -65,7 +65,7 @@ export const handleCheckBanksAvailable = (banks: any[], userBanks: any[]) => {
     )
 
   return banksAvailable.map((bank: any) => (
-    <MenuItem key={bank._id} value={bank._id}>
+    <MenuItem key={bank.id} value={bank.id}>
       {bank.name}
     </MenuItem>
   ))

@@ -29,7 +29,7 @@ export class UserAuthRepository implements IUserAuthRepository {
     const { data: userData } = response.data
 
     const user = new UserAuth({
-      id: userData._id,
+      id: userData.id,
       role: userData.type,
       email: userData.email,
       name: userData.name,

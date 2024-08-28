@@ -56,7 +56,7 @@ const Edit = memo(({ openEdit, handleEditClose, data }: EditProps) => {
 
   const handleEditProfile = useMutation(
     async ({ name, email, status }: FormData) => {
-      return api.put(`/users/${data._id}`, {
+      return api.put(`/users/${data.id}`, {
         name: name,
         email: email,
         status: status

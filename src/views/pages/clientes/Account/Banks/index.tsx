@@ -111,7 +111,7 @@ const Banks = () => {
                   const labelId = `enhanced-table-checkbox-${index}`
 
                   return (
-                    <TableRow hover tabIndex={-1} key={row._id}>
+                    <TableRow hover tabIndex={-1} key={row.id}>
                       <TableCell component='th' id={labelId} scope='row' padding='none'>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           {renderInitials(row?.bank || row.importedBank, {

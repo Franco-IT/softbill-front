@@ -79,7 +79,7 @@ const StatementsTable = () => {
   const handleFilterBank = (val: string | null, banks: any[] | null) => {
     if (!val || !banks) return null
 
-    const filteredBanks = banks.filter(bank => bank._id == val)[0]
+    const filteredBanks = banks.filter(bank => bank.id == val)[0]
 
     return filteredBanks ? filteredBanks.bank.slug : null
   }

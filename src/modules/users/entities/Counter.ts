@@ -14,7 +14,7 @@ export class Counter extends User {
   }
 
   public getId(): string {
-    return this._id
+    return this.id
   }
 
   public getName(): string {
