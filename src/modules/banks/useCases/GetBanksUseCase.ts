@@ -9,9 +9,9 @@ export class GetBanksUseCase {
     this.bankRepository = bankRepository
   }
 
-  async execute(data: IGetBanksDTO) {
+  async execute(params: IGetBanksDTO) {
     try {
-      const response = await this.bankRepository.getBanks(data)
+      const response = await this.bankRepository.getBanks(params)
 
       return response.data
     } catch (error: any) {
