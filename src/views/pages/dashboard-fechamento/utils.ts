@@ -1,16 +1,14 @@
 import { ColorType, DataProps } from './types'
 
 export const statusColorsMUI: { [key: string]: ColorType } = {
-  ALL: undefined,
-  APPROVED: 'success',
+  DONE: 'success',
   REJECTED: 'error',
   PENDING: 'warning'
 }
 
 export const bankStatusLabel: { [key: string]: string } = {
-  APPROVED: 'Aprovado',
+  DONE: 'Aprovado',
   PENDING: 'Pendente',
-  REJECTED: 'Rejeitado'
 }
 
 export const monthName: { [key: string]: string } = {

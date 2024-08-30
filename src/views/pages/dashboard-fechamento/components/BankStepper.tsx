@@ -1,7 +1,36 @@
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { Box, Button } from '@mui/material'
 import Avatar from 'src/@core/components/mui/avatar'
 import CustomStepper from './CustomStepper'
-import { useRouter } from 'next/router'
+
+const statusMap: { [key: string]: any } = {
+  PENDING: {
+    extract: { status: false, isError: true },
+    conciliation: { status: false, isError: true },
+    exportation: { status: false, isError: true }
+  },
+  PROCESSING: {
+    extract: { status: true, isError: false },
+    conciliation: { status: false, isError: false },
+    exportation: { status: false, isError: false }
+  },
+  TRANSACTION_UNTRACKED: {
+    extract: { status: true, isError: false },
+    conciliation: { status: true, isError: true },
+    exportation: { status: false, isError: false }
+  },
+  WAITING_VALIDATION: {
+    extract: { status: true, isError: false },
+    conciliation: { status: true, isError: false },
+    exportation: { status: false, isError: false }
+  },
+  DONE: {
+    extract: { status: true, isError: false },
+    conciliation: { status: true, isError: false },
+    exportation: { status: true, isError: false }
+  }
+}
 
 interface BankStepperProps {
   bank: any
@@ -10,11 +39,24 @@ interface BankStepperProps {
 const BankStepper = ({ bank }: BankStepperProps) => {
   const router = useRouter()
 
-  const CustomStepperProps = {
-    extract: bank.extract,
-    conciliation: bank.conciliation,
-    exportation: bank.validation
-  }
+  const [statusObj, setStatusObj] = useState({
+    extract: {
+      status: false,
+      isError: false
+    },
+    conciliation: {
+      status: false,
+      isError: false
+    },
+    exportation: {
+      status: false,
+      isError: false
+    }
+  })
+
+  useEffect(() => {
+    if (statusMap[bank.subStatus]) setStatusObj(statusMap[bank.subStatus])
+  }, [bank.subStatus])
 
   return (
     <Box
@@ -34,21 +76,21 @@ const BankStepper = ({ bank }: BankStepperProps) => {
           gap: 2
         }}
       >
-        <Avatar src={bank.avatar} />
+        <Avatar src={bank.bank.logo} />
         <Button
           variant='text'
           color='inherit'
           onClick={() =>
             router.push({
               pathname: '/dashboard-fechamento/fechamento/[id]',
-              query: { id: bank.userId, bankId: bank.id }
+              query: { id: bank.id }
             })
           }
         >
-          {bank.name}
+          {bank.bank.name}
         </Button>
       </Box>
-      <CustomStepper {...CustomStepperProps} />
+      <CustomStepper {...statusObj} />
     </Box>
   )
 }

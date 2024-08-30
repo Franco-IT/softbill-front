@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import CustomTextField from 'src/@core/components/mui/text-field'
 import CardOptionHorizontal from 'src/@core/components/card-statistics/card-option-horizontal'
@@ -19,26 +19,27 @@ import { dateProvider } from 'src/shared/providers'
 
 import { monthsOptions, statusOptions, usersQuantiryOptions } from './options'
 
-import { monthName, statusColorsMUI, users } from './utils'
+import { monthName, statusColorsMUI } from './utils'
 
-import { DataProps, StatusValue } from './types'
+import { StatusValue } from './types'
 import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
 import NoResultsCard from './components/NoResultsCard'
 import BankCard from './components/BankCard'
 import IconifyIcon from 'src/@core/components/icon'
 import CustomUserAccordion from './components/CustomUserAccordion'
+import { useQuery } from 'react-query'
+import { api } from 'src/services/api'
+import Error from 'src/components/FeedbackAPIs/Error'
 
 const Dashboard = () => {
   const currentMonth = dateProvider.getCurrentMonth().toLowerCase()
 
   const [showList, setShowList] = useState<'LIST' | 'GRID'>('GRID')
 
-  const [loading, setLoading] = useState(true)
-  const [onSearch, setOnSearch] = useState('')
+  const [search, setSearch] = useState('')
   const [month, setMonth] = useState(currentMonth)
-  const [usersData, setUsersData] = useState<DataProps[] | null>(null)
-  const [usersQuantity, setUsersQuantity] = useState('5')
-  const [status, setStatus] = useState<StatusValue>('ALL')
+  const [perPage, setPerPage] = useState('5')
+  const [status, setStatus] = useState<any>('')
   const [dashboardData, setDashboardData] = useState({
     totalUsers: 0,
     totalApproved: 0,
@@ -46,39 +47,27 @@ const Dashboard = () => {
     totalError: 0
   })
 
-  const handleOnSearch = (value: string) => {
-    setLoading(true)
+  const params = useMemo(
+    () => ({
+      search,
+      status,
+      perPage
+    }),
+    [perPage, search, status]
+  )
 
-    setOnSearch(value)
+  const { data, isLoading, isError } = useQuery(
+    ['dashboard-data', params],
+    async () => {
+      const response = await api.get('/monthlyFinancialCloses/dashboard-accounting', { params })
 
-    if (!value)
-      return setTimeout(() => {
-        setUsersData(users), setLoading(false)
-      }, 1500)
-
-    setTimeout(() => {
-      const filteredData = users.filter(user => user.name.toLowerCase().includes(value.toLowerCase()))
-      setUsersData(filteredData)
-      setLoading(false)
-    }, 1000)
-  }
-
-  const handleStatus = (status: StatusValue) => {
-    setLoading(true)
-
-    setStatus(status)
-
-    if (status === 'ALL')
-      return setTimeout(() => {
-        setUsersData(users), setLoading(false)
-      }, 1500)
-
-    setTimeout(() => {
-      const filteredData = users.filter(user => user.status === status)
-      setUsersData(filteredData)
-      setLoading(false)
-    }, 1000)
-  }
+      return response.data
+    },
+    {
+      staleTime: 1000 * 60 * 5,
+      keepPreviousData: true
+    }
+  )
 
   const gridProps = {
     LIST: {
@@ -92,31 +81,11 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    const getUsers = async () => {
-      try {
-        new Promise<void>(resolve => {
-          setTimeout(() => {
-            setUsersData(users)
-
-            resolve()
-          }, 1500)
-        })
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    getUsers()
-  }, [])
-
-  useEffect(() => {
-    if (usersData) {
-      const totalUsers = usersData.length
-      const totalApproved = usersData.filter(user => user.status === 'APPROVED').length
-      const totalPending = usersData.filter(user => user.status === 'PENDING').length
-      const totalError = usersData.filter(user => user.status === 'REJECTED').length
+    if (data) {
+      const totalUsers = data.totalMonthlyFinancialCloses
+      const totalApproved = data.monthlyFinancialClosesDone
+      const totalPending = data.monthlyFinancialClosesPending
+      const totalError = data.totalMonthlyFinancialCloseBanks
 
       setDashboardData({
         totalUsers,
@@ -125,7 +94,9 @@ const Dashboard = () => {
         totalError
       })
     }
-  }, [usersData])
+  }, [data])
+
+  if (isError) return <Error />
 
   return (
     <Card>
@@ -150,8 +121,8 @@ const Dashboard = () => {
               fullWidth
               label='Cliente'
               placeholder='Buscar Cliente'
-              value={onSearch}
-              onChange={e => handleOnSearch(e.target.value)}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} md={3}>
@@ -162,6 +133,7 @@ const Dashboard = () => {
               placeholder='Selecione Periodo'
               value={month || 'default'}
               onChange={e => setMonth(e.target.value)}
+              disabled
             >
               <MenuItem disabled value='default'>
                 <em>selecione</em>
@@ -179,15 +151,15 @@ const Dashboard = () => {
               fullWidth
               label='Quantidade de Usuários'
               placeholder='Selecione a quantidade de usuários'
-              value={usersQuantity || 'default'}
-              onChange={e => setUsersQuantity(e.target.value)}
+              value={perPage || 'default'}
+              onChange={e => setPerPage(e.target.value)}
             >
               <MenuItem disabled value='default'>
                 <em>selecione</em>
               </MenuItem>
-              {usersQuantiryOptions.map(usersQuantity => (
-                <MenuItem key={usersQuantity.value} value={usersQuantity.value}>
-                  {usersQuantity.label}
+              {usersQuantiryOptions.map(perPage => (
+                <MenuItem key={perPage.value} value={perPage.value}>
+                  {perPage.label}
                 </MenuItem>
               ))}
             </CustomTextField>
@@ -199,9 +171,9 @@ const Dashboard = () => {
               label='Status'
               placeholder='Selecione Status'
               value={status || 'default'}
-              onChange={e => handleStatus(e.target.value as StatusValue)}
-              color={statusColorsMUI[status]}
-              focused={!!statusColorsMUI[status]}
+              onChange={e => setStatus(e.target.value as StatusValue)}
+              color={statusColorsMUI[status || '']}
+              focused={!!statusColorsMUI[status || '']}
             >
               <MenuItem disabled value='default'>
                 <em>selecione</em>
@@ -244,9 +216,9 @@ const Dashboard = () => {
           <Grid item xs={12} md={6}>
             <CardOptionHorizontal
               title={dashboardData.totalError}
-              subtitle='Clientes Cancelados'
+              subtitle='Total de Bancos Pendentes'
               avatarColor='error'
-              icon='tabler:user-x'
+              icon='tabler:building-bank'
             />
           </Grid>
         </Grid>
@@ -271,7 +243,7 @@ const Dashboard = () => {
               </ToggleButtonGroup>
             </Box>
           </Grid>
-          {loading ? (
+          {isLoading ? (
             <Grid item xs={12}>
               <LoadingCard
                 title='Carregando...'
@@ -280,10 +252,10 @@ const Dashboard = () => {
                 icon='tabler:loader-2'
               />
             </Grid>
-          ) : usersData ? (
-            usersData.map((user, index) => (
+          ) : data.monthlyFinancialCloses.data.length > 0 ? (
+            data.monthlyFinancialCloses.data.map((client: any, index: number) => (
               <Grid item {...gridProps[showList]} key={index}>
-                {showList === 'LIST' ? <CustomUserAccordion user={user} /> : <BankCard user={user} />}
+                {showList === 'GRID' ? <BankCard client={client} /> : <CustomUserAccordion client={client} />}
               </Grid>
             ))
           ) : (

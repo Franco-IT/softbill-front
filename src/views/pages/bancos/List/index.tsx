@@ -191,6 +191,7 @@ const List = () => {
                             <CustomBadgeAvatar
                               icon={<Icon fontSize='1.4rem' icon='tabler:edit' />}
                               initials={getInitials(row.name)}
+                              src={row.logo}
                               sx={{
                                 mr: 2.5,
                                 width: 38,

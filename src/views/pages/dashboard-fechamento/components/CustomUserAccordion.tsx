@@ -13,7 +13,6 @@ import TimelineBank from './TimelineBank'
 
 import { statusColorsMUI } from '../utils'
 
-import { DataProps } from '../types'
 import { formatName } from 'src/utils/formatName'
 
 const Accordion = styled(MuiAccordion)<AccordionProps>(({ theme }) => ({
@@ -75,12 +74,11 @@ const AccordionDetails = styled(MuiAccordionDetails)<AccordionDetailsProps>(({ t
 }))
 
 interface CustomUserAccordionProps {
-  user: DataProps
+  client: any
 }
 
-const CustomUserAccordion = ({ user }: CustomUserAccordionProps) => {
+const CustomUserAccordion = ({ client }: CustomUserAccordionProps) => {
   const isSmallerThan550 = useMediaQuery('(max-width:550px)')
-  const { avatar, banks, name, status } = user
 
   const [expanded, setExpanded] = useState<string | false>(false)
 
@@ -101,7 +99,7 @@ const CustomUserAccordion = ({ user }: CustomUserAccordionProps) => {
           }
         }}
       >
-        <Avatar src={avatar} color={statusColorsMUI[status]} />
+        <Avatar src={client.clientAvatar} color={statusColorsMUI[client.status]} />
         <Button
           variant='text'
           color='inherit'
@@ -110,18 +108,18 @@ const CustomUserAccordion = ({ user }: CustomUserAccordionProps) => {
             p: 0
           }}
         >
-          {formatName(name)}
+          {formatName(client.clientName)}
         </Button>
-        <GlowIcon status={status as any} />
-        {user.status === 'APPROVED' && (
+        <GlowIcon status={client.status} />
+        {client.status === 'APPROVED' && (
           <IconButton>
             <Icon icon='tabler:download' fontSize='1.5rem' />
           </IconButton>
         )}
       </AccordionSummary>
       <AccordionDetails>
-        {banks.map(bank => (
-          <TimelineBank key={bank.name} bank={bank} />
+        {client.monthlyFinancialCloseBanks.map((bank: any) => (
+          <TimelineBank key={bank.id} bank={bank} />
         ))}
       </AccordionDetails>
     </Accordion>

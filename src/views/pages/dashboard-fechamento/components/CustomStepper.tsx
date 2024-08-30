@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { memo, ReactNode, useState } from 'react'
 import { Step, StepLabel, Stepper } from '@mui/material'
 import StepperCustomDot from './StepperCustomDot'
 import Icon from 'src/@core/components/icon'
@@ -10,12 +10,21 @@ const steps = [
 ]
 
 interface CustomStepperProps {
-  extract: string
-  conciliation: string
-  exportation: string
+  extract: {
+    status: boolean
+    isError: boolean
+  }
+  conciliation: {
+    status: boolean
+    isError: boolean
+  }
+  exportation: {
+    status: boolean
+    isError: boolean
+  }
 }
 
-const CustomStepper = ({ extract, conciliation, exportation }: CustomStepperProps) => {
+const CustomStepper = memo(({ extract, conciliation, exportation }: CustomStepperProps) => {
   const [activeStep, setActiveStep] = useState(0)
 
   return (
@@ -37,7 +46,10 @@ const CustomStepper = ({ extract, conciliation, exportation }: CustomStepperProp
           icon?: ReactNode
         } = {}
 
-        const statusMap: { [key: number]: string } = {
+        const statusMap: { [key: number]: {
+          status: boolean
+          isError: boolean
+        } } = {
           0: extract,
           1: conciliation,
           2: exportation
@@ -45,8 +57,8 @@ const CustomStepper = ({ extract, conciliation, exportation }: CustomStepperProp
 
         if (index === activeStep) {
           const status = statusMap[index]
-          if (status === 'REJECTED') labelProps.error = true
-          if (status === 'APPROVED') (labelProps.completed = true), setActiveStep(index+1)
+          if (status.isError) labelProps.error = true
+          if (status.status) (labelProps.completed = true), setActiveStep(index+1)
         }
 
         return (
@@ -65,6 +77,6 @@ const CustomStepper = ({ extract, conciliation, exportation }: CustomStepperProp
       })}
     </Stepper>
   )
-}
+})
 
 export default CustomStepper
