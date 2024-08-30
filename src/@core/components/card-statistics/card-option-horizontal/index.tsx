@@ -1,4 +1,4 @@
-// ** MUI Imports
+import { memo } from 'react'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent'
 import Icon from 'src/@core/components/icon'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 
-const CardOptionHorizontal = (props: any) => {
+const CardOptionHorizontal = memo((props: any) => {
   const { icon, title, subtitle, avatarSize = 42, iconSize = '1.625rem', avatarColor = 'primary' } = props
 
   return (
@@ -24,6 +24,6 @@ const CardOptionHorizontal = (props: any) => {
       </CardContent>
     </Card>
   )
-}
+})
 
 export default CardOptionHorizontal

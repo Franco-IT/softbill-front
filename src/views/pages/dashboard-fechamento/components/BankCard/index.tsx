@@ -3,14 +3,14 @@ import Header from './Header'
 import Content from './Content'
 
 interface BankCardProps {
-  user: any
+  client: any
 }
 
-const BankCard = ({ user }: BankCardProps) => {
+const BankCard = ({ client }: BankCardProps) => {
   return (
     <Card>
-      <Header user={user} />
-      <Content banks={user.banks} />
+      <Header client={client} />
+      <Content banks={client.monthlyFinancialCloseBanks} />
     </Card>
   )
 }

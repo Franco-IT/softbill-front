@@ -2,7 +2,7 @@ import { SelectOptionsProps } from './types'
 
 export const statusOptions: SelectOptionsProps[] = [
   {
-    value: 'ALL',
+    value: '',
     label: 'Todos'
   },
   {
@@ -10,12 +10,8 @@ export const statusOptions: SelectOptionsProps[] = [
     label: 'Pendente'
   },
   {
-    value: 'APPROVED',
+    value: 'DONE',
     label: 'Aprovado'
-  },
-  {
-    value: 'REJECTED',
-    label: 'Rejeitado'
   }
 ]
 
@@ -41,7 +37,7 @@ export const usersQuantiryOptions: SelectOptionsProps[] = [
     label: '25'
   },
   {
-    value: 'all',
+    value: '100',
     label: 'Todos'
   }
 ]
