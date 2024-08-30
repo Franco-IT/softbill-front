@@ -130,8 +130,10 @@ const OperationsTypes = ({ banksProps, methods, operationType, handleSetOperatio
           <Divider sx={{ m: '0 !important' }} />
           <AccordionDetails sx={{ pt: 6, pb: 6 }}>
             <BoxWrapper
-              onClick={() => handleSelectOperationType('INTEGRATION')}
               sx={operationType === 'INTEGRATION' ? { borderColor: 'primary.main' } : {}}
+              onClick={() => alert('Integração desabilitada')}
+
+              // onClick={() => handleSelectOperationType('INTEGRATION')}
             >
               <Radio
                 value='Integração'
@@ -139,6 +141,7 @@ const OperationsTypes = ({ banksProps, methods, operationType, handleSetOperatio
                 name='form-layouts-collapsible-options-radio'
                 inputProps={{ 'aria-label': 'INTEGRATION' }}
                 sx={{ mr: 2, ml: -2.5, mt: -2.5, alignItems: 'flex-start' }}
+                disabled={true}
               />
               <Box sx={{ width: '100%' }}>
                 <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>

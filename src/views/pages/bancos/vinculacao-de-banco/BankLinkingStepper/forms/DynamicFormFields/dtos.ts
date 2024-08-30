@@ -18,7 +18,10 @@ export type InterValues = {
 export type OFXValues = {
   accountNumber: string | undefined
   agencyNumber: string | undefined
-  importedBank: string | undefined
+  importedBank: {
+    id: string | undefined
+    name: string | undefined
+  }
 }
 
 export interface TypeMapEntry extends Partial<ControllerRenderProps<FieldValues>> {

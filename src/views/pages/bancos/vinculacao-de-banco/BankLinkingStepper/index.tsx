@@ -193,6 +193,8 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
         if (data[key]) {
           if (key === 'files') {
             data[key].map((file: any) => formData.append(key, file))
+          } else if (key === 'importedBank') {
+            formData.append('bankId', data[key].id)
           } else {
             formData.append(key, data[key])
           }
