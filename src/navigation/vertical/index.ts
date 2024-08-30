@@ -8,7 +8,7 @@ const navigation = (): VerticalNavItemsType => {
       path: '/home',
       action: ['read', 'client:read'],
       auth: true,
-      subject: ['ADMIN', 'ACCOUNTING', 'COUNTER', 'CLIENT'],
+      subject: ['ADMIN', 'ACCOUNTING', 'ACCOUNTANT', 'CLIENT'],
       icon: 'tabler:smart-home'
     },
     {
@@ -16,7 +16,7 @@ const navigation = (): VerticalNavItemsType => {
       path: '/dashboard-fechamento',
       auth: true,
       action: 'read',
-      subject: ['ACCOUNTING', 'COUNTER'],
+      subject: ['ACCOUNTING', 'ACCOUNTANT'],
       icon: 'tabler:calendar-check'
     },
     {
@@ -54,7 +54,7 @@ const navigation = (): VerticalNavItemsType => {
       subtitle: 'Ver Contadores',
       action: 'read',
       auth: true,
-      subject: ['ACCOUNTING', 'COUNTER'],
+      subject: ['ACCOUNTING', 'ACCOUNTANT'],
       path: '/contadores',
       icon: 'tabler:user-dollar',
       avatarColor: 'primary'
@@ -64,7 +64,7 @@ const navigation = (): VerticalNavItemsType => {
       subtitle: 'Ver Clientes',
       action: ['read', 'delete'],
       auth: true,
-      subject: ['ACCOUNTING', 'COUNTER'],
+      subject: ['ACCOUNTING', 'ACCOUNTANT'],
       path: '/clientes',
       icon: 'tabler:users',
       avatarColor: 'success'
@@ -74,7 +74,7 @@ const navigation = (): VerticalNavItemsType => {
       subtitle: 'Ver Bancos do Cliente',
       action: 'read',
       auth: true,
-      subject: ['ACCOUNTING', 'COUNTER'],
+      subject: ['ACCOUNTING', 'ACCOUNTANT'],
       path: '/bancos/extrato',
       icon: 'tabler:building-bank',
       avatarColor: 'warning'
@@ -95,7 +95,7 @@ const navigation = (): VerticalNavItemsType => {
       path: '/minha-conta',
       action: ['read', 'update', 'delete'],
       auth: true,
-      subject: ['ADMIN', 'ACCOUNTING', 'COUNTER', 'CLIENT'],
+      subject: ['ADMIN', 'ACCOUNTING', 'ACCOUNTANT', 'CLIENT'],
       icon: 'tabler:user-check',
       avatarColor: 'info'
     }

@@ -37,7 +37,7 @@ export class Counter extends User {
     return this.status
   }
 
-  public getType(): 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'COUNTER' {
+  public getType(): 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'ACCOUNTANT' {
     return this.type
   }
 

@@ -39,7 +39,7 @@ const roleColors: ColorsType = {
   ADMIN: 'info',
   CLIENT: 'success',
   ACCOUNTING: 'warning',
-  COUNTER: 'primary'
+  ACCOUNTANT: 'primary'
 }
 
 const statusColors: ColorsType = {

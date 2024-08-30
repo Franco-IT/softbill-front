@@ -7,7 +7,7 @@ export class User implements IUserDTO {
   phone: string
   cellphone: string
   status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
-  type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'COUNTER'
+  type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'ACCOUNTANT'
   documentNumber: string
   documentType: 'CPF' | 'CNPJ' | 'OTHER'
   avatar: string
@@ -51,7 +51,7 @@ export class User implements IUserDTO {
     return this.status
   }
 
-  public getType(): 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'COUNTER' {
+  public getType(): 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'ACCOUNTANT' {
     return this.type
   }
 

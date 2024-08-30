@@ -24,7 +24,7 @@ interface ColorsType {
 }
 
 const roleColors: ColorsType = {
-  COUNTER: 'primary'
+  ACCOUNTANT: 'primary'
 }
 
 const statusColors: ColorsType = {

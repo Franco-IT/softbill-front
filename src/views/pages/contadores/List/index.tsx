@@ -27,7 +27,7 @@ interface ColorsType {
 }
 
 const roleColors: ColorsType = {
-  COUNTER: 'primary'
+  ACCOUNTANT: 'primary'
 }
 
 interface UserStatusType {
@@ -50,7 +50,7 @@ const List = () => {
   const [users, setUsers] = useState<ICounterDTO[]>([])
 
   const params = useMemo(
-    () => ({ type: 'COUNTER', page: page + 1, perPage: rowsPerPage, search: filter }),
+    () => ({ type: 'ACCOUNTANT', page: page + 1, perPage: rowsPerPage, search: filter }),
     [page, rowsPerPage, filter]
   )
 
