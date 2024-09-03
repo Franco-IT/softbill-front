@@ -1,5 +1,7 @@
+import React, { useEffect, useMemo } from 'react'
+import { useRouter } from 'next/router'
+import { useQuery } from 'react-query'
 import {
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -9,26 +11,27 @@ import {
   IconButton,
   MenuItem,
   Typography,
-  useMediaQuery
+  useMediaQuery,
+  Box
 } from '@mui/material'
-import { Box } from '@mui/system'
-import GlowIcon from 'src/components/GlowIcon'
-import Avatar from 'src/@core/components/mui/avatar'
+
+import CustomAvatar from 'src/@core/components/mui/avatar'
 import CustomTextField from 'src/@core/components/mui/text-field'
-import { banksOptions, monthsOptions } from '../options'
-import { statusColorsMUI } from '../utils'
+import CustomChip from 'src/@core/components/mui/chip'
+import CustomDatePicker from 'src/components/CustomDatePicker'
+import GlowIcon from 'src/components/GlowIcon'
 import IconifyIcon from 'src/@core/components/icon'
 import BankStepperInteractive from '../components/BankStepperInteractive'
-import { useDrawer } from 'src/hooks/useDrawer'
-import Export from '../components/DrawerComponents/Export'
-import React, { useEffect } from 'react'
 import StatementsTable from '../components/StatementsTable'
-import CustomChip from 'src/@core/components/mui/chip'
-import { useRouter } from 'next/router'
-import { useQuery } from 'react-query'
-import { api } from 'src/services/api'
+import Export from '../components/DrawerComponents/Export'
+import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
 import Error from 'src/components/FeedbackAPIs/Error'
-import CustomDatePicker from 'src/components/CustomDatePicker'
+
+import { useDrawer } from 'src/hooks/useDrawer'
+import { api } from 'src/services/api'
+import { dateProvider } from 'src/shared/providers'
+import { banksOptions } from '../options'
+import { getInitials, statusColorsMUI } from '../utils'
 
 const statusValues: any = {
   PENDING: true,
@@ -49,39 +52,52 @@ const Closure = () => {
   const { toggleDrawer } = useDrawer()
 
   const [status, setStatus] = React.useState<any>('PENDING')
-  const [date, setDate] = React.useState<any>()
+  const [referenceDate, setReferenceDate] = React.useState<any>('2024-06-01')
+  const [date, setDate] = React.useState<any>(new Date())
+
+  const params = useMemo(() => ({ referenceDate }), [referenceDate])
 
   const {
     data: financialData,
     isLoading: isLoadingFinancial,
     isError: isErrorFinancial
   } = useQuery(
-    'financial',
+    ['financial-closing', router.query.id, params],
     async () => {
       const response = await api.get(
-        `/monthlyFinancialCloseBanks/monthly-financial-close-accounting/${router.query.id}`
+        `/monthlyFinancialCloseBanks/monthly-financial-close-accounting/${router.query.id}`,
+        {
+          params
+        }
       )
 
       return response.data
     },
     {
       onSuccess: data => {
-        setDate(data.referenceDate)
+        setDate(dateProvider.adjustDate(data.referenceDate))
         setStatus(data.status)
       },
-      enabled: router.isReady
+      enabled: router.isReady,
+      keepPreviousData: true,
+      staleTime: 1000 * 60 * 5
     }
   )
 
-  const handleConvertStringToDate = (date: string | null) => {
-    return date ? new Date(date) : null
-  }
-
   const handleConvertDateToString = (date: Date | null) => {
-    return date ? date.toISOString() : null
+    return date ? dateProvider.formatDate(date, 'yyyy/MM/dd') : null
   }
 
-  if (isErrorFinancial || !financialData) return <Error />
+  useEffect(() => {
+    setReferenceDate(handleConvertDateToString(date))
+  }, [date])
+
+  if (isLoadingFinancial || (!financialData && !isErrorFinancial))
+    return (
+      <LoadingCard title='Carregando...' subtitle='Aguarde um momento' avatarColor='primary' icon='tabler:loader-2' />
+    )
+
+  if (isErrorFinancial) return <Error />
 
   return (
     <Card>
@@ -90,10 +106,10 @@ const Closure = () => {
           <Grid container spacing={4}>
             <Grid item xs={12} sm={6}>
               <Box display='flex' alignItems='center' gap={4}>
-                <Avatar src={financialData?.clientAvatar} color={statusColorsMUI[financialData.status]} />
+                <CustomAvatar src={financialData?.clientAvatar} color={statusColorsMUI[financialData.status]} />
                 <Typography variant='h5'>{financialData?.clientName}</Typography>
                 {isSmallerThanSm ? (
-                  <GlowIcon status={financialData.status} />
+                  <GlowIcon status={financialData?.status} />
                 ) : (
                   <CustomChip
                     rounded
@@ -126,7 +142,9 @@ const Closure = () => {
                   alignItems={isSmallerThanSm ? 'end' : 'center'}
                   gap={2}
                 >
-                  <Avatar src={financialData.monthlyFinancialCloseBank.bank.logo} />
+                  <CustomAvatar src={financialData.monthlyFinancialCloseBank.bank.logo}>
+                    {getInitials(financialData.monthlyFinancialCloseBank.bank.name)}
+                  </CustomAvatar>
                   <CustomChip rounded skin='light' size='small' label='OFX' color='primary' />
                 </Box>
               </Box>
@@ -148,7 +166,13 @@ const Closure = () => {
       <Divider />
       <Box display='flex' alignItems='center' gap={2} p={'24px 24px 0px'}>
         <Typography variant='h5'>Fechamento</Typography>
-        <CustomChip rounded skin='light' size='small' label='#SETEMBRO' color='primary' />
+        <CustomChip
+          rounded
+          skin='light'
+          size='small'
+          label={'#' + dateProvider.getMonthFromDate(date).toUpperCase()}
+          color='primary'
+        />
       </Box>
       <CardActions>
         <Grid container spacing={3}>
@@ -167,45 +191,19 @@ const Closure = () => {
           <Grid item xs={12} md={3} alignContent={'end'}>
             <CustomDatePicker
               label='Mês de Referência'
-              value={handleConvertStringToDate(date)}
-              onChange={e => setDate(handleConvertDateToString(e))}
+              value={date}
+              onChange={e => setDate(e)}
               placeholderText='Escolha o mês'
               maxDate={new Date()}
               dateFormat='MMMM'
               showMonthYearPicker
+              disabled
             />
           </Grid>
-
-          {/* <Grid item xs={12} md={3} alignContent={'end'}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2
-              }}
-            >
-              <CustomTextField
-                select
-                fullWidth
-                label='Revisão'
-                placeholder='Selecione'
-                value={status || 'default'}
-                onChange={e => setStatus(e.target.value)}
-                color={statusColorsMUI[status]}
-                focused={!!statusColorsMUI[status]}
-              >
-                <MenuItem disabled value='default'>
-                  <em>selecione</em>
-                </MenuItem>
-                <MenuItem value='PENDING'>Pendente</MenuItem>
-                <MenuItem value='APPROVED'>Aprovado</MenuItem>
-              </CustomTextField>
-            </Box>
-          </Grid> */}
         </Grid>
       </CardActions>
       <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {financialData && <BankStepperInteractive bank={financialData.monthlyFinancialCloseBank} />}
+        <BankStepperInteractive bank={financialData.monthlyFinancialCloseBank} />
       </CardContent>
       <StatementsTable />
     </Card>

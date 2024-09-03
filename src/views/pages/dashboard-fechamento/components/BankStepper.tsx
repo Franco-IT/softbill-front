@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Box, Button } from '@mui/material'
+
 import Avatar from 'src/@core/components/mui/avatar'
 import CustomStepper from './CustomStepper'
-import { StatusMapProps, StatusProps } from '../types'
+
 import { statusMap } from '../utils'
+import { StatusMapProps, StatusProps } from '../types'
 
 interface BankStepperProps {
   bank: any
@@ -68,7 +70,7 @@ const BankStepper = ({ bank }: BankStepperProps) => {
           onClick={() =>
             router.push({
               pathname: '/dashboard-fechamento/fechamento/[id]',
-              query: { id: bank.id, clientId: bank.clientId }
+              query: { id: bank.id }
             })
           }
         >

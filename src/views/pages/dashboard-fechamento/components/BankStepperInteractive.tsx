@@ -1,8 +1,10 @@
+import { useState, useEffect, useMemo, memo } from 'react'
 import { Box, Button } from '@mui/material'
-import Avatar from 'src/@core/components/mui/avatar'
+
+import CustomAvatar from 'src/@core/components/mui/avatar'
 import CustomStepperInteractive from './CustomStepperInteractive'
-import { useState, useEffect, memo, useMemo } from 'react'
-import { statusMap } from '../utils'
+
+import { getInitials, statusMap } from '../utils'
 import { StatusMapProps, StatusProps } from '../types'
 
 interface BankStepperInteractiveProps {
@@ -59,7 +61,7 @@ const BankStepperInteractive = memo(({ bank }: BankStepperInteractiveProps) => {
           gap: 2
         }}
       >
-        <Avatar src={bank.bank.logo} />
+        <CustomAvatar src={bank.bank.logo}>{getInitials(bank.bank.name)}</CustomAvatar>
         <Button variant='text' color='inherit'>
           {bank.bank.name}
         </Button>

@@ -31,6 +31,18 @@ const Pagination = memo(
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        sx={{
+          '& .MuiToolbar-root': {
+            p: 0
+          },
+          '& .MuiInputBase-root': {
+            mr: '20px',
+            ml: 0
+          },
+          '& .MuiTablePagination-actions': {
+            ml: '20px'
+          }
+        }}
       />
     )
   }

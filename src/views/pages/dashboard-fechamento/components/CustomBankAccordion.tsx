@@ -47,7 +47,7 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
             onClick={() =>
               router.push({
                 pathname: '/dashboard-fechamento/fechamento/[id]',
-                query: { id: bank.id, clientId: bank.clientId }
+                query: { id: bank.id }
               })
             }
           >
@@ -87,9 +87,6 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
                 <Typography sx={{ mr: 2 }} variant='h6'>
                   Extrato
                 </Typography>
-                {/* <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                  6th October
-                </Typography> */}
               </Box>
               <CustomChip
                 rounded
@@ -120,9 +117,6 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
                 <Typography sx={{ mr: 2 }} variant='h6'>
                   Conciliação
                 </Typography>
-                {/* <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                  6th October
-                </Typography> */}
               </Box>
               <CustomChip
                 rounded
@@ -153,9 +147,6 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
                 <Typography sx={{ mr: 2 }} variant='h6'>
                   Validação
                 </Typography>
-                {/* <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                  4th October
-                </Typography> */}
               </Box>
               <CustomChip
                 rounded

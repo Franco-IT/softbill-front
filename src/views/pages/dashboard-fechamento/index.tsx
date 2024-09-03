@@ -12,8 +12,7 @@ import {
   Grid,
   MenuItem,
   ToggleButton,
-  ToggleButtonGroup,
-  useMediaQuery
+  ToggleButtonGroup
 } from '@mui/material'
 
 import { dateProvider } from 'src/shared/providers'
@@ -35,7 +34,6 @@ import CustomDatePicker from 'src/components/CustomDatePicker'
 import Pagination from './components/Pagination'
 
 const Dashboard = () => {
-  const isSmallerThanSm = useMediaQuery((theme: any) => theme.breakpoints.down('sm'))
   const [showList, setShowList] = useState<'LIST' | 'GRID'>('GRID')
 
   const [search, setSearch] = useState('')
@@ -285,8 +283,8 @@ const Dashboard = () => {
       <CardContent>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
-              {!isSmallerThanSm && <Pagination {...paginationProps} />}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'end', gap: 2 }}>
+              <Pagination {...paginationProps} />
               <ToggleButtonGroup
                 exclusive
                 size='small'
@@ -303,11 +301,6 @@ const Dashboard = () => {
               </ToggleButtonGroup>
             </Box>
           </Grid>
-          {isSmallerThanSm && (
-            <Grid item xs={12}>
-              {<Pagination {...paginationProps} />}
-            </Grid>
-          )}
           {isLoadingFinancialClosingData ? (
             <Grid item xs={12}>
               <LoadingCard
