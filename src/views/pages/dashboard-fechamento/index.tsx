@@ -17,9 +17,9 @@ import {
 
 import { dateProvider } from 'src/shared/providers'
 
-import { monthsOptions, statusOptions, usersQuantiryOptions } from './options'
+import { statusOptions, usersQuantiryOptions } from './options'
 
-import { monthName, statusColorsMUI } from './utils'
+import { statusColorsMUI } from './utils'
 
 import { StatusValue } from './types'
 import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
@@ -30,14 +30,14 @@ import CustomUserAccordion from './components/CustomUserAccordion'
 import { useQuery } from 'react-query'
 import { api } from 'src/services/api'
 import Error from 'src/components/FeedbackAPIs/Error'
+import CustomDatePicker from 'src/components/CustomDatePicker'
 
 const Dashboard = () => {
-  const currentMonth = dateProvider.getCurrentMonth().toLowerCase()
-
   const [showList, setShowList] = useState<'LIST' | 'GRID'>('GRID')
 
   const [search, setSearch] = useState('')
-  const [month, setMonth] = useState(currentMonth)
+  const [month, setMonth] = useState('')
+  const [date, setDate] = useState<any>()
   const [perPage, setPerPage] = useState('5')
   const [status, setStatus] = useState<any>('')
   const [dashboardData, setDashboardData] = useState({
@@ -69,16 +69,18 @@ const Dashboard = () => {
     }
   )
 
-  const gridProps = {
-    LIST: {
-      xs: 12
-    },
-    GRID: {
-      xs: 12,
-      md: 4,
-      xl: 3
-    }
+  const handleConvertStringToDate = (date: string | null) => {
+    return date ? new Date(date) : null
   }
+
+  const handleConvertDateToString = (date: Date | null) => {
+    return date ? date.toISOString() : null
+  }
+
+  useEffect(() => {
+    setDate(new Date())
+    setMonth(dateProvider.getMonthFromDate(new Date()))
+  }, [])
 
   useEffect(() => {
     if (data) {
@@ -96,13 +98,24 @@ const Dashboard = () => {
     }
   }, [data])
 
+  const gridProps = {
+    LIST: {
+      xs: 12
+    },
+    GRID: {
+      xs: 12,
+      md: 4,
+      xl: 3
+    }
+  }
+
   if (isError) return <Error />
 
   return (
     <Card>
       <CardHeader
         title='Dashboard de Fechamento'
-        subheader={`#${monthName[month]}`}
+        subheader={`#${month}`}
         subheaderTypographyProps={{
           variant: 'overline',
           style: {
@@ -126,24 +139,16 @@ const Dashboard = () => {
             />
           </Grid>
           <Grid item xs={12} md={3}>
-            <CustomTextField
-              select
-              fullWidth
-              label='Periodo'
-              placeholder='Selecione Periodo'
-              value={month || 'default'}
-              onChange={e => setMonth(e.target.value)}
+            <CustomDatePicker
+              label='Mês de Referência'
+              value={handleConvertStringToDate(date)}
+              onChange={e => setDate(handleConvertDateToString(e))}
+              placeholderText='Escolha o mês'
+              maxDate={new Date()}
+              dateFormat='MMMM'
+              showMonthYearPicker
               disabled
-            >
-              <MenuItem disabled value='default'>
-                <em>selecione</em>
-              </MenuItem>
-              {monthsOptions.map(month => (
-                <MenuItem key={month.value} value={month.value}>
-                  {month.label}
-                </MenuItem>
-              ))}
-            </CustomTextField>
+            />
           </Grid>
           <Grid item xs={12} md={3}>
             <CustomTextField

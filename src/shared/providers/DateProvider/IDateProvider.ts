@@ -3,4 +3,5 @@ export interface IDateProvider {
   formatDate(date: Date): string
   getCurrentDate(): Date
   getCurrentMonth(): string
+  getMonthFromDate(date: Date): string
 }

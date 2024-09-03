@@ -1,4 +1,4 @@
-import { Card, CardHeader, IconButton, Typography, CardActions, Grid, Button, Box, CardContent } from '@mui/material'
+import { Card, CardHeader, Typography, CardActions, Grid, Button, Box, CardContent } from '@mui/material'
 import IconifyIcon from 'src/@core/components/icon'
 import CustomChip from 'src/@core/components/mui/chip'
 
@@ -12,14 +12,7 @@ const Export = () => {
 
   return (
     <Card>
-      <CardHeader
-        title={<Typography variant='h5'>Exportação</Typography>}
-        action={
-          <IconButton disabled={statusValues[status]}>
-            <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
-          </IconButton>
-        }
-      />
+      <CardHeader title={<Typography variant='h5'>Exportação</Typography>} />
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography sx={{ fontWeight: 500, color: 'text.secondary' }}>Modelo:</Typography>
@@ -44,9 +37,9 @@ const Export = () => {
               fullWidth
               variant='contained'
               color='primary'
-              startIcon={<IconifyIcon icon='tabler:edit' fontSize='1.7rem' />}
+              startIcon={<IconifyIcon icon='tabler:file-download' fontSize='1.7rem' />}
             >
-              Alterar Modelo
+              Exportar
             </Button>
           </Grid>
         </Grid>

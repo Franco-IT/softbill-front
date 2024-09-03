@@ -42,57 +42,6 @@ export const usersQuantiryOptions: SelectOptionsProps[] = [
   }
 ]
 
-export const monthsOptions: SelectOptionsProps[] = [
-  {
-    value: 'january',
-    label: 'Janeiro'
-  },
-  {
-    value: 'february',
-    label: 'Fevereiro'
-  },
-  {
-    value: 'march',
-    label: 'Março'
-  },
-  {
-    value: 'april',
-    label: 'Abril'
-  },
-  {
-    value: 'may',
-    label: 'Maio'
-  },
-  {
-    value: 'june',
-    label: 'Junho'
-  },
-  {
-    value: 'july',
-    label: 'Julho'
-  },
-  {
-    value: 'august',
-    label: 'Agosto'
-  },
-  {
-    value: 'september',
-    label: 'Setembro'
-  },
-  {
-    value: 'octiber',
-    label: 'Outubro'
-  },
-  {
-    value: 'november',
-    label: 'Novembro'
-  },
-  {
-    value: 'dezember',
-    label: 'Dezembro'
-  }
-]
-
 export const banksOptions: SelectOptionsProps[] = [
   {
     value: 'BANCO_DO_BRASIL',

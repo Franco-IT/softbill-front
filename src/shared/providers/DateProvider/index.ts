@@ -18,4 +18,8 @@ export class DateProvider implements IDateProvider {
   getCurrentMonth(): string {
     return format(new Date(), 'MMMM')
   }
+
+  getMonthFromDate(date: Date): string {
+    return format(date, 'MMMM', { locale: ptBR })
+  }
 }

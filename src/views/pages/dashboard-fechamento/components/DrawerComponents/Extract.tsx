@@ -10,37 +10,36 @@ import useToast from 'src/hooks/useToast'
 import { statusColorsMUI } from '../../utils'
 import GlowIcon from 'src/components/GlowIcon'
 
-const Extract = () => {
-  const { formatDate } = dateProvider
+interface ExtractProps {
+  status: string
+  method: string
+  receivedAt: Date
+}
 
+const Extract = ({ status, method, receivedAt }: ExtractProps) => {
+  const { formatDate } = dateProvider
+  
   const { toastPromise } = useToast()
   const { anchor, toggleDrawer } = useDrawer()
 
-  const type: any = 'OFX'
-  const status: any = 'APPROVED'
-
   const statusValues: any = {
     PENDING: true,
-    APPROVED: false,
-    REJECTED: true
+    DONE: false
   }
 
   const statusValuesText: any = {
     PENDING: 'Pendente',
-    APPROVED: 'Aprovado',
-    REJECTED: 'Rejeitado'
+    DONE: 'Aprovado'
   }
 
   const statusValuesExtract: any = {
     PENDING: 'Não Integrado',
-    APPROVED: formatDate(new Date()),
-    REJECTED: 'Não Integrado'
+    DONE: formatDate(receivedAt)
   }
 
   const statusValuesExtractOFX: any = {
     PENDING: 'Não Recebido',
-    APPROVED: formatDate(new Date()),
-    REJECTED: 'Rejeitado'
+    DONE: formatDate(receivedAt)
   }
 
   const [files, setFiles] = useState<any>([])
@@ -83,7 +82,7 @@ const Extract = () => {
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography variant='h5'>Extrato</Typography>
-            <GlowIcon status={status} />
+            <GlowIcon status={status as any} />
           </Box>
         }
         action={
@@ -111,24 +110,24 @@ const Extract = () => {
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography sx={{ fontWeight: 500, color: 'text.secondary' }}>
-            {type === 'OFX' ? 'Recebido em' : 'Integrado em'}:
+            {method === 'OFX' ? 'Recebido em' : 'Integrado em'}:
           </Typography>
           <CustomChip
             rounded
             skin='light'
             size='small'
-            label={type === 'OFX' ? statusValuesExtractOFX[status] : statusValuesExtract[status]}
-            color={status === 'APPROVED' ? 'primary' : 'secondary'}
+            label={method === 'OFX' ? statusValuesExtractOFX[status] : statusValuesExtract[status]}
+            color={status === 'DONE' ? 'primary' : 'secondary'}
           />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography sx={{ fontWeight: 500, color: 'text.secondary' }}>Método:</Typography>
-          <CustomChip rounded skin='light' size='small' label={type} color='primary' />
+          <CustomChip rounded skin='light' size='small' label={method} color='primary' />
         </Box>
       </CardContent>
       <CardActions>
         <Grid container spacing={5}>
-          {type === 'OFX' ? (
+          {method === 'OFX' ? (
             <>
               <Grid item xs={12} md={6}>
                 <Button
@@ -152,7 +151,7 @@ const Extract = () => {
                   Deletar
                 </Button>
               </Grid>
-              {type === 'OFX' && status !== 'APPROVED' && (
+              {method === 'OFX' && status !== 'DONE' && (
                 <>
                   <Grid item xs={12}>
                     <DropzoneWrapper>

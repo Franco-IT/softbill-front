@@ -1,4 +1,29 @@
-export type StatusValue = | 'DONE' | 'PENDING' | undefined
+export type SubStatusProps = {
+  status: boolean
+  isError: boolean
+  isPending: boolean
+}
+
+export type StatusProps = {
+  extract: SubStatusProps
+  conciliation: SubStatusProps
+  validation: SubStatusProps
+}
+
+export type StatusMapProps = {
+  PENDING: StatusProps
+  PROCESSING: StatusProps
+  TRANSACTION_UNTRACKED: StatusProps
+  WAITING_VALIDATION: StatusProps
+  DONE: StatusProps
+}
+
+export type StatusValue = 'DONE' | 'PENDING' | undefined
+
+export interface StepProps {
+  name: string
+  icon: React.ReactNode
+}
 
 export type ColorType = 'primary' | 'error' | 'success' | 'secondary' | 'info' | 'warning' | undefined
 

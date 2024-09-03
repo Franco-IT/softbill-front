@@ -1,36 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Box, Button } from '@mui/material'
 import Avatar from 'src/@core/components/mui/avatar'
 import CustomStepper from './CustomStepper'
-
-const statusMap: { [key: string]: any } = {
-  PENDING: {
-    extract: { status: false, isError: true },
-    conciliation: { status: false, isError: true },
-    exportation: { status: false, isError: true }
-  },
-  PROCESSING: {
-    extract: { status: true, isError: false },
-    conciliation: { status: false, isError: false },
-    exportation: { status: false, isError: false }
-  },
-  TRANSACTION_UNTRACKED: {
-    extract: { status: true, isError: false },
-    conciliation: { status: true, isError: true },
-    exportation: { status: false, isError: false }
-  },
-  WAITING_VALIDATION: {
-    extract: { status: true, isError: false },
-    conciliation: { status: true, isError: false },
-    exportation: { status: false, isError: false }
-  },
-  DONE: {
-    extract: { status: true, isError: false },
-    conciliation: { status: true, isError: false },
-    exportation: { status: true, isError: false }
-  }
-}
+import { StatusMapProps, StatusProps } from '../types'
+import { statusMap } from '../utils'
 
 interface BankStepperProps {
   bank: any
@@ -39,24 +13,35 @@ interface BankStepperProps {
 const BankStepper = ({ bank }: BankStepperProps) => {
   const router = useRouter()
 
-  const [statusObj, setStatusObj] = useState({
+  const [statusObj, setStatusObj] = useState<StatusProps>({
     extract: {
       status: false,
-      isError: false
+      isError: false,
+      isPending: false
     },
     conciliation: {
       status: false,
-      isError: false
+      isError: false,
+      isPending: false
     },
-    exportation: {
+    validation: {
       status: false,
-      isError: false
+      isError: false,
+      isPending: false
     }
   })
 
   useEffect(() => {
-    if (statusMap[bank.subStatus]) setStatusObj(statusMap[bank.subStatus])
+    if (statusMap[bank.subStatus as keyof StatusMapProps])
+      setStatusObj(statusMap[bank.subStatus as keyof StatusMapProps])
   }, [bank.subStatus])
+
+  const customStepperProps = useMemo(
+    () => ({
+      status: statusObj
+    }),
+    [statusObj]
+  )
 
   return (
     <Box
@@ -83,14 +68,14 @@ const BankStepper = ({ bank }: BankStepperProps) => {
           onClick={() =>
             router.push({
               pathname: '/dashboard-fechamento/fechamento/[id]',
-              query: { id: bank.id }
+              query: { id: bank.id, clientId: bank.clientId }
             })
           }
         >
           {bank.bank.name}
         </Button>
       </Box>
-      <CustomStepper {...statusObj} />
+      <CustomStepper {...customStepperProps} />
     </Box>
   )
 }
