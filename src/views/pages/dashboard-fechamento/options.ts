@@ -41,26 +41,3 @@ export const usersQuantiryOptions: SelectOptionsProps[] = [
     label: 'Todos'
   }
 ]
-
-export const banksOptions: SelectOptionsProps[] = [
-  {
-    value: 'BANCO_DO_BRASIL',
-    label: 'Banco do Brasil'
-  },
-  {
-    value: 'BRADESCO',
-    label: 'Bradesco'
-  },
-  {
-    value: 'ITAU',
-    label: 'Itaú'
-  },
-  {
-    value: 'SANTANDER',
-    label: 'Santander'
-  },
-  {
-    value: 'CAIXA',
-    label: 'Caixa Econômica Federal'
-  }
-]

@@ -30,8 +30,8 @@ import Error from 'src/components/FeedbackAPIs/Error'
 import { useDrawer } from 'src/hooks/useDrawer'
 import { api } from 'src/services/api'
 import { dateProvider } from 'src/shared/providers'
-import { banksOptions } from '../options'
-import { getInitials, statusColorsMUI } from '../utils'
+import { getInitials, statusColorsMUI, typesIntegration } from '../utils'
+import { ClosureOptionsProps } from '../types'
 
 const statusValues: any = {
   PENDING: true,
@@ -54,20 +54,34 @@ const Closure = () => {
   const [status, setStatus] = React.useState<any>('PENDING')
   const [referenceDate, setReferenceDate] = React.useState<any>('2024-06-01')
   const [date, setDate] = React.useState<any>(new Date())
+  const [closuresOptions, setClosuresOptions] = React.useState<ClosureOptionsProps[]>([])
+  const [closureSelected, setClosureSelected] = React.useState('')
 
-  const params = useMemo(() => ({ referenceDate }), [referenceDate])
+  const handleCheckClosureId = useMemo(
+    () => (closureId: string, paramId: string) => {
+      if (!closureId) return paramId
+
+      return closureId === paramId ? paramId : closureId
+    },
+    []
+  )
+
+  const paramsFinancialClosing = useMemo(() => ({ referenceDate }), [referenceDate])
 
   const {
     data: financialData,
     isLoading: isLoadingFinancial,
     isError: isErrorFinancial
   } = useQuery(
-    ['financial-closing', router.query.id, params],
+    ['financial-closing', handleCheckClosureId(closureSelected, router.query.id as string), paramsFinancialClosing],
     async () => {
       const response = await api.get(
-        `/monthlyFinancialCloseBanks/monthly-financial-close-accounting/${router.query.id}`,
+        `/monthlyFinancialCloseBanks/monthly-financial-close-accounting/${handleCheckClosureId(
+          closureSelected,
+          router.query.id as string
+        )}`,
         {
-          params
+          params: paramsFinancialClosing
         }
       )
 
@@ -84,13 +98,72 @@ const Closure = () => {
     }
   )
 
+  const paramsClosures = useMemo(() => ({ clientId: router.query.clientId, perPage: 1000 }), [router.query.clientId])
+
+  const { isLoading: isLoadingClosures, isError: isErrorClosures } = useQuery(
+    ['closures', router.query.clientId, paramsClosures],
+    async () => {
+      const response = await api.get(`/monthlyFinancialCloseBanks`, {
+        params: paramsClosures
+      })
+
+      return response.data
+    },
+    {
+      onSuccess: response => {
+        setClosuresOptions([])
+
+        response.data.map((item: any) => {
+          setClosuresOptions(prev => [
+            ...prev,
+            {
+              id: item.id,
+              label: item.bank.name,
+              logo: item.bank.logo
+            }
+          ])
+        })
+      },
+      enabled: router.isReady,
+      keepPreviousData: true
+    }
+  )
+
+  const handleCheckClosuresStatus = (
+    isLoadingClosures: boolean,
+    isErrorClosures: boolean,
+    closuresOptions: ClosureOptionsProps[],
+    closureSelected: string
+  ) => {
+    if (isLoadingClosures) return 'loading'
+    if (isErrorClosures) return 'error'
+    if (closuresOptions.length === 0 || closureSelected === '') return 'default'
+
+    return closureSelected
+  }
+
   const handleConvertDateToString = (date: Date | null) => {
     return date ? dateProvider.formatDate(date, 'yyyy/MM/dd') : null
+  }
+
+  const generateExtract = async () => {
+    api.get('/transactions/by-monthly-financial-close/' + financialData.monthlyFinancialCloseId, {
+      params: {
+        step: 'IMPORT',
+        bankAccountId: financialData.bankAccountId
+      }
+    })
   }
 
   useEffect(() => {
     setReferenceDate(handleConvertDateToString(date))
   }, [date])
+
+  useEffect(() => {
+    if (closuresOptions.length > 0 && financialData) {
+      setClosureSelected(financialData.monthlyFinancialCloseBank.monthlyFinancialCloseBankId)
+    }
+  }, [closuresOptions, financialData])
 
   if (isLoadingFinancial || (!financialData && !isErrorFinancial))
     return (
@@ -145,7 +218,13 @@ const Closure = () => {
                   <CustomAvatar src={financialData.monthlyFinancialCloseBank.bank.logo}>
                     {getInitials(financialData.monthlyFinancialCloseBank.bank.name)}
                   </CustomAvatar>
-                  <CustomChip rounded skin='light' size='small' label='OFX' color='primary' />
+                  <CustomChip
+                    rounded
+                    skin='light'
+                    size='small'
+                    label={typesIntegration[financialData.monthlyFinancialCloseBank.bankAccount.generatedBy]}
+                    color='primary'
+                  />
                 </Box>
               </Box>
             </Grid>
@@ -177,13 +256,30 @@ const Closure = () => {
       <CardActions>
         <Grid container spacing={3}>
           <Grid item xs={12} md={3} alignContent={'end'}>
-            <CustomTextField select fullWidth label='Banco' placeholder='Selecione o Banco' value={'default'}>
+            <CustomTextField
+              select
+              fullWidth
+              label='Banco'
+              placeholder='Selecione o Banco'
+              value={handleCheckClosuresStatus(isLoadingClosures, isErrorClosures, closuresOptions, closureSelected)}
+              onChange={e => setClosureSelected(e.target.value)}
+            >
               <MenuItem disabled value='default'>
                 <em>selecione</em>
               </MenuItem>
-              {banksOptions.map(bank => (
-                <MenuItem key={bank.value} value={bank.value}>
-                  {bank.label}
+              {isLoadingClosures && (
+                <MenuItem disabled value='loading'>
+                  Carregando...
+                </MenuItem>
+              )}
+              {isErrorClosures && (
+                <MenuItem disabled value='error'>
+                  Ocorreu um erro, tente novamente.
+                </MenuItem>
+              )}
+              {closuresOptions.map(closuresItem => (
+                <MenuItem key={closuresItem.id} value={closuresItem.id}>
+                  {closuresItem.label}
                 </MenuItem>
               ))}
             </CustomTextField>
@@ -203,7 +299,7 @@ const Closure = () => {
         </Grid>
       </CardActions>
       <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <BankStepperInteractive bank={financialData.monthlyFinancialCloseBank} />
+        <BankStepperInteractive bank={financialData.monthlyFinancialCloseBank} generateExtract={generateExtract} />
       </CardContent>
       <StatementsTable />
     </Card>

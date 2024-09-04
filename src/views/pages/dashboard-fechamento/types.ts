@@ -32,6 +32,12 @@ export type SelectOptionsProps = {
   label: string
 }
 
+export interface ClosureOptionsProps {
+  id: string
+  label: string
+  logo: string
+}
+
 export type bankProps = {
   id: string
   avatar: string | undefined

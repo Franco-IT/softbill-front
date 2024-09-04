@@ -13,6 +13,12 @@ export const bankStatusLabel: { [key: string]: string } = {
   PENDING: 'Pendente'
 }
 
+// Mapeamento de tipos de integração
+export const typesIntegration: { [key: string]: string } = {
+  API: 'INTEGRAÇÃO',
+  IMPORT: 'IMPORTAÇÃO'
+}
+
 // Mapeamento de status com suas respectivas propriedades
 export const statusMap: StatusMapProps = {
   PENDING: {

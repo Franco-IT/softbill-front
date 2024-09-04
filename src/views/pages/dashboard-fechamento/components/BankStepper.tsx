@@ -70,7 +70,7 @@ const BankStepper = ({ bank }: BankStepperProps) => {
           onClick={() =>
             router.push({
               pathname: '/dashboard-fechamento/fechamento/[id]',
-              query: { id: bank.id }
+              query: { id: bank.id, clientId: bank.clientId }
             })
           }
         >

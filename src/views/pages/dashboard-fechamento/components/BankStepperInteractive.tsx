@@ -9,9 +9,10 @@ import { StatusMapProps, StatusProps } from '../types'
 
 interface BankStepperInteractiveProps {
   bank: any
+  generateExtract: () => void
 }
 
-const BankStepperInteractive = memo(({ bank }: BankStepperInteractiveProps) => {
+const BankStepperInteractive = memo(({ bank, generateExtract }: BankStepperInteractiveProps) => {
   const [statusObj, setStatusObj] = useState<StatusProps>({
     extract: {
       status: false,
@@ -38,9 +39,10 @@ const BankStepperInteractive = memo(({ bank }: BankStepperInteractiveProps) => {
   const customStepperInteractiveProps = useMemo(
     () => ({
       status: statusObj,
-      data: bank
+      data: bank,
+      generateExtract
     }),
-    [bank, statusObj]
+    [bank, generateExtract, statusObj]
   )
 
   return (

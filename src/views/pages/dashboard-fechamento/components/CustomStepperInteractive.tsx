@@ -12,6 +12,7 @@ import steps from '../steps'
 interface CustomStepperInteractiveProps {
   status: StatusProps
   data: any
+  generateExtract: () => void
 }
 
 const CustomStepperInteractive = ({ status, data }: CustomStepperInteractiveProps) => {
@@ -29,7 +30,7 @@ const CustomStepperInteractive = ({ status, data }: CustomStepperInteractiveProp
 
   const extractProps = {
     status: data.subStatus,
-    method: 'OFX',
+    method: data.bankAccount.generatedBy,
     receivedAt: new Date(data.referenceDate)
   }
 
