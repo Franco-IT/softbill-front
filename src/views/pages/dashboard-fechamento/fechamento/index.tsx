@@ -32,6 +32,10 @@ import { api } from 'src/services/api'
 import { dateProvider } from 'src/shared/providers'
 import { getInitials, statusColorsMUI, typesIntegration } from '../utils'
 import { ClosureOptionsProps } from '../types'
+import { useAppDispatch } from 'src/hooks/useAppDispatch'
+import { useAppSelector } from 'src/hooks/useAppSelector'
+import { setMonthlyFinancialClose, setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
+import ConciliationTable from '../components/ConciliationTable'
 
 const statusValues: any = {
   PENDING: true,
@@ -46,12 +50,16 @@ const statusValuesText: any = {
 const Closure = () => {
   const router = useRouter()
 
+  const dispatch = useAppDispatch()
+  const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
+  const showStatements = useAppSelector(state => state.ClosingReducer.showStatements)
+  const showConciliations = useAppSelector(state => state.ClosingReducer.showConciliations)
+
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
   const isSmallerThanSm = useMediaQuery((theme: any) => theme.breakpoints.down('sm'))
 
   const { toggleDrawer } = useDrawer()
 
-  const [status, setStatus] = React.useState<any>('PENDING')
   const [referenceDate, setReferenceDate] = React.useState<any>('2024-06-01')
   const [date, setDate] = React.useState<any>(new Date())
   const [closuresOptions, setClosuresOptions] = React.useState<ClosureOptionsProps[]>([])
@@ -88,10 +96,6 @@ const Closure = () => {
       return response.data
     },
     {
-      onSuccess: data => {
-        setDate(dateProvider.adjustDate(data.referenceDate))
-        setStatus(data.status)
-      },
       enabled: router.isReady,
       keepPreviousData: true,
       staleTime: 1000 * 60 * 5
@@ -125,7 +129,8 @@ const Closure = () => {
         })
       },
       enabled: router.isReady,
-      keepPreviousData: true
+      keepPreviousData: true,
+      refetchOnWindowFocus: false
     }
   )
 
@@ -146,26 +151,26 @@ const Closure = () => {
     return date ? dateProvider.formatDate(date, 'yyyy/MM/dd') : null
   }
 
-  const generateExtract = async () => {
-    api.get('/transactions/by-monthly-financial-close/' + financialData.monthlyFinancialCloseId, {
-      params: {
-        step: 'IMPORT',
-        bankAccountId: financialData.bankAccountId
-      }
-    })
-  }
+  useEffect(() => {
+    if (financialData) {
+      setDate(dateProvider.adjustDate(financialData.referenceDate))
+      dispatch(setMonthlyFinancialClose(financialData))
+      dispatch(setShowStatements(false))
+      dispatch(setShowConciliations(false))
+    }
+  }, [dispatch, financialData])
 
   useEffect(() => {
     setReferenceDate(handleConvertDateToString(date))
   }, [date])
 
   useEffect(() => {
-    if (closuresOptions.length > 0 && financialData) {
-      setClosureSelected(financialData.monthlyFinancialCloseBank.monthlyFinancialCloseBankId)
+    if (closuresOptions.length > 0 && monthlyFinancialClose) {
+      setClosureSelected(monthlyFinancialClose.monthlyFinancialCloseBank.monthlyFinancialCloseBankId)
     }
-  }, [closuresOptions, financialData])
+  }, [closuresOptions, monthlyFinancialClose])
 
-  if (isLoadingFinancial || (!financialData && !isErrorFinancial))
+  if (isLoadingFinancial || (!monthlyFinancialClose && !isErrorFinancial))
     return (
       <LoadingCard title='Carregando...' subtitle='Aguarde um momento' avatarColor='primary' icon='tabler:loader-2' />
     )
@@ -179,19 +184,18 @@ const Closure = () => {
           <Grid container spacing={4}>
             <Grid item xs={12} sm={6}>
               <Box display='flex' alignItems='center' gap={4}>
-                <CustomAvatar src={financialData?.clientAvatar} color={statusColorsMUI[financialData.status]} />
-                <Typography variant='h5'>{financialData?.clientName}</Typography>
-                {isSmallerThanSm ? (
-                  <GlowIcon status={financialData?.status} />
-                ) : (
-                  <CustomChip
-                    rounded
-                    skin='light'
-                    size='small'
-                    label={statusValuesText[financialData.status]}
-                    color={statusColorsMUI[financialData.status]}
-                  />
-                )}
+                <CustomAvatar
+                  src={monthlyFinancialClose?.clientAvatar}
+                  color={statusColorsMUI[monthlyFinancialClose.status]}
+                />
+                <Typography variant='h5'>{monthlyFinancialClose?.clientName}</Typography>
+                <CustomChip
+                  rounded
+                  skin='light'
+                  size='small'
+                  label={'#' + dateProvider.getMonthFromDate(date).toUpperCase()}
+                  color='primary'
+                />
               </Box>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -205,6 +209,7 @@ const Closure = () => {
                   <IconButton
                     title='Exportar'
                     onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Export />)(e)}
+                    disabled={statusValues[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
                   >
                     <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
                   </IconButton>
@@ -215,14 +220,14 @@ const Closure = () => {
                   alignItems={isSmallerThanSm ? 'end' : 'center'}
                   gap={2}
                 >
-                  <CustomAvatar src={financialData.monthlyFinancialCloseBank.bank.logo}>
-                    {getInitials(financialData.monthlyFinancialCloseBank.bank.name)}
+                  <CustomAvatar src={monthlyFinancialClose.monthlyFinancialCloseBank.bank.logo}>
+                    {getInitials(monthlyFinancialClose.monthlyFinancialCloseBank.bank.name)}
                   </CustomAvatar>
                   <CustomChip
                     rounded
                     skin='light'
                     size='small'
-                    label={typesIntegration[financialData.monthlyFinancialCloseBank.bankAccount.generatedBy]}
+                    label={typesIntegration[monthlyFinancialClose.monthlyFinancialCloseBank.bankAccount.generatedBy]}
                     color='primary'
                   />
                 </Box>
@@ -233,7 +238,7 @@ const Closure = () => {
         action={
           <Box display={isSmallerThanSm ? 'flex' : 'none'} alignItems='center' justifyContent='center'>
             <IconButton
-              disabled={statusValues[status]}
+              disabled={statusValues[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
               title='Exportar'
               onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Export />)(e)}
             >
@@ -245,13 +250,18 @@ const Closure = () => {
       <Divider />
       <Box display='flex' alignItems='center' gap={2} p={'24px 24px 0px'}>
         <Typography variant='h5'>Fechamento</Typography>
-        <CustomChip
-          rounded
-          skin='light'
-          size='small'
-          label={'#' + dateProvider.getMonthFromDate(date).toUpperCase()}
-          color='primary'
-        />
+
+        {isSmallerThanSm ? (
+          <GlowIcon status={monthlyFinancialClose.monthlyFinancialCloseBank.status} />
+        ) : (
+          <CustomChip
+            rounded
+            skin='light'
+            size='small'
+            label={statusValuesText[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
+            color={statusColorsMUI[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
+          />
+        )}
       </Box>
       <CardActions>
         <Grid container spacing={3}>
@@ -299,9 +309,11 @@ const Closure = () => {
         </Grid>
       </CardActions>
       <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <BankStepperInteractive bank={financialData.monthlyFinancialCloseBank} generateExtract={generateExtract} />
+        <BankStepperInteractive />
       </CardContent>
-      <StatementsTable />
+      <Divider />
+      {showStatements && <StatementsTable />}
+      {showConciliations && <ConciliationTable />}
     </Card>
   )
 }

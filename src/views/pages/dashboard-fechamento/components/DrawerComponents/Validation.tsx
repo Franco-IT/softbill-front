@@ -47,6 +47,7 @@ const Validation = () => {
           fullWidth
           label='Status'
           placeholder='Selecione Status'
+          disabled
           value={status || 'default'}
           onChange={e => handleStatus(e.target.value as StatusValue)}
           color={statusColorsMUI[status]}

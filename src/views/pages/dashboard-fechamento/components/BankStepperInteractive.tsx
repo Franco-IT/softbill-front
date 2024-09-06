@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, memo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Box, Button } from '@mui/material'
 
 import CustomAvatar from 'src/@core/components/mui/avatar'
@@ -6,13 +6,12 @@ import CustomStepperInteractive from './CustomStepperInteractive'
 
 import { getInitials, statusMap } from '../utils'
 import { StatusMapProps, StatusProps } from '../types'
+import { useAppSelector } from 'src/hooks/useAppSelector'
 
-interface BankStepperInteractiveProps {
-  bank: any
-  generateExtract: () => void
-}
+const BankStepperInteractive = () => {
+  const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
+  const { monthlyFinancialCloseBank } = monthlyFinancialClose
 
-const BankStepperInteractive = memo(({ bank, generateExtract }: BankStepperInteractiveProps) => {
   const [statusObj, setStatusObj] = useState<StatusProps>({
     extract: {
       status: false,
@@ -32,17 +31,15 @@ const BankStepperInteractive = memo(({ bank, generateExtract }: BankStepperInter
   })
 
   useEffect(() => {
-    if (statusMap[bank.subStatus as keyof StatusMapProps])
-      setStatusObj(statusMap[bank.subStatus as keyof StatusMapProps])
-  }, [bank.subStatus])
+    if (statusMap[monthlyFinancialCloseBank.subStatus as keyof StatusMapProps])
+      setStatusObj(statusMap[monthlyFinancialCloseBank.subStatus as keyof StatusMapProps])
+  }, [monthlyFinancialCloseBank])
 
   const customStepperInteractiveProps = useMemo(
     () => ({
-      status: statusObj,
-      data: bank,
-      generateExtract
+      status: statusObj
     }),
-    [bank, generateExtract, statusObj]
+    [statusObj]
   )
 
   return (
@@ -63,14 +60,16 @@ const BankStepperInteractive = memo(({ bank, generateExtract }: BankStepperInter
           gap: 2
         }}
       >
-        <CustomAvatar src={bank.bank.logo}>{getInitials(bank.bank.name)}</CustomAvatar>
+        <CustomAvatar src={monthlyFinancialCloseBank.bank.logo}>
+          {getInitials(monthlyFinancialCloseBank.bank.name)}
+        </CustomAvatar>
         <Button variant='text' color='inherit'>
-          {bank.bank.name}
+          {monthlyFinancialCloseBank.bank.name}
         </Button>
       </Box>
       <CustomStepperInteractive {...customStepperInteractiveProps} />
     </Box>
   )
-})
+}
 
 export default BankStepperInteractive

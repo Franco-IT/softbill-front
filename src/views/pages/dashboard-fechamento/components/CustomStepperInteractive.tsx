@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { memo, ReactNode, useEffect, useState } from 'react'
 import { Step, StepLabel, Stepper, useMediaQuery } from '@mui/material'
 import StepperCustomDot from './StepperCustomDot'
 import DrawerAnchor from 'src/components/DrawerAnchor'
@@ -11,27 +11,24 @@ import steps from '../steps'
 
 interface CustomStepperInteractiveProps {
   status: StatusProps
-  data: any
-  generateExtract: () => void
 }
 
-const CustomStepperInteractive = ({ status, data }: CustomStepperInteractiveProps) => {
+const CustomStepperInteractive = memo(({ status }: CustomStepperInteractiveProps) => {
   const { extract, conciliation, validation } = status
+
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
   const { anchor, open, toggleDrawer, children } = useDrawer()
   const [activeStep, setActiveStep] = useState(0)
+
+  useEffect(() => {
+    if (status) setActiveStep(0)
+  }, [status])
 
   const drawerProps = {
     anchor,
     open,
     toggleDrawer,
     children
-  }
-
-  const extractProps = {
-    status: data.subStatus,
-    method: data.bankAccount.generatedBy,
-    receivedAt: new Date(data.referenceDate)
   }
 
   return (
@@ -62,7 +59,7 @@ const CustomStepperInteractive = ({ status, data }: CustomStepperInteractiveProp
         }
 
         const drawerChildren: any = {
-          0: <Extract {...extractProps} />,
+          0: <Extract />,
           1: <Conciliation />,
           2: <Validation />
         }
@@ -90,6 +87,6 @@ const CustomStepperInteractive = ({ status, data }: CustomStepperInteractiveProp
       <DrawerAnchor {...drawerProps} />
     </Stepper>
   )
-}
+})
 
 export default CustomStepperInteractive

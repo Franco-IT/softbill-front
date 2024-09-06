@@ -1,45 +1,42 @@
+import { memo } from 'react'
+
 import { CardHeader, Grid, Box } from '@mui/material'
 
-import { ClientProps } from 'src/types/clients'
-import { BankAccountProps } from 'src/types/banks'
+import CustomTextField from 'src/@core/components/mui/text-field'
 
-interface FilterProps {
-  filter: string
+interface TableHeaderProps {
+  value: string
   handleFilter: (val: string) => void
 }
 
-interface PaginationProps {
-  page: number
-  perPage: number
-  setTotalPages: (totalPages: number) => void
-}
+const TableHeader = memo((props: TableHeaderProps) => {
+  const { handleFilter, value } = props
 
-interface ClientComponentProps {
-  clients: ClientProps[]
-}
-
-interface ClientBanksProps {
-  clientBanks: BankAccountProps[]
-  handleResetClientBanks: () => void
-}
-
-interface TableHeaderProps {
-  filterProps: FilterProps
-  paginationProps: PaginationProps
-  clientProps: ClientComponentProps
-  clientBanksProps: ClientBanksProps
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const TableHeader = ({ filterProps, clientProps, paginationProps, clientBanksProps }: TableHeaderProps) => {
-  
   return (
-    <Grid container gap={4} paddingX={6} paddingY={5} justifyContent={'space-between'}>
+    <Grid container gap={{ xs: 3, md: 0 }} paddingX={6} paddingY={4} justifyContent={'space-between'}>
       <Box display='flex'>
-        <CardHeader title='Extrato Bancário' subheader='Pré Visualização' sx={{ padding: 0 }} />
+        <CardHeader
+          sx={{
+            padding: 0
+          }}
+          title='Transações'
+        />
       </Box>
+
+      <Grid item xs={12} md={10}>
+        <Grid container gap={3} justifyContent={'end'}>
+          <Grid item xs={12} md={3} xl={2}>
+            <CustomTextField
+              fullWidth
+              value={value}
+              placeholder='Buscar Transação'
+              onChange={e => handleFilter(e.target.value)}
+            />
+          </Grid>
+        </Grid>
+      </Grid>
     </Grid>
   )
-}
+})
 
 export default TableHeader

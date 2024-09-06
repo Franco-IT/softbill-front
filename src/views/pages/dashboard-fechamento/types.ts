@@ -1,3 +1,7 @@
+export type StatusValue = 'DONE' | 'PENDING' | 'PROCESSING' | 'TRANSACTION_UNTRACKED' | 'WAITING_VALIDATION'
+
+export type StatusKeys = keyof StatusMapProps
+
 export type SubStatusProps = {
   status: boolean
   isError: boolean
@@ -17,9 +21,6 @@ export type StatusMapProps = {
   WAITING_VALIDATION: StatusProps
   DONE: StatusProps
 }
-
-export type StatusValue = 'DONE' | 'PENDING' | undefined
-
 export interface StepProps {
   name: string
   icon: React.ReactNode

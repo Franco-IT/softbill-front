@@ -1,4 +1,4 @@
-import { ColorType, StatusMapProps } from './types'
+import { ColorType, StatusKeys, StatusMapProps } from './types'
 
 // Mapeamento das cores de status para tipos MUI
 export const statusColorsMUI: { [key: string]: ColorType } = {
@@ -17,6 +17,26 @@ export const bankStatusLabel: { [key: string]: string } = {
 export const typesIntegration: { [key: string]: string } = {
   API: 'INTEGRAÇÃO',
   IMPORT: 'IMPORTAÇÃO'
+}
+
+// Rótulos dos status de fechamento
+export const statusKeys: StatusKeys[] = ['PENDING', 'PROCESSING', 'TRANSACTION_UNTRACKED', 'WAITING_VALIDATION', 'DONE']
+
+export const statusColors: { [key: string]: ColorType } = {
+  PENDING: 'error',
+  PROCESSING: 'warning',
+  TRANSACTION_UNTRACKED: 'warning',
+  WAITING_VALIDATION: 'warning',
+  DONE: 'success'
+}
+
+// Rótulos dos status de fechamento
+export const statusLabels: { [key: string]: string } = {
+  PENDING: 'Pendente',
+  PROCESSING: 'Processando',
+  TRANSACTION_UNTRACKED: 'Transação não rastreada',
+  WAITING_VALIDATION: 'Aguardando validação',
+  DONE: 'Concluído'
 }
 
 // Mapeamento de status com suas respectivas propriedades

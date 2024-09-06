@@ -1,4 +1,15 @@
-import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, IconButton, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Divider,
+  Grid,
+  IconButton,
+  Typography
+} from '@mui/material'
 import IconifyIcon from 'src/@core/components/icon'
 import DropzoneWrapper from 'src/@core/styles/libs/react-dropzone'
 import FileUploaderRestrictions from 'src/components/FileUploaderRestrictions'
@@ -14,6 +25,9 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
 import { useQueryClient } from 'react-query'
+import { useAppSelector } from 'src/hooks/useAppSelector'
+import { useAppDispatch } from 'src/hooks/useAppDispatch'
+import { setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
 
 const FILE_TYPES: { [key: string]: string[] } = {
   'application/ofx': ['.ofx']
@@ -46,19 +60,21 @@ const fileSchema = yup.object().shape({
     .max(1, 'É permitido adicionar apenas um arquivo')
 })
 
-interface ExtractProps {
-  status: string
-  method: string
-  receivedAt: Date
-}
-
-const Extract = ({ status, method, receivedAt }: ExtractProps) => {
+const Extract = () => {
   const { formatDate } = dateProvider
 
   const queryClient = useQueryClient()
 
   const { toastPromise } = useToast()
   const { anchor, toggleDrawer } = useDrawer()
+
+  const dispatch = useAppDispatch()
+  const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
+
+  const status = monthlyFinancialClose.monthlyFinancialCloseBank.subStatus
+  const method = monthlyFinancialClose.monthlyFinancialCloseBank.bankAccount.generatedBy
+  const receivedAt = new Date(monthlyFinancialClose.monthlyFinancialCloseBank.referenceDate)
+  const importedFileId = monthlyFinancialClose.monthlyFinancialCloseBank.importedFileId
 
   const {
     handleSubmit,
@@ -75,9 +91,15 @@ const Extract = ({ status, method, receivedAt }: ExtractProps) => {
     PENDING: true
   }
 
-  const statusValuesText: any = {
-    PENDING: 'Pendente',
-    DONE: 'Aprovado'
+  const statusValuesTextForMethod: { [key: string]: { [key: string]: string } } = {
+    IMPORT: {
+      PENDING: 'Não Recebido',
+      DONE: 'Recebido'
+    },
+    API: {
+      PENDING: 'Não Integrado',
+      DONE: 'Integrado'
+    }
   }
 
   const statusValuesExtract: any = {
@@ -88,22 +110,6 @@ const Extract = ({ status, method, receivedAt }: ExtractProps) => {
   const statusValuesExtractOFX: any = {
     PENDING: 'Não Recebido',
     DONE: formatDate(receivedAt)
-  }
-
-  const handleGetExtract = (e: React.KeyboardEvent | React.MouseEvent) => {
-    const myPromise = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (Math.random() < 0.5) {
-          resolve('foo')
-
-          toggleDrawer(anchor, false, null)(e)
-        } else {
-          reject('fox')
-        }
-      }, 1000)
-    })
-
-    toastPromise(myPromise, 'Buscando extrato...', 'Busca realizada com sucesso', 'Erro ao buscar extrato')
   }
 
   const handleSendReminder = (e: React.KeyboardEvent | React.MouseEvent) => {
@@ -120,6 +126,26 @@ const Extract = ({ status, method, receivedAt }: ExtractProps) => {
     })
 
     toastPromise(myPromise, 'Enviando lembrete...', 'Lembrete enviado com sucesso', 'Erro ao enviar lembrete')
+  }
+
+  const handleDownloadImportedFile = (fileId: string) => {
+    api
+      .get('/files/download-file/' + fileId)
+      .then(response => window.open(response.data))
+      .catch(() => toast.error('Erro ao baixar o arquivo, tente novamente mais tarde'))
+  }
+
+  const handleDeleteImportedFile = (fileId: string) => {
+    api
+      .delete('/files/' + fileId)
+      .then(() => queryClient.invalidateQueries(['financial-closing']))
+      .catch(() => toast.error('Erro ao baixar o arquivo, tente novamente mais tarde'))
+  }
+
+  const handleGenerateExtract = (e: React.KeyboardEvent | React.MouseEvent) => {
+    dispatch(setShowStatements(true))
+    dispatch(setShowConciliations(false))
+    toggleDrawer(anchor, false, null)(e)
   }
 
   const onSubmit = (data: any, e: any) => {
@@ -149,21 +175,39 @@ const Extract = ({ status, method, receivedAt }: ExtractProps) => {
       })
   }
 
+  const handleCheckStatus = (status: string) => {
+    if (statusValuesTextForMethod[method][status]) return statusValuesTextForMethod[method][status]
+
+    return statusValuesTextForMethod[method] && method == 'IMPORT' ? 'Recebido' : 'Integrado'
+  }
+
+  const handleCheckStatusColor = (status: string) => {
+    if (status === 'PENDING') return 'REJECTED'
+
+    return 'DONE'
+  }
+
   return (
     <Card>
       <CardHeader
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography variant='h5'>Extrato</Typography>
-            <GlowIcon status={status === `PENDING` ? status : 'DONE'} />
+            <GlowIcon status={handleCheckStatusColor(status)} />
           </Box>
         }
         action={
-          <IconButton disabled={statusValues[status] || false}>
-            <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
-          </IconButton>
+          method === 'IMPORT' && (
+            <IconButton
+              disabled={statusValues[status] || false}
+              onClick={() => handleDownloadImportedFile(importedFileId as string)}
+            >
+              <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
+            </IconButton>
+          )
         }
       />
+      <Divider />
       <CardContent
         sx={{
           display: 'flex',
@@ -177,8 +221,8 @@ const Extract = ({ status, method, receivedAt }: ExtractProps) => {
             rounded
             skin='light'
             size='small'
-            label={statusValuesText[status] || 'Recebido'}
-            color={statusColorsMUI[status] || 'success'}
+            label={handleCheckStatus(status)}
+            color={statusColorsMUI[handleCheckStatusColor(status)] || 'success'}
           />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -194,7 +238,7 @@ const Extract = ({ status, method, receivedAt }: ExtractProps) => {
                 ? statusValuesExtractOFX[status] || formatDate(receivedAt)
                 : statusValuesExtract[status] || formatDate(receivedAt)
             }
-            color={status !== 'PENDING' ? 'primary' : 'secondary'}
+            color={statusColorsMUI[handleCheckStatusColor(status)]}
           />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -213,6 +257,7 @@ const Extract = ({ status, method, receivedAt }: ExtractProps) => {
                   color='primary'
                   disabled={statusValues[status] || false}
                   startIcon={<IconifyIcon icon='tabler:eye' fontSize='1.7rem' />}
+                  onClick={e => handleGenerateExtract(e)}
                 >
                   Visualizar
                 </Button>
@@ -224,6 +269,7 @@ const Extract = ({ status, method, receivedAt }: ExtractProps) => {
                   color='primary'
                   disabled={statusValues[status] || false}
                   startIcon={<IconifyIcon icon='tabler:trash' fontSize='1.7rem' />}
+                  onClick={() => handleDeleteImportedFile(importedFileId as string)}
                 >
                   Deletar
                 </Button>
@@ -292,7 +338,7 @@ const Extract = ({ status, method, receivedAt }: ExtractProps) => {
                 variant='contained'
                 color='primary'
                 startIcon={<IconifyIcon icon='tabler:file-search' fontSize='1.7rem' />}
-                onClick={e => handleGetExtract(e)}
+                onClick={e => handleGenerateExtract(e)}
               >
                 Buscar Extrato
               </Button>

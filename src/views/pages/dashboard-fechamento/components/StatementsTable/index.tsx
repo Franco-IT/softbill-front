@@ -1,166 +1,200 @@
-import { Suspense, useState, ChangeEvent, MouseEvent, useMemo, useEffect, useCallback } from 'react'
-import { Box, Paper, Table, TableContainer, TablePagination } from '@mui/material'
+// Pacotes externos
+import { Suspense, useEffect, useState, ChangeEvent, MouseEvent, useMemo, useCallback } from 'react'
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
+import { useQuery } from 'react-query'
 
-import { HeadCellsOFX } from './HeadCells'
+import CustomChip from 'src/@core/components/mui/chip'
+import Error from 'src/components/FeedbackAPIs/Error'
+import HeadCells from './HeadCells'
 import TableHeader from './TableHeader'
+import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
 import { Loading, Order, getComparator, stableSort } from 'src/utils/list'
 
-import { BankAccountListDataProps } from 'src/types/banks'
-import useGetDataApi from 'src/hooks/useGetDataApi'
-import { useAuth } from 'src/hooks/useAuth'
-import { ClientsListProps } from 'src/types/clients'
-
+import { ThemeColor } from 'src/@core/layouts/types'
 import { useAppSelector } from 'src/hooks/useAppSelector'
-import { useAppDispatch } from 'src/hooks/useAppDispatch'
-import { setStatements } from 'src/store/modules/statement/reducer'
-import Rows from './Rows'
+import { api } from 'src/services/api'
+import { dateProvider } from 'src/shared/providers'
+import { formatAmount } from 'src/utils/format'
 
-export type OperationTypeProps = 'INTEGRATION' | 'IMPORT' | null
+interface ColorsType {
+  [key: string]: ThemeColor
+}
 
-const StatementsTable = () => {
-  const { user } = useAuth()
+const transactionTypeColors: ColorsType = {
+  DEBIT: 'error',
+  CREDIT: 'success'
+}
 
-  const clientId = useAppSelector(state => state.StatementsReducer.clientId)
-  const operationType = useAppSelector(state => state.StatementsReducer.operationType)
-  const bankId = useAppSelector(state => state.StatementsReducer.operations.integration.bankId)
-  const statements = useAppSelector(state => state.StatementsReducer.statements)
+interface TransactionType {
+  [key: string]: string
+}
 
-  const dispatch = useAppDispatch()
+const transactionType: TransactionType = {
+  DEBIT: 'Débito',
+  CREDIT: 'Crédito'
+}
+
+const List = () => {
+  const showStatements = useAppSelector(state => state.ClosingReducer.showStatements)
+  const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
+  const { monthlyFinancialCloseBank } = monthlyFinancialClose
 
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<any>('createdAt')
+  const [orderBy, setOrderBy] = useState<keyof any>('createdAt')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
-  const [totalRows, setTotalRows] = useState(0)
-
+  const [statements, setStatements] = useState<any[]>([])
   const [filter, setFilter] = useState('')
 
-  const { data: clients } = useGetDataApi<ClientsListProps>({
-    url: `/users?accountingId=${user?.id}&type=CLIENT`,
-    params: { perPage: 10000 }
-  })
-
-  const { data: clientBanks, handleResetData: handleResetClientBanks } = useGetDataApi<BankAccountListDataProps>({
-    url: `/bankAccounts/by-client/${clientId}`,
-    params: { withBanks: true },
-    callInit: !!clientId
-  })
+  const params = useMemo(
+    () => ({
+      step: 'IMPORT',
+      page: page + 1,
+      perPage: rowsPerPage,
+      Search: filter,
+      bankAccountId: monthlyFinancialCloseBank.bankAccountId
+    }),
+    [filter, monthlyFinancialCloseBank.bankAccountId, page, rowsPerPage]
+  )
 
   const {
     data: rows,
-    loading,
-    handleResetData: handleResetRows
-  } = useGetDataApi<any>({
-    url: `/bankAccounts/get-bank-data/${bankId}`,
-    params: { page: page + 1, perPage: rowsPerPage, search: filter, withBanks: true },
-    callInit: !!bankId
-  })
+    isLoading,
+    isError
+  } = useQuery(
+    ['statement', params],
+    async () => {
+      const response = await api.get(
+        '/transactions/by-monthly-financial-close/' + monthlyFinancialClose.monthlyFinancialCloseId,
+        {
+          params
+        }
+      )
 
-  const handleRequestSort = (event: MouseEvent<unknown>, property: any) => {
-    const isAsc = orderBy === property && order === 'asc'
-    setOrder(isAsc ? 'desc' : 'asc')
-    setOrderBy(property)
-  }
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage)
-  }
-
-  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
-
-  const visibleRows = useMemo(() => stableSort(statements, getComparator(order, orderBy)), [statements, order, orderBy])
-
-  const handleRenderFileImported = (rows: any) => {
-    return (
-      <>
-        <EnhancedTableHead
-          headCells={HeadCellsOFX}
-          order={order}
-          orderBy={orderBy}
-          onRequestSort={handleRequestSort}
-          rowCount={totalRows || 0}
-        />
-        <Suspense fallback={<Loading />}>
-          <Rows visibleRows={rows} loading={loading} />
-        </Suspense>
-      </>
-    )
-  }
-
-  const handleSetStatements = useCallback(
-    (operationType: string, rows: any) => {
-      switch (operationType) {
-        case 'INTEGRATION':
-          return dispatch(setStatements(rows.listaLancamento || []))
-        case 'IMPORT':
-          return dispatch(setStatements(rows.preview || []))
-        default:
-          return null
-      }
+      return response.data
     },
-    [dispatch]
+    {
+      staleTime: 1000 * 60 * 5,
+      keepPreviousData: true,
+      enabled: showStatements
+    }
   )
 
+  const handleRequestSort = useCallback(
+    (event: MouseEvent<unknown>, property: keyof any) => {
+      const isAsc = orderBy === property && order === 'asc'
+      setOrder(isAsc ? 'desc' : 'asc')
+      setOrderBy(property)
+    },
+    [order, orderBy]
+  )
+
+  const handleChangePage = useCallback((event: unknown, newPage: number) => {
+    setPage(newPage)
+  }, [])
+
+  const handleChangeRowsPerPage = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }, [])
+
+  const visibleRows = useMemo(() => stableSort(statements, getComparator(order, orderBy)), [order, orderBy, statements])
+
   useEffect(() => {
-    if (!bankId && rows) return handleResetRows()
+    if (rows) setStatements(rows.data)
+  }, [rows])
 
-    if (bankId && rows) handleSetStatements(operationType || '', rows)
-  }, [clientId, bankId, dispatch, rows, handleResetRows, handleSetStatements, operationType])
+  const paginationProps = useMemo(() => {
+    return {
+      rowsTotal: rows?.total || 0,
+      rowsPerPage,
+      rowsPerPageOptions: [5, 10, 25],
+      page,
+      handleChangePage,
+      handleChangeRowsPerPage
+    }
+  }, [rows?.total, rowsPerPage, page, handleChangePage, handleChangeRowsPerPage])
 
-  const filterProps = {
-    filter,
-    handleFilter: setFilter
-  }
-
-  const clientProps = {
-    clients: clients?.data || []
-  }
-
-  const paginationProps = {
-    page: page + 1,
-    perPage: rowsPerPage,
-    setTotalPages: setTotalRows
-  }
-
-  const clientBanksProps = {
-    clientBanks: clientBanks?.data || [],
-    handleResetClientBanks
-  }
+  if (isError) return <Error />
 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <TableHeader
-          filterProps={filterProps}
-          clientProps={clientProps}
-          paginationProps={paginationProps}
-          clientBanksProps={clientBanksProps}
-        />
+        <TableHeader value={filter} handleFilter={setFilter} />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={'medium'}>
-            {handleRenderFileImported(visibleRows || [])}
+            <EnhancedTableHead
+              headCells={HeadCells}
+              order={order}
+              orderBy={orderBy as string}
+              onRequestSort={handleRequestSort}
+              rowCount={rows?.total || 0}
+            />
+            <Suspense fallback={<Loading />}>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={6}>
+                      <Typography noWrap variant='h6' sx={{ color: 'text.secondary' }}>
+                        Carregando...
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ) : visibleRows.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6}>
+                      <Typography noWrap variant='h6' sx={{ color: 'text.secondary' }}>
+                        Nenhuma transação encontrada
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  visibleRows.map((row, index) => {
+                    const labelId = `enhanced-table-checkbox-${index}`
+
+                    return (
+                      <TableRow hover tabIndex={-1} key={row.id}>
+                        <TableCell component='th' id={labelId} scope='row' padding='none'>
+                          <Typography noWrap sx={{ color: 'text.secondary' }}>
+                            {dateProvider.formatDate(new Date(row.date), "d 'de' MMM 'de' yyyy")}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align='left'>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Typography noWrap variant='body2' sx={{ color: 'text.secondary' }}>
+                              {formatAmount(row.amount)}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell align='left'>
+                          <CustomChip
+                            rounded
+                            skin='light'
+                            size='small'
+                            label={transactionType[row.transactionTypeExtract]}
+                            color={transactionTypeColors[row.transactionTypeExtract]}
+                            sx={{ minWidth: 107, textTransform: 'capitalize' }}
+                          />
+                        </TableCell>
+                        <TableCell align='left'>
+                          <Typography noWrap sx={{ color: 'text.secondary' }}>
+                            {row.extractDescription}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
+                )}
+              </TableBody>
+            </Suspense>
           </Table>
         </TableContainer>
-        {visibleRows.length > 0 && (
-          <TablePagination
-            labelRowsPerPage='Linhas por página:'
-            rowsPerPageOptions={[5, 10, 25]}
-            component='div'
-            count={totalRows || 0}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        )}
+        <TablePagination {...paginationProps} />
       </Paper>
     </Box>
   )
 }
 
-export default StatementsTable
+export default List

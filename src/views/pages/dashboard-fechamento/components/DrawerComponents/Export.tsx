@@ -1,13 +1,36 @@
 import { Card, CardHeader, Typography, CardActions, Grid, Button, Box, CardContent } from '@mui/material'
+import toast from 'react-hot-toast'
 import IconifyIcon from 'src/@core/components/icon'
 import CustomChip from 'src/@core/components/mui/chip'
+import { useAppSelector } from 'src/hooks/useAppSelector'
+import { api } from 'src/services/api'
 
 const Export = () => {
-  const status: any = 'APPROVED'
+  const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
+  const { monthlyFinancialCloseBank } = monthlyFinancialClose
 
-  const statusValues: any = {
-    PENDING: true,
-    APPROVED: false
+  const { extractFileId } = monthlyFinancialCloseBank
+
+  const handleExport = (fileId: string) => {
+    api
+      .get('/files/download-file/' + fileId)
+      .then(response => window.open(response.data))
+      .catch(() => toast.error('Erro ao baixar o arquivo, tente novamente mais tarde'))
+  }
+
+  const handleGenerateExport = (id: string) => {
+    api
+      .get('/monthlyFinancialCloseBanks/export/' + id)
+      .then(response => window.open(response.data))
+      .catch(() => toast.error('Erro ao gerar o arquivo, tente novamente mais tarde'))
+  }
+
+  const handleCheckAction = (extractFileId: string, id: string) => {
+    if (extractFileId) {
+      handleExport(extractFileId)
+    } else {
+      handleGenerateExport(id)
+    }
   }
 
   return (
@@ -26,7 +49,7 @@ const Export = () => {
               fullWidth
               variant='contained'
               color='primary'
-              disabled={statusValues[status]}
+              disabled
               startIcon={<IconifyIcon icon='tabler:eye' fontSize='1.7rem' />}
             >
               Visualizar
@@ -38,8 +61,9 @@ const Export = () => {
               variant='contained'
               color='primary'
               startIcon={<IconifyIcon icon='tabler:file-download' fontSize='1.7rem' />}
+              onClick={() => handleCheckAction(extractFileId, monthlyFinancialCloseBank.monthlyFinancialCloseBankId)}
             >
-              Exportar
+              {extractFileId ? 'Baixar' : 'Gerar'} Arquivo
             </Button>
           </Grid>
         </Grid>

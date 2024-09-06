@@ -1,26 +1,43 @@
-import { Card, CardHeader, IconButton, Typography, Box, CardContent, CardActions, Grid, Button } from '@mui/material'
+import { Card, CardHeader, Typography, Box, CardContent, CardActions, Grid, Button, Divider } from '@mui/material'
 import IconifyIcon from 'src/@core/components/icon'
 import GlowIcon from 'src/components/GlowIcon'
 import CustomChip from 'src/@core/components/mui/chip'
-import { statusColorsMUI } from '../../utils'
 import { useDrawer } from 'src/hooks/useDrawer'
 import useToast from 'src/hooks/useToast'
+import { useAppDispatch } from 'src/hooks/useAppDispatch'
+import { setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
+import { useAppSelector } from 'src/hooks/useAppSelector'
+import { ColorType } from '../../types'
 
 const Conciliation = () => {
   const { toastPromise } = useToast()
   const { anchor, toggleDrawer } = useDrawer()
 
-  const status: any = 'PENDING'
+  const dispatch = useAppDispatch()
+  const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
+
+  const status = monthlyFinancialClose.monthlyFinancialCloseBank.subStatus
 
   const statusValuesText: any = {
     PENDING: 'Pendente',
-    APPROVED: 'Aprovado',
-    REJECTED: 'Rejeitado'
+    PROCESSING: 'Processando',
+    DONE: 'Aprovado',
+    TRANSACTION_UNTRACKED: 'Transações Pendentes'
   }
 
-  const statusValues: any = {
+  const statusColorsMUI: { [key: string]: ColorType } = {
+    DONE: 'success',
+    PENDING: 'error',
+    PROCESSING: 'error',
+    TRANSACTION_UNTRACKED: 'warning'
+  }
+
+  const statusValuesBoolean: any = {
     PENDING: true,
-    APPROVED: false
+    PROCESSING: true,
+    TRANSACTION_UNTRACKED: false,
+    WAITING_VALIDATION: false,
+    DONE: false
   }
 
   const handleSendReminder = (e: React.KeyboardEvent | React.MouseEvent) => {
@@ -39,21 +56,35 @@ const Conciliation = () => {
     toastPromise(myPromise, 'Enviando lembrete...', 'Lembrete enviado com sucesso', 'Erro ao enviar lembrete')
   }
 
+  const handleGenerateConciliations = (e: React.KeyboardEvent | React.MouseEvent) => {
+    dispatch(setShowConciliations(true))
+    dispatch(setShowStatements(false))
+    toggleDrawer(anchor, false, null)(e)
+  }
+
+  const handleCheckStatusColor = (status: string) => {
+    const statusValues: any = {
+      PENDING: 'REJECTED',
+      PROCESSING: 'REJECTED',
+      TRANSACTION_UNTRACKED: 'PENDING',
+      WAITING_VALIDATION: 'DONE',
+      DONE: 'DONE'
+    }
+
+    return statusValues[status]
+  }
+
   return (
     <Card>
       <CardHeader
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography variant='h5'>Conciliação</Typography>
-            <GlowIcon status={status} />
+            <GlowIcon status={handleCheckStatusColor(status)} />
           </Box>
         }
-        action={
-          <IconButton disabled={statusValues[status]}>
-            <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
-          </IconButton>
-        }
       />
+      <Divider />
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography sx={{ fontWeight: 500, color: 'text.secondary' }}>Status:</Typography>
@@ -61,33 +92,23 @@ const Conciliation = () => {
             rounded
             skin='light'
             size='small'
-            label={statusValuesText[status]}
+            label={statusValuesText[status] || 'Aprovado'}
             color={statusColorsMUI[status]}
           />
         </Box>
       </CardContent>
       <CardActions>
         <Grid container spacing={5}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <Button
               fullWidth
               variant='contained'
               color='primary'
-              disabled={statusValues[status]}
               startIcon={<IconifyIcon icon='tabler:eye' fontSize='1.7rem' />}
+              disabled={statusValuesBoolean[status]}
+              onClick={e => handleGenerateConciliations(e)}
             >
               Visualizar
-            </Button>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Button
-              fullWidth
-              variant='contained'
-              color='primary'
-              disabled={status === 'APPROVED'}
-              startIcon={<IconifyIcon icon='tabler:edit' fontSize='1.7rem' />}
-            >
-              Editar
             </Button>
           </Grid>
           <Grid item xs={12}>
@@ -97,6 +118,7 @@ const Conciliation = () => {
               color='primary'
               startIcon={<IconifyIcon icon='tabler:alert-circle' fontSize='1.7rem' />}
               onClick={e => handleSendReminder(e)}
+              disabled={statusValuesBoolean[status]}
             >
               Enviar Lembrete Para o Cliente
             </Button>

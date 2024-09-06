@@ -5,7 +5,7 @@ import { Box, Button } from '@mui/material'
 import Avatar from 'src/@core/components/mui/avatar'
 import CustomStepper from './CustomStepper'
 
-import { statusMap } from '../utils'
+import { getInitials, statusMap } from '../utils'
 import { StatusMapProps, StatusProps } from '../types'
 
 interface BankStepperProps {
@@ -63,7 +63,7 @@ const BankStepper = ({ bank }: BankStepperProps) => {
           gap: 2
         }}
       >
-        <Avatar src={bank.bank.logo} />
+        <Avatar src={bank.bank.logo}>{getInitials(bank.bank.name)}</Avatar>
         <Button
           variant='text'
           color='inherit'
