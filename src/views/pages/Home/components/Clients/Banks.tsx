@@ -37,7 +37,6 @@ const Banks = ({ id }: BanksProps) => {
   })
 
   const banks = response?.data || null
-  console.log('🚀 ~ Banks ~ banks:', banks)
 
   const handleRefetch = () => refetch()
 

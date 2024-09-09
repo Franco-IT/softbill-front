@@ -2,16 +2,19 @@ import { Button, Card, CardContent, CardHeader, List } from '@mui/material'
 import CardPending from './CardPending'
 import { useRouter } from 'next/router'
 
-const Pendings = () => {
+interface ConciliationsProps {
+  data: any
+}
+
+const Conciliations = ({ data }: ConciliationsProps) => {
   const router = useRouter()
-  const monthPending = ['february', 'august']
 
   return (
     <Card>
       <CardHeader
         title='Conciliações Pendentes'
         action={
-          <Button variant='contained' color='primary' onClick={() =>router.push('conciliacao-bancaria-cliente')}>
+          <Button variant='contained' color='primary' onClick={() => router.push('conciliacao-bancaria-cliente')}>
             Ver Todos
           </Button>
         }
@@ -35,10 +38,10 @@ const Pendings = () => {
           }}
           subheader={<li />}
         >
-          {monthPending.map(sectionId => (
-            <li key={`section-${sectionId}`}>
+          {data.map((item: any) => (
+            <li key={`section-${item.bankAccountId}`}>
               <ul>
-                <CardPending month={sectionId} />
+                <CardPending data={item} />
               </ul>
             </li>
           ))}
@@ -48,4 +51,4 @@ const Pendings = () => {
   )
 }
 
-export default Pendings
+export default Conciliations
