@@ -7,7 +7,7 @@ import DrawerAnchor from 'src/components/DrawerAnchor'
 import { useDrawer } from 'src/hooks/useDrawer'
 import { formatAmount } from 'src/utils/format'
 import Chip from 'src/@core/components/mui/chip'
-import ConciliationItem from 'src/components/DrawerComponents/ConciliationItem'
+import ConciliationItem from 'src/components/DrawerComponents/client/ConciliationItem'
 
 const CardPending = (props: any) => {
   const { anchor, open, toggleDrawer, children } = useDrawer()

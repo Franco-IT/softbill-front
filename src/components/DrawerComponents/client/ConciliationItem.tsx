@@ -119,6 +119,7 @@ const ConciliationItem = (props: ConciliationItemProps) => {
       .then(response => {
         if (response.status === 200) {
           queryClient.invalidateQueries(['dashboard-client'])
+          queryClient.invalidateQueries(['client-conciliations-list'])
           toast.success('Conciliação salva com sucesso')
           toggleDrawer(anchor, false, null)(e as React.KeyboardEvent | React.MouseEvent)
         }
