@@ -19,7 +19,6 @@ import RowOptions from './RowOptions'
 import TableHeader from './TableHeader'
 import EnhancedTableHead from './EnhancedTableHead'
 
-import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
 import { Loading, Order, getComparator, renderInitials, stableSort } from 'src/utils/list'
 
@@ -28,6 +27,7 @@ import { ThemeColor } from 'src/@core/layouts/types'
 import useGetDataApi from 'src/hooks/useGetDataApi'
 
 import { BankAccountListDataProps, BankAccountProps } from 'src/types/banks'
+import { formatNameBank } from 'src/utils/format'
 
 interface BankStatusColor {
   [key: string]: ThemeColor
@@ -132,7 +132,7 @@ const Banks = () => {
                                 color: 'text.secondary'
                               }}
                             >
-                              {formatName(row?.bank?.name || 'Nome não informado')}
+                              {formatNameBank(row?.bank?.name || 'Nome não informado')}
                             </Typography>
                           </Box>
                         </Box>
