@@ -30,7 +30,6 @@ const FileUploaderRestrictions = ({
   inputProps,
   error
 }: FileUploaderRestrictionsProps) => {
-  console.log("🚀 ~ files:", files)
   const { getRootProps, getInputProps } = useDropzone({
     maxFiles: 2,
     maxSize: 20000000,
