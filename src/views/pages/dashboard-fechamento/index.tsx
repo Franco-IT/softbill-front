@@ -53,9 +53,9 @@ const Dashboard = () => {
     data: dashboardDataResponse,
     isLoading: isLoadingDashboardData,
     isError: isErrorDashboardData
-  } = useQuery(['dashboard-financial-closing'], async () => await api.get('/monthlyFinancialCloses/statistics'), {
+  } = useQuery(['financial-closing-dashboard'], async () => await api.get('/monthlyFinancialCloses/statistics'), {
     staleTime: 1000 * 60 * 5,
-    keepPreviousData: true
+    keepPreviousData: true,
   })
 
   const params = useMemo(
@@ -73,7 +73,7 @@ const Dashboard = () => {
     isLoading: isLoadingFinancialClosingData,
     isError: isErrorFinancialClosingData
   } = useQuery(
-    ['financial-closing-data', params],
+    ['financial-closing-list', params],
     async () => {
       const response = await api.get('/monthlyFinancialCloses/dashboard-accounting', { params })
 
@@ -81,7 +81,7 @@ const Dashboard = () => {
     },
     {
       staleTime: 1000 * 60 * 5,
-      keepPreviousData: true
+      keepPreviousData: true,
     }
   )
 

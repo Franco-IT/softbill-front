@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/router'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import {
   Card,
   CardActions,
@@ -12,7 +12,8 @@ import {
   MenuItem,
   Typography,
   useMediaQuery,
-  Box
+  Box,
+  Button
 } from '@mui/material'
 
 import CustomAvatar from 'src/@core/components/mui/avatar'
@@ -49,6 +50,7 @@ const statusValuesText: any = {
 
 const Closure = () => {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const dispatch = useAppDispatch()
   const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
@@ -149,6 +151,10 @@ const Closure = () => {
 
   const handleConvertDateToString = (date: Date | null) => {
     return date ? dateProvider.formatDate(date, 'yyyy/MM/dd') : null
+  }
+
+  const handleInvalidationQueries = () => {
+    queryClient.invalidateQueries(['financial-closing'])
   }
 
   useEffect(() => {
@@ -305,6 +311,17 @@ const Closure = () => {
               showMonthYearPicker
               disabled
             />
+          </Grid>
+          <Grid item xs={12} md={3} alignContent={'end'}>
+            <Button
+              fullWidth
+              variant='contained'
+              color='primary'
+              startIcon={<IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />}
+              onClick={handleInvalidationQueries}
+            >
+              Atualizar
+            </Button>
           </Grid>
         </Grid>
       </CardActions>

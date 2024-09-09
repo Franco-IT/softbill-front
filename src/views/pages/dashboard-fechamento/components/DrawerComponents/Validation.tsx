@@ -4,19 +4,25 @@ import React from 'react'
 import CustomChip from 'src/@core/components/mui/chip'
 import { statusColorsMUI } from '../../utils'
 import CustomTextField from 'src/@core/components/mui/text-field'
-import { StatusValue } from '../../types'
+import { useAppSelector } from 'src/hooks/useAppSelector'
 
 const Validation = () => {
-  const [status, setStatus] = React.useState<any>('PENDING')
+  const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
+
+  const status = monthlyFinancialClose.monthlyFinancialCloseBank.status
 
   const statusValuesText: any = {
     PENDING: 'Pendente',
-    APPROVED: 'Aprovado',
-    REJECTED: 'Rejeitado'
+    REJECTED: 'Pendente',
+    DONE: 'Aprovado'
   }
 
-  const handleStatus = (status: StatusValue) => {
-    setStatus(status)
+  const handleCheckStatus = (status: string) => {
+    if (status === 'PENDING') return 'REJECTED'
+
+    if (status === 'DONE') return 'DONE'
+
+    return 'PENDING'
   }
 
   return (
@@ -25,7 +31,7 @@ const Validation = () => {
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography variant='h5'>Validação</Typography>
-            <GlowIcon status={status} />
+            <GlowIcon status={handleCheckStatus(status)} />
           </Box>
         }
       />
@@ -36,8 +42,8 @@ const Validation = () => {
             rounded
             skin='light'
             size='small'
-            label={statusValuesText[status]}
-            color={statusColorsMUI[status]}
+            label={statusValuesText[handleCheckStatus(status)]}
+            color={statusColorsMUI[handleCheckStatus(status)]}
           />
         </Box>
       </CardContent>
@@ -49,16 +55,14 @@ const Validation = () => {
           placeholder='Selecione Status'
           disabled
           value={status || 'default'}
-          onChange={e => handleStatus(e.target.value as StatusValue)}
-          color={statusColorsMUI[status]}
-          focused={!!statusColorsMUI[status]}
+          color={statusColorsMUI[handleCheckStatus(status)]}
+          focused={!!statusColorsMUI[handleCheckStatus(status)]}
         >
           <MenuItem disabled value='default'>
             <em>selecione</em>
           </MenuItem>
           <MenuItem value='PENDING'>Pendente</MenuItem>
-          <MenuItem value='APPROVED'>Aprovado</MenuItem>
-          <MenuItem value='REJECTED'>Rejeitado</MenuItem>
+          <MenuItem value='DONE'>Aprovado</MenuItem>
         </CustomTextField>
       </CardActions>
     </Card>
