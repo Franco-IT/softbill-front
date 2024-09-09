@@ -1,6 +1,6 @@
 import { SyntheticEvent, useState } from 'react'
 
-import { Button, useMediaQuery, styled, IconButton } from '@mui/material'
+import { Button, styled, IconButton } from '@mui/material'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary'
 import MuiAccordionDetails, { AccordionDetailsProps } from '@mui/material/AccordionDetails'
@@ -78,8 +78,6 @@ interface CustomUserAccordionProps {
 }
 
 const CustomUserAccordion = ({ client }: CustomUserAccordionProps) => {
-  const isSmallerThan550 = useMediaQuery('(max-width:550px)')
-
   const [expanded, setExpanded] = useState<string | false>(false)
 
   const handleChange = (panel: string) => (event: SyntheticEvent, isExpanded: boolean) => {
@@ -95,7 +93,7 @@ const CustomUserAccordion = ({ client }: CustomUserAccordionProps) => {
         sx={{
           '& .MuiAccordionSummary-content': {
             gap: '1rem',
-            justifyContent: !isSmallerThan550 ? 'flex-start' : 'space-between'
+            justifyContent: 'flex-start'
           }
         }}
       >

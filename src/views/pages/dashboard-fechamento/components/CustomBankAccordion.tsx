@@ -1,3 +1,5 @@
+import { useRouter } from 'next/router'
+
 import Icon from 'src/@core/components/icon'
 import GlowIcon from 'src/components/GlowIcon'
 import CustomChip from 'src/@core/components/mui/chip'
@@ -15,36 +17,8 @@ import {
 } from '@mui/material'
 import { TimelineDot, TimelineItem, TimelineContent, TimelineSeparator, TimelineConnector } from '@mui/lab'
 
-import { bankStatusLabel, formatNameBank, statusColorsMUI } from '../utils'
-import { useRouter } from 'next/router'
-
-const statusMap: any = {
-  PENDING: {
-    extract: { status: false, isError: true },
-    conciliation: { status: false, isError: true },
-    validation: { status: false, isError: true }
-  },
-  PROCESSING: {
-    extract: { status: true, isError: false },
-    conciliation: { status: false, isError: false },
-    validation: { status: false, isError: false }
-  },
-  TRANSACTION_UNTRACKED: {
-    extract: { status: true, isError: false },
-    conciliation: { status: true, isError: true },
-    validation: { status: false, isError: false }
-  },
-  WAITING_VALIDATION: {
-    extract: { status: true, isError: false },
-    conciliation: { status: true, isError: false },
-    validation: { status: false, isError: false }
-  },
-  DONE: {
-    extract: { status: true, isError: false },
-    conciliation: { status: true, isError: false },
-    validation: { status: true, isError: false }
-  }
-}
+import { bankStatusLabel, formatNameBank, statusColorsMUI, statusMap } from '../utils'
+import { ColorType, StatusMapProps, SubStatusProps } from '../types'
 
 interface CustomBankAccordionProps {
   bank: any
@@ -54,13 +28,12 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
   const router = useRouter()
   const isSmallerThan550 = useMediaQuery('(max-width:550px)')
 
-  // Aplicando statusMap ao bank
-  const bankStatus = statusMap[bank.subStatus] || {}
+  const bankStatus = statusMap[bank.subStatus as keyof StatusMapProps] || {}
 
-  const handleCheckColor = (status: boolean, isError: boolean) => {
-    if (isError) return 'error'
-
-    return status ? 'success' : 'warning'
+  const handleCheckStatus = (status: SubStatusProps): ColorType => {
+    if (status.isError) return 'error'
+    if (status.isPending) return 'warning'
+    if (status.status) return 'success'
   }
 
   return (
@@ -74,7 +47,7 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
             onClick={() =>
               router.push({
                 pathname: '/dashboard-fechamento/fechamento/[id]',
-                query: { id: bank.id }
+                query: { id: bank.id, clientId: bank.clientId }
               })
             }
           >
@@ -98,7 +71,7 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
         <Box width='100%' px={3}>
           <TimelineItem>
             <TimelineSeparator>
-              <TimelineDot color={handleCheckColor(bankStatus.extract?.status, bankStatus.extract?.isError)} />
+              <TimelineDot color={handleCheckStatus(bankStatus.extract)} />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
@@ -114,16 +87,13 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
                 <Typography sx={{ mr: 2 }} variant='h6'>
                   Extrato
                 </Typography>
-                {/* <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                  6th October
-                </Typography> */}
               </Box>
               <CustomChip
                 rounded
                 skin='light'
                 size='small'
                 label={bankStatusLabel[bankStatus.extract?.status ? 'DONE' : 'PENDING']}
-                color={handleCheckColor(bankStatus.extract?.status, bankStatus.extract?.isError)}
+                color={handleCheckStatus(bankStatus.extract)}
                 sx={{ textTransform: 'capitalize', minWidth: 85 }}
               />
               <Divider sx={{ borderStyle: 'dashed', my: theme => `${theme.spacing(3)} !important` }} />
@@ -131,9 +101,7 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
           </TimelineItem>
           <TimelineItem>
             <TimelineSeparator>
-              <TimelineDot
-                color={handleCheckColor(bankStatus.conciliation?.status, bankStatus.conciliation?.isError)}
-              />
+              <TimelineDot color={handleCheckStatus(bankStatus.conciliation)} />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
@@ -149,16 +117,13 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
                 <Typography sx={{ mr: 2 }} variant='h6'>
                   Conciliação
                 </Typography>
-                {/* <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                  6th October
-                </Typography> */}
               </Box>
               <CustomChip
                 rounded
                 skin='light'
                 size='small'
                 label={bankStatusLabel[bankStatus.conciliation?.status ? 'DONE' : 'PENDING']}
-                color={handleCheckColor(bankStatus.conciliation?.status, bankStatus.conciliation?.isError)}
+                color={handleCheckStatus(bankStatus.conciliation)}
                 sx={{ textTransform: 'capitalize', minWidth: 85 }}
               />
               <Divider sx={{ borderStyle: 'dashed', my: theme => `${theme.spacing(3)} !important` }} />
@@ -166,7 +131,7 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
           </TimelineItem>
           <TimelineItem>
             <TimelineSeparator>
-              <TimelineDot color={handleCheckColor(bankStatus.validation?.status, bankStatus.validation?.isError)} />
+              <TimelineDot color={handleCheckStatus(bankStatus.validation)} />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
@@ -182,16 +147,13 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
                 <Typography sx={{ mr: 2 }} variant='h6'>
                   Validação
                 </Typography>
-                {/* <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                  4th October
-                </Typography> */}
               </Box>
               <CustomChip
                 rounded
                 skin='light'
                 size='small'
                 label={bankStatusLabel[bankStatus.validation?.status ? 'DONE' : 'PENDING']}
-                color={handleCheckColor(bankStatus.validation?.status, bankStatus.validation?.isError)}
+                color={handleCheckStatus(bankStatus.validation)}
                 sx={{ textTransform: 'capitalize', minWidth: 85 }}
               />
             </TimelineContent>

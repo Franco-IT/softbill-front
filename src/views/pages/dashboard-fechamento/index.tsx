@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
 import CustomTextField from 'src/@core/components/mui/text-field'
 import CardOptionHorizontal from 'src/@core/components/card-statistics/card-option-horizontal'
@@ -17,9 +17,9 @@ import {
 
 import { dateProvider } from 'src/shared/providers'
 
-import { monthsOptions, statusOptions, usersQuantiryOptions } from './options'
+import { statusOptions } from './options'
 
-import { monthName, statusColorsMUI } from './utils'
+import { statusColorsMUI } from './utils'
 
 import { StatusValue } from './types'
 import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
@@ -30,15 +30,17 @@ import CustomUserAccordion from './components/CustomUserAccordion'
 import { useQuery } from 'react-query'
 import { api } from 'src/services/api'
 import Error from 'src/components/FeedbackAPIs/Error'
+import CustomDatePicker from 'src/components/CustomDatePicker'
+import Pagination from './components/Pagination'
 
 const Dashboard = () => {
-  const currentMonth = dateProvider.getCurrentMonth().toLowerCase()
-
   const [showList, setShowList] = useState<'LIST' | 'GRID'>('GRID')
 
   const [search, setSearch] = useState('')
-  const [month, setMonth] = useState(currentMonth)
-  const [perPage, setPerPage] = useState('5')
+  const [month, setMonth] = useState('')
+  const [date, setDate] = useState<any>()
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
   const [status, setStatus] = useState<any>('')
   const [dashboardData, setDashboardData] = useState({
     totalUsers: 0,
@@ -47,17 +49,31 @@ const Dashboard = () => {
     totalError: 0
   })
 
+  const {
+    data: dashboardDataResponse,
+    isLoading: isLoadingDashboardData,
+    isError: isErrorDashboardData
+  } = useQuery(['financial-closing-dashboard'], async () => await api.get('/monthlyFinancialCloses/statistics'), {
+    staleTime: 1000 * 60 * 5,
+    keepPreviousData: true,
+  })
+
   const params = useMemo(
     () => ({
       search,
       status,
-      perPage
+      perPage: rowsPerPage,
+      page: page + 1
     }),
-    [perPage, search, status]
+    [page, rowsPerPage, search, status]
   )
 
-  const { data, isLoading, isError } = useQuery(
-    ['dashboard-data', params],
+  const {
+    data: financialClosingData,
+    isLoading: isLoadingFinancialClosingData,
+    isError: isErrorFinancialClosingData
+  } = useQuery(
+    ['financial-closing-list', params],
     async () => {
       const response = await api.get('/monthlyFinancialCloses/dashboard-accounting', { params })
 
@@ -65,23 +81,35 @@ const Dashboard = () => {
     },
     {
       staleTime: 1000 * 60 * 5,
-      keepPreviousData: true
+      keepPreviousData: true,
     }
   )
 
-  const gridProps = {
-    LIST: {
-      xs: 12
-    },
-    GRID: {
-      xs: 12,
-      md: 4,
-      xl: 3
-    }
+  const handleChangePage = useCallback((event: unknown, newPage: number) => {
+    setPage(newPage)
+  }, [])
+
+  const handleChangeRowsPerPage = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }, [])
+
+  const handleConvertStringToDate = (date: string | null) => {
+    return date ? new Date(date) : null
+  }
+
+  const handleConvertDateToString = (date: Date | null) => {
+    return date ? date.toISOString() : null
   }
 
   useEffect(() => {
-    if (data) {
+    setDate(new Date())
+    setMonth(dateProvider.getMonthFromDate(new Date()))
+  }, [])
+
+  useEffect(() => {
+    if (dashboardDataResponse) {
+      const { data } = dashboardDataResponse.data
       const totalUsers = data.totalMonthlyFinancialCloses
       const totalApproved = data.monthlyFinancialClosesDone
       const totalPending = data.monthlyFinancialClosesPending
@@ -94,15 +122,35 @@ const Dashboard = () => {
         totalError
       })
     }
-  }, [data])
+  }, [dashboardDataResponse])
 
-  if (isError) return <Error />
+  const gridProps = {
+    LIST: {
+      xs: 12
+    },
+    GRID: {
+      xs: 12,
+      md: 4,
+      xl: 3
+    }
+  }
+
+  const paginationProps = {
+    rowsTotal: financialClosingData?.total || 0,
+    rowsPerPage,
+    rowsPerPageOptions: [5, 10, 25],
+    page,
+    handleChangePage,
+    handleChangeRowsPerPage
+  }
+
+  if (isErrorDashboardData || isErrorFinancialClosingData) return <Error />
 
   return (
     <Card>
       <CardHeader
         title='Dashboard de Fechamento'
-        subheader={`#${monthName[month]}`}
+        subheader={`#${month}`}
         subheaderTypographyProps={{
           variant: 'overline',
           style: {
@@ -126,43 +174,16 @@ const Dashboard = () => {
             />
           </Grid>
           <Grid item xs={12} md={3}>
-            <CustomTextField
-              select
-              fullWidth
-              label='Periodo'
-              placeholder='Selecione Periodo'
-              value={month || 'default'}
-              onChange={e => setMonth(e.target.value)}
+            <CustomDatePicker
+              label='Mês de Referência'
+              value={handleConvertStringToDate(date)}
+              onChange={e => setDate(handleConvertDateToString(e))}
+              placeholderText='Escolha o mês'
+              maxDate={new Date()}
+              dateFormat='MMMM'
+              showMonthYearPicker
               disabled
-            >
-              <MenuItem disabled value='default'>
-                <em>selecione</em>
-              </MenuItem>
-              {monthsOptions.map(month => (
-                <MenuItem key={month.value} value={month.value}>
-                  {month.label}
-                </MenuItem>
-              ))}
-            </CustomTextField>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <CustomTextField
-              select
-              fullWidth
-              label='Quantidade de Usuários'
-              placeholder='Selecione a quantidade de usuários'
-              value={perPage || 'default'}
-              onChange={e => setPerPage(e.target.value)}
-            >
-              <MenuItem disabled value='default'>
-                <em>selecione</em>
-              </MenuItem>
-              {usersQuantiryOptions.map(perPage => (
-                <MenuItem key={perPage.value} value={perPage.value}>
-                  {perPage.label}
-                </MenuItem>
-              ))}
-            </CustomTextField>
+            />
           </Grid>
           <Grid item xs={12} md={3}>
             <CustomTextField
@@ -190,43 +211,80 @@ const Dashboard = () => {
       <CardContent>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <CardOptionHorizontal
-              title={dashboardData.totalUsers}
-              subtitle='Total de Clientes'
-              avatarColor='primary'
-              icon='tabler:user'
-            />
+            {isLoadingDashboardData ? (
+              <LoadingCard
+                title='Carregando...'
+                subtitle='Aguarde um momento'
+                avatarColor='primary'
+                icon='tabler:loader-2'
+              />
+            ) : (
+              <CardOptionHorizontal
+                title={dashboardData.totalUsers}
+                subtitle='Total de Clientes'
+                avatarColor='primary'
+                icon='tabler:user'
+              />
+            )}
           </Grid>
           <Grid item xs={12} md={6}>
-            <CardOptionHorizontal
-              title={dashboardData.totalApproved}
-              subtitle='Clientes Aprovados'
-              avatarColor='success'
-              icon='tabler:user-check'
-            />
+            {isLoadingDashboardData ? (
+              <LoadingCard
+                title='Carregando...'
+                subtitle='Aguarde um momento'
+                avatarColor='primary'
+                icon='tabler:loader-2'
+              />
+            ) : (
+              <CardOptionHorizontal
+                title={dashboardData.totalApproved}
+                subtitle='Clientes Aprovados'
+                avatarColor='success'
+                icon='tabler:user-check'
+              />
+            )}
           </Grid>
           <Grid item xs={12} md={6}>
-            <CardOptionHorizontal
-              title={dashboardData.totalPending}
-              subtitle='Clientes Pendentes'
-              avatarColor='warning'
-              icon='tabler:user-exclamation'
-            />
+            {isLoadingDashboardData ? (
+              <LoadingCard
+                title='Carregando...'
+                subtitle='Aguarde um momento'
+                avatarColor='primary'
+                icon='tabler:loader-2'
+              />
+            ) : (
+              <CardOptionHorizontal
+                title={dashboardData.totalPending}
+                subtitle='Clientes Pendentes'
+                avatarColor='warning'
+                icon='tabler:user-exclamation'
+              />
+            )}
           </Grid>
           <Grid item xs={12} md={6}>
-            <CardOptionHorizontal
-              title={dashboardData.totalError}
-              subtitle='Total de Bancos Pendentes'
-              avatarColor='error'
-              icon='tabler:building-bank'
-            />
+            {isLoadingDashboardData ? (
+              <LoadingCard
+                title='Carregando...'
+                subtitle='Aguarde um momento'
+                avatarColor='primary'
+                icon='tabler:loader-2'
+              />
+            ) : (
+              <CardOptionHorizontal
+                title={dashboardData.totalError}
+                subtitle='Total de Bancos Pendentes'
+                avatarColor='error'
+                icon='tabler:building-bank'
+              />
+            )}
           </Grid>
         </Grid>
       </CardContent>
       <CardContent>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'end', gap: 2 }}>
+              <Pagination {...paginationProps} />
               <ToggleButtonGroup
                 exclusive
                 size='small'
@@ -243,7 +301,7 @@ const Dashboard = () => {
               </ToggleButtonGroup>
             </Box>
           </Grid>
-          {isLoading ? (
+          {isLoadingFinancialClosingData ? (
             <Grid item xs={12}>
               <LoadingCard
                 title='Carregando...'
@@ -252,8 +310,8 @@ const Dashboard = () => {
                 icon='tabler:loader-2'
               />
             </Grid>
-          ) : data.monthlyFinancialCloses.data.length > 0 ? (
-            data.monthlyFinancialCloses.data.map((client: any, index: number) => (
+          ) : financialClosingData.data.length > 0 ? (
+            financialClosingData.data.map((client: any, index: number) => (
               <Grid item {...gridProps[showList]} key={index}>
                 {showList === 'GRID' ? <BankCard client={client} /> : <CustomUserAccordion client={client} />}
               </Grid>

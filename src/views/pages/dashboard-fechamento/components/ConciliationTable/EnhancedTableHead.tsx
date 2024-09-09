@@ -1,6 +1,7 @@
 import { memo } from 'react'
 import { Box, TableCell, TableHead, TableRow, TableSortLabel, useTheme } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
+
 import { HeadCellProps } from './HeadCells'
 
 type Order = 'asc' | 'desc'
