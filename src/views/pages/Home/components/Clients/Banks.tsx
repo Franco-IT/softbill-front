@@ -37,6 +37,7 @@ const Banks = ({ id }: BanksProps) => {
   })
 
   const banks = response?.data || null
+  console.log('🚀 ~ Banks ~ banks:', banks)
 
   const handleRefetch = () => refetch()
 
@@ -78,9 +79,9 @@ const Banks = ({ id }: BanksProps) => {
             {banks.data.map((item: any) => (
               <Bank
                 key={item.id}
-                sx={{
-                  cursor: 'pointer'
-                }}
+                bankLogo={item.bank.logo}
+                bankName={item.bank.name}
+                sx={{ cursor: 'pointer' }}
                 onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <BankInfo data={item} />)(e)}
               />
             ))}

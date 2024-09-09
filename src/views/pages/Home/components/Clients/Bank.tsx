@@ -1,11 +1,19 @@
-import { Avatar, Box, BoxProps } from '@mui/material'
+import { Avatar, Box, BoxProps, Tooltip } from '@mui/material'
+import { getInitials } from 'src/utils/getInitials'
 
-type BankProps = BoxProps
+interface BankProps extends BoxProps {
+  bankLogo: string
+  bankName: string
+}
 
-const Bank = ({ ...rest }: BankProps) => {
+const Bank = ({ bankLogo, bankName, ...rest }: BankProps) => {
   return (
     <Box {...rest}>
-      <Avatar src='https://raichu-uploads.s3.amazonaws.com/logo_inter_XNlYcp.png' color='primary' />
+      <Tooltip title={bankName} placement='top'>
+        <Avatar src={bankLogo} color='primary'>
+          {getInitials(bankName)}
+        </Avatar>
+      </Tooltip>
     </Box>
   )
 }

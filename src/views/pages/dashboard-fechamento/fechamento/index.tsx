@@ -31,7 +31,8 @@ import Error from 'src/components/FeedbackAPIs/Error'
 import { useDrawer } from 'src/hooks/useDrawer'
 import { api } from 'src/services/api'
 import { dateProvider } from 'src/shared/providers'
-import { getInitials, statusColorsMUI, typesIntegration } from '../utils'
+import { getInitials } from 'src/utils/getInitials'
+import { statusColorsMUI, typesIntegration } from '../utils'
 import { ClosureOptionsProps } from '../types'
 import { useAppDispatch } from 'src/hooks/useAppDispatch'
 import { useAppSelector } from 'src/hooks/useAppSelector'
@@ -62,7 +63,7 @@ const Closure = () => {
 
   const { toggleDrawer } = useDrawer()
 
-  const [referenceDate, setReferenceDate] = React.useState<any>('2024-06-01')
+  const [referenceDate, setReferenceDate] = React.useState<any>('')
   const [date, setDate] = React.useState<any>(new Date())
   const [closuresOptions, setClosuresOptions] = React.useState<ClosureOptionsProps[]>([])
   const [closureSelected, setClosureSelected] = React.useState('')

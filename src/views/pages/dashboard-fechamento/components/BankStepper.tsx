@@ -5,7 +5,8 @@ import { Box, Button } from '@mui/material'
 import Avatar from 'src/@core/components/mui/avatar'
 import CustomStepper from './CustomStepper'
 
-import { getInitials, statusMap } from '../utils'
+import { statusMap } from '../utils'
+import { getInitials } from 'src/utils/getInitials'
 import { StatusMapProps, StatusProps } from '../types'
 
 interface BankStepperProps {

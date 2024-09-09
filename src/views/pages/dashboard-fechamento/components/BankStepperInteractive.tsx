@@ -4,7 +4,8 @@ import { Box, Button } from '@mui/material'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import CustomStepperInteractive from './CustomStepperInteractive'
 
-import { getInitials, statusMap } from '../utils'
+import { statusMap } from '../utils'
+import { getInitials } from 'src/utils/getInitials'
 import { StatusMapProps, StatusProps } from '../types'
 import { useAppSelector } from 'src/hooks/useAppSelector'
 
