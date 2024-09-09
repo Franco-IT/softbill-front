@@ -1,47 +1,43 @@
 // ** React Imports
 import { useState } from 'react'
 
-import * as yup from 'yup'
+// ** React Hook Form Imports
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-import Card from '@mui/material/Card'
-import Grid from '@mui/material/Grid'
-import Alert from '@mui/material/Alert'
-import Button from '@mui/material/Button'
-import CardHeader from '@mui/material/CardHeader'
-import AlertTitle from '@mui/material/AlertTitle'
-import IconButton from '@mui/material/IconButton'
-import CardContent from '@mui/material/CardContent'
-import InputAdornment from '@mui/material/InputAdornment'
+// ** MUI Components
+import {
+  Card,
+  Grid,
+  Alert,
+  Button,
+  CardHeader,
+  AlertTitle,
+  IconButton,
+  CardContent,
+  InputAdornment,
+  Box
+} from '@mui/material'
 
+// ** Custom Components
 import Icon from 'src/@core/components/icon'
-
 import CustomTextField from 'src/@core/components/mui/text-field'
-import { Box } from '@mui/system'
-import { api } from 'src/services/api'
+
+// ** Services and Utilities
 import toast from 'react-hot-toast'
 import { delay } from 'src/utils/delay'
 import { useAuth } from 'src/hooks/useAuth'
-import { verifyChangePasswordErrors } from 'src/utils/verifyErrors'
 
-const schema = yup.object().shape({
-  password: yup.string().required('Senha obrigatória'),
-  newPassword: yup.string().min(8, 'minino de 8 caracteres').required('Nova senha obrigatória'),
-  confirmPassword: yup
-    .string()
-    .required('Confirmação de nova senha obrigatória')
-    .equals([yup.ref('newPassword')], 'As senhas não coincidem')
-})
-
-interface FormData {
-  password: string
-  newPassword: string
-  confirmPassword: string
-}
+// ** Schema Validation
+import { changePasswordAuthUserSchema } from 'src/services/yup/schemas/changePasswordAuthUserSchema'
+import { IChangePasswordAuthUserDTO } from 'src/modules/auth/dtos/IChangePasswordAuthUserDTO'
+import { useMutation, useQueryClient } from 'react-query'
+import { authController } from 'src/modules/auth'
+import { AppError } from 'src/shared/errors/AppError'
 
 const ChangePassword = () => {
   const { logout, user } = useAuth()
+  const queryClient = useQueryClient()
 
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false)
@@ -53,34 +49,32 @@ const ChangePassword = () => {
     formState: { errors }
   } = useForm({
     defaultValues: {
-      password: '',
+      oldPassword: '',
       newPassword: '',
-      confirmPassword: ''
-    },
+      confirmPassword: '',
+      userId: user?.id
+    } as IChangePasswordAuthUserDTO,
     mode: 'onBlur',
-    resolver: yupResolver(schema)
+    resolver: yupResolver(changePasswordAuthUserSchema)
   })
 
-  const onSubmit = (data: FormData) => {
-    api
-      .put('/auth/change-password', {
-        oldPassword: data.password,
-        newPassword: data.newPassword,
-        confirmPassword: data.confirmPassword,
-        userId: user?.id
-      })
-      .then(response => {
-        if (response.status === 200) {
-          toast.success('Senha alterada com sucesso, faça login novamente')
-          delay(2000).then(() => {
-            logout()
-          })
-        }
-      })
-      .catch(error => {
-        verifyChangePasswordErrors(error.response.status, error.response.data.message)
-      })
-  }
+  const handleChangePassword = useMutation((data: IChangePasswordAuthUserDTO) => authController.changePassword(data), {
+    onSuccess: response => {
+      if (response?.status === 200) {
+        toast.success('Senha alterada com sucesso, faça login novamente')
+        queryClient.invalidateQueries(['profile'])
+
+        delay(2000).then(() => {
+          logout()
+        })
+      }
+    },
+    onError: error => {
+      if (error instanceof AppError) toast.error(error.message)
+    }
+  })
+
+  const onSubmit = async (data: IChangePasswordAuthUserDTO) => await handleChangePassword.mutateAsync(data)
 
   return (
     <Grid container spacing={6}>
@@ -101,7 +95,7 @@ const ChangePassword = () => {
               <Grid container spacing={4}>
                 <Grid item xs={12}>
                   <Controller
-                    name='password'
+                    name='oldPassword'
                     control={control}
                     rules={{ required: true }}
                     render={({ field: { value, onChange, onBlur } }) => (
@@ -112,8 +106,8 @@ const ChangePassword = () => {
                         label='Senha'
                         onChange={onChange}
                         placeholder='Senha'
-                        error={Boolean(errors.password)}
-                        {...(errors.password && { helperText: errors.password.message })}
+                        error={Boolean(errors.oldPassword)}
+                        {...(errors.oldPassword && { helperText: errors.oldPassword.message })}
                         type={showPassword ? 'text' : 'password'}
                         InputProps={{
                           endAdornment: (

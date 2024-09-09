@@ -58,7 +58,7 @@ const Content = ({ pending }: ContentProps) => {
             {formatNameBank(item.name)}
           </Button>
           {isSmallerThan550 ? (
-            <GlowIcon status={item.status as 'APPROVED' | 'REJECTED' | 'PENDING'} />
+            <GlowIcon status={item.status as 'DONE' | 'REJECTED' | 'PENDING'} />
           ) : (
             <CustomChip
               rounded

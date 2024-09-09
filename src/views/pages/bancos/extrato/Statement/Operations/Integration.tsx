@@ -55,7 +55,7 @@ const Integration = ({ filterProps, clientProps }: IntegrationProps) => {
                 {clientId ? 'Selecione' : 'Selecione um cliente'}
               </MenuItem>
               {clientBanks.map(bank => (
-                <MenuItem key={bank._id} value={bank._id}>
+                <MenuItem key={bank.id} value={bank.id}>
                   {bank.bank.name}
                 </MenuItem>
               ))}

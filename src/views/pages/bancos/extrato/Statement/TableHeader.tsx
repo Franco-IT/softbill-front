@@ -169,7 +169,7 @@ const TableHeader = ({ filterProps, clientProps, paginationProps, clientBanksPro
               <MenuItem disabled>Selecione</MenuItem>
               <MenuItem value=''>Nenhum</MenuItem>
               {clients.map(client => (
-                <MenuItem key={client._id} value={client._id}>
+                <MenuItem key={client.id} value={client.id}>
                   {client.name}
                 </MenuItem>
               ))}

@@ -12,11 +12,11 @@ interface StepperCustomDot extends StepIconProps {
 const StepperCustomDot = (props: StepperCustomDot) => {
   const { completed, error, icon, active } = props
 
-  const statusValue = (error && 'REJECTED') || (completed && 'APPROVED') || (active && 'PENDING') || 'PENDING'
+  const statusValue = (error && 'REJECTED') || (completed && 'DONE') || (active && 'PENDING') || 'REJECTED'
 
   return (
     <Tooltip title={props.name} placement='top'>
-      <CustomAvatar skin='light' color={statusColorsMUI[statusValue] || 'warning'} sx={{ width: 38, height: 38 }}>
+      <CustomAvatar skin='light' color={statusColorsMUI[statusValue]} sx={{ width: 38, height: 38 }}>
         {icon}
       </CustomAvatar>
     </Tooltip>

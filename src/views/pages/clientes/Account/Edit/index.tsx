@@ -88,7 +88,7 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
     }
 
     api
-      .put(`/users/${data._id}`, formData)
+      .put(`/users/${data.id}`, formData)
       .then(response => {
         if (response.status === 200) {
           handleEditClose()

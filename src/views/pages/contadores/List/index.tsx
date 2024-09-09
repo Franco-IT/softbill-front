@@ -27,7 +27,7 @@ interface ColorsType {
 }
 
 const roleColors: ColorsType = {
-  COUNTER: 'primary'
+  ACCOUNTANT: 'primary'
 }
 
 interface UserStatusType {
@@ -50,7 +50,7 @@ const List = () => {
   const [users, setUsers] = useState<ICounterDTO[]>([])
 
   const params = useMemo(
-    () => ({ type: 'COUNTER', page: page + 1, perPage: rowsPerPage, search: filter }),
+    () => ({ type: 'ACCOUNTANT', page: page + 1, perPage: rowsPerPage, search: filter }),
     [page, rowsPerPage, filter]
   )
 
@@ -155,7 +155,7 @@ const List = () => {
                     const labelId = `enhanced-table-checkbox-${index}`
 
                     return (
-                      <TableRow hover tabIndex={-1} key={row._id}>
+                      <TableRow hover tabIndex={-1} key={row.id}>
                         <TableCell component='th' id={labelId} scope='row' padding='none'>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             {renderUser(row, {
@@ -171,7 +171,7 @@ const List = () => {
                               <Typography
                                 noWrap
                                 component={Link}
-                                href={`/contadores/${row._id}`}
+                                href={`/contadores/${row.id}`}
                                 sx={{
                                   fontWeight: 500,
                                   textDecoration: 'none',
@@ -218,8 +218,8 @@ const List = () => {
                         </TableCell>
                         <TableCell align='left'>
                           <RowOptions
-                            id={String(row._id)}
-                            handleConfirmDelete={() => handleConfirmDelete.mutateAsync(row._id)}
+                            id={String(row.id)}
+                            handleConfirmDelete={() => handleConfirmDelete.mutateAsync(row.id)}
                           />
                         </TableCell>
                       </TableRow>

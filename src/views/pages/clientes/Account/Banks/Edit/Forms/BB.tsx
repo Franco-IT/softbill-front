@@ -66,7 +66,7 @@ const BB = ({ data, handleEditClose }: BBProps) => {
     reqBody.append('agencyNumber', formData.agencyNumber)
 
     api
-      .put(`/bankAccounts/${data._id}`, reqBody, {
+      .put(`/bankAccounts/${data.id}`, reqBody, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

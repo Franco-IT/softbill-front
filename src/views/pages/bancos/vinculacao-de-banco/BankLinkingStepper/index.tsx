@@ -51,8 +51,8 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
   const [activeStep, setActiveStep] = useState<number>(0)
   const [formValues, setFormValues] = useState<Partial<Step1DefaultValues>>()
   const [operationType, setOperationType] = useState<string | null>(null)
-  const [bank, setBank] = useState<{ _id: string; name: string }>({
-    _id: '',
+  const [bank, setBank] = useState<{ id: string; name: string }>({
+    id: '',
     name: ''
   })
 
@@ -92,7 +92,7 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
       handleResetData(values)
 
       if (value === 'IMPORT') {
-        setBank({ _id: '', name: '' })
+        setBank({ id: '', name: '' })
 
         const defaultValue = defaultValuesByStep[1]['OFX' as keyof Step1DefaultValues]
 
@@ -100,7 +100,7 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
           return {
             OFX: {
               ...defaultValue,
-              clientId: client._id
+              clientId: client.id
             }
           }
         })
@@ -108,7 +108,7 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
 
       setOperationType(value)
     },
-    [client._id, handleResetData, methods]
+    [client.id, handleResetData, methods]
   )
 
   const handleSelectBank = useCallback(
@@ -117,7 +117,7 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
 
       handleResetData(values)
 
-      const bank = banks.find((bank: any) => bank._id === value)
+      const bank = banks.find((bank: any) => bank.id === value)
 
       setBank(bank)
 
@@ -126,14 +126,14 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
 
         const newValues = Object.assign(bankValues, {
           ...values,
-          bankId: bank._id,
-          clientId: client._id
+          bankId: bank.id,
+          clientId: client.id
         })
 
         return bank.name && { [bank.name]: newValues }
       })
     },
-    [client._id, handleResetData, methods]
+    [client.id, handleResetData, methods]
   )
 
   const handleNext = useCallback(
@@ -173,7 +173,7 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
     methods.clearErrors()
 
     if (activeStep - 1 === 0) {
-      if (operationType === 'INTEGRATION') setBank({ _id: '', name: '' })
+      if (operationType === 'INTEGRATION') setBank({ id: '', name: '' })
 
       setOperationType(null)
 
@@ -193,6 +193,8 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
         if (data[key]) {
           if (key === 'files') {
             data[key].map((file: any) => formData.append(key, file))
+          } else if (key === 'importedBank') {
+            formData.append('bankId', data[key].id)
           } else {
             formData.append(key, data[key])
           }
@@ -208,14 +210,14 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
         .then(response => {
           if (response.status === 201) {
             toast.success('Banco vinculado com sucesso!')
-            router.push(`/clientes/${client._id}`)
+            router.push(`/clientes/${client.id}`)
           }
         })
         .catch(() => {
           toast.error('Erro ao vincular banco, tente novamente mais tarde')
         })
     },
-    [client._id, router]
+    [client.id, router]
   )
 
   const onSubmit = useCallback(

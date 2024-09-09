@@ -111,10 +111,10 @@ const Banks = () => {
                   const labelId = `enhanced-table-checkbox-${index}`
 
                   return (
-                    <TableRow hover tabIndex={-1} key={row._id}>
+                    <TableRow hover tabIndex={-1} key={row.id}>
                       <TableCell component='th' id={labelId} scope='row' padding='none'>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          {renderInitials(row?.bank || row.importedBank, {
+                          {renderInitials(row?.bank || 'Banco', {
                             sx: {
                               mr: 2.5,
                               width: 38,
@@ -132,7 +132,7 @@ const Banks = () => {
                                 color: 'text.secondary'
                               }}
                             >
-                              {formatName(row?.bank?.name || row.importedBank)}
+                              {formatName(row?.bank?.name || 'Nome não informado')}
                             </Typography>
                           </Box>
                         </Box>

@@ -78,9 +78,9 @@ const Banks = ({ id }: BanksProps) => {
             {banks.data.map((item: any) => (
               <Bank
                 key={item.id}
-                sx={{
-                  cursor: 'pointer'
-                }}
+                bankLogo={item.bank.logo}
+                bankName={item.bank.name}
+                sx={{ cursor: 'pointer' }}
                 onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <BankInfo data={item} />)(e)}
               />
             ))}

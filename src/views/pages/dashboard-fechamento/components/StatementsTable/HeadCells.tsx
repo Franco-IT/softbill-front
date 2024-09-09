@@ -4,25 +4,27 @@ export interface HeadCellProps {
   label: string
 }
 
-export const HeadCellsOFX: HeadCellProps[] = [
+const HeadCells: HeadCellProps[] = [
   {
     id: 'date',
     disablePadding: true,
     label: 'Data'
   },
   {
-    id: 'type',
-    disablePadding: false,
-    label: 'Tipo'
-  },
-  {
-    id: 'value',
+    id: 'amount',
     disablePadding: false,
     label: 'Valor'
   },
   {
-    id: 'origin',
+    id: 'transactionTypeExtract',
     disablePadding: false,
-    label: 'Origem'
+    label: 'Tipo'
+  },
+  {
+    id: 'extractDescription',
+    disablePadding: false,
+    label: 'Descrição'
   }
 ]
+
+export default HeadCells

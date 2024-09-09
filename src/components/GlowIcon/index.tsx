@@ -3,14 +3,14 @@ import Icon from 'src/@core/components/icon'
 import { motion, MotionProps } from 'framer-motion'
 
 interface GlowIconProps {
-  status: 'APPROVED' | 'PENDING' | 'REJECTED'
+  status: 'DONE' | 'PENDING' | 'REJECTED'
 }
 
 const GlowIcon = ({ status }: GlowIconProps) => {
   const theme = useTheme()
 
   const statusColors: { [key in GlowIconProps['status']]: string } = {
-    APPROVED: theme.palette.success.main,
+    DONE: theme.palette.success.main,
     PENDING: theme.palette.warning.main,
     REJECTED: theme.palette.error.main
   }

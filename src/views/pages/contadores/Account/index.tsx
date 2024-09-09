@@ -24,7 +24,7 @@ interface ColorsType {
 }
 
 const roleColors: ColorsType = {
-  COUNTER: 'primary'
+  ACCOUNTANT: 'primary'
 }
 
 const statusColors: ColorsType = {
@@ -160,7 +160,7 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
             setOpen={setDeleteDialogOpen}
             question={'Você tem certeza que deseja deletar este contador?'}
             description={'Essa ação não poderá ser desfeita.'}
-            handleConfirmDelete={() => handleConfirmDeleteProfile(data._id)}
+            handleConfirmDelete={() => handleConfirmDeleteProfile(data.id)}
           />
         </Card>
       </Grid>

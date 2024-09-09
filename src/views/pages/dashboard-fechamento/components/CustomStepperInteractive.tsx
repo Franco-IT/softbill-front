@@ -1,29 +1,28 @@
-import { ReactNode, useState } from 'react'
+import { memo, ReactNode, useEffect, useState } from 'react'
 import { Step, StepLabel, Stepper, useMediaQuery } from '@mui/material'
 import StepperCustomDot from './StepperCustomDot'
-import Icon from 'src/@core/components/icon'
 import DrawerAnchor from 'src/components/DrawerAnchor'
 import { useDrawer } from 'src/hooks/useDrawer'
 import Extract from './DrawerComponents/Extract'
 import Conciliation from './DrawerComponents/Conciliation'
 import Validation from './DrawerComponents/Validation'
-
-const steps = [
-  { name: 'Extrato', icon: <Icon icon='tabler:file-text' fontSize='1.5rem' /> },
-  { name: 'Conciliação', icon: <Icon icon='tabler:input-check' fontSize='1.5rem' /> },
-  { name: 'Validação', icon: <Icon icon='tabler:eye-check' fontSize='1.5rem' /> }
-]
+import { StatusProps, SubStatusProps } from '../types'
+import steps from '../steps'
 
 interface CustomStepperInteractiveProps {
-  extract: string
-  conciliation: string
-  exportation: string
+  status: StatusProps
 }
 
-const CustomStepperInteractive = ({ extract, conciliation, exportation }: CustomStepperInteractiveProps) => {
+const CustomStepperInteractive = memo(({ status }: CustomStepperInteractiveProps) => {
+  const { extract, conciliation, validation } = status
+
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
   const { anchor, open, toggleDrawer, children } = useDrawer()
   const [activeStep, setActiveStep] = useState(0)
+
+  useEffect(() => {
+    if (status) setActiveStep(0)
+  }, [status])
 
   const drawerProps = {
     anchor,
@@ -51,10 +50,12 @@ const CustomStepperInteractive = ({ extract, conciliation, exportation }: Custom
           icon?: ReactNode
         } = {}
 
-        const statusMap: { [key: number]: string } = {
+        const statusMap: {
+          [key: number]: SubStatusProps
+        } = {
           0: extract,
           1: conciliation,
-          2: exportation
+          2: validation
         }
 
         const drawerChildren: any = {
@@ -65,8 +66,9 @@ const CustomStepperInteractive = ({ extract, conciliation, exportation }: Custom
 
         if (index === activeStep) {
           const status = statusMap[index]
-          if (status === 'REJECTED') labelProps.error = true
-          if (status === 'APPROVED') (labelProps.completed = true), setActiveStep(index + 1)
+          if (status.isError) labelProps.error = true
+          if (status.isPending) labelProps.active = true
+          if (status.status) (labelProps.completed = true), setActiveStep(index + 1)
         }
 
         return (
@@ -85,6 +87,6 @@ const CustomStepperInteractive = ({ extract, conciliation, exportation }: Custom
       <DrawerAnchor {...drawerProps} />
     </Stepper>
   )
-}
+})
 
 export default CustomStepperInteractive

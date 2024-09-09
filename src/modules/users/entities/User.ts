@@ -1,20 +1,20 @@
 import { IUserDTO } from '../dtos/IUserDTO'
 
 export class User implements IUserDTO {
-  _id: string
+  id: string
   name: string
   email: string
   phone: string
   cellphone: string
   status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
-  type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'COUNTER'
+  type: 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'ACCOUNTANT'
   documentNumber: string
   documentType: 'CPF' | 'CNPJ' | 'OTHER'
   avatar: string
   createdAt: Date
 
   constructor(user: IUserDTO) {
-    this._id = user._id
+    this.id = user.id
     this.name = user.name
     this.email = user.email
     this.phone = user.phone
@@ -28,7 +28,7 @@ export class User implements IUserDTO {
   }
 
   public getId(): string {
-    return this._id
+    return this.id
   }
 
   public getName(): string {
@@ -51,7 +51,7 @@ export class User implements IUserDTO {
     return this.status
   }
 
-  public getType(): 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'COUNTER' {
+  public getType(): 'ADMIN' | 'CLIENT' | 'ACCOUNTING' | 'ACCOUNTANT' {
     return this.type
   }
 

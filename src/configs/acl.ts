@@ -36,7 +36,7 @@ const defineRulesFor = (role: string, subject: string | string[]) => {
         return ['manage']
       case 'ACCOUNTING':
         return ['read', 'create', 'update', 'delete']
-      case 'COUNTER':
+      case 'ACCOUNTANT':
         return ['read', 'create', 'update']
       case 'CLIENT':
         return ['client:read', 'client:update', 'client:delete', 'client:create']

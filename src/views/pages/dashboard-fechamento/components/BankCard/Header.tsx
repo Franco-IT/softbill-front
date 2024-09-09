@@ -7,26 +7,26 @@ import { statusColorsMUI } from '../../utils'
 import GlowIcon from 'src/components/GlowIcon'
 
 interface HeaderProps {
-  user: any
+  client: any
 }
 
-const Header = ({ user }: HeaderProps) => {
+const Header = ({ client }: HeaderProps) => {
   return (
     <CardHeader
       title={
         <Button variant='text' color='inherit'>
-          {user.name}
+          {client.clientName}
         </Button>
       }
-      avatar={<Avatar src={user.avatar} color={statusColorsMUI[user.status]} />}
+      avatar={<Avatar src={client.clientAvatar} color={statusColorsMUI[client.status]} />}
       action={
         <Box display='flex' alignItems='center' gap={3}>
-          {user.status === 'APPROVED' && (
+          {client.status === 'DONE' && (
             <IconButton>
               <Icon icon='tabler:download' fontSize='1.5rem' />
             </IconButton>
           )}
-          <GlowIcon status={user.status} />
+          <GlowIcon status={client.status} />
         </Box>
       }
       sx={{

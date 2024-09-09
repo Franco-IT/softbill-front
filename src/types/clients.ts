@@ -11,7 +11,7 @@ export type ClientProps = UserProps & {
     observations: string
   }
   updatedAt: string
-  _id: string
+  id: string
   __v: number
   'type#status'?: string
 }

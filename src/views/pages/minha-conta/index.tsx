@@ -39,7 +39,7 @@ const roleColors: ColorsType = {
   ADMIN: 'info',
   CLIENT: 'success',
   ACCOUNTING: 'warning',
-  COUNTER: 'primary'
+  ACCOUNTANT: 'primary'
 }
 
 const statusColors: ColorsType = {
@@ -64,7 +64,7 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
   const handleEditClose = () => setOpenEdit(false)
 
   const handleConfirmDeleteProfile = useMutation(
-    async (id: string) => {
+    (id: string) => {
       return userController.delete({ id })
     },
     {
@@ -87,14 +87,14 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
   )
 
   const handleSetAvatar = useMutation(
-    async (file: File) => {
+    (file: File) => {
       const formData: ISetUserAvatarDTO = {
         file,
-        userId: data._id,
+        userId: data.id,
         uploadType: data.type != 'ACCOUNTING' ? 'PROFILE' : 'LOGO'
       }
 
-      return await userController.setAvatar(formData)
+      return userController.setAvatar(formData)
     },
     {
       onSuccess: response => {
@@ -245,7 +245,7 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
               setOpen={setDeleteDialogOpen}
               question={'Você tem certeza que deseja deletar sua conta?'}
               description={'Essa ação não poderá ser desfeita.'}
-              handleConfirmDelete={() => handleConfirmDeleteProfile.mutateAsync(data._id)}
+              handleConfirmDelete={() => handleConfirmDeleteProfile.mutateAsync(data.id)}
             />
           )}
         </Card>

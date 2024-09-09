@@ -33,7 +33,7 @@ const StatementsTableBB = ({ visibleRows, loading }: StatementsTableBBProps) => 
           const labelId = `enhanced-table-checkbox-${index}`
 
           return (
-            <TableRow hover tabIndex={-1} key={row._id}>
+            <TableRow hover tabIndex={-1} key={row.id}>
               <TableCell component='th' id={labelId} scope='row' padding='none'>
                 <Box sx={{ color: 'text.secondary' }}>
                   <CustomTypography noWrap data={row.indicadorTipoLancamento} />

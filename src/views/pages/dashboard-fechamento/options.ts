@@ -2,7 +2,7 @@ import { SelectOptionsProps } from './types'
 
 export const statusOptions: SelectOptionsProps[] = [
   {
-    value: 'ALL',
+    value: '',
     label: 'Todos'
   },
   {
@@ -10,12 +10,8 @@ export const statusOptions: SelectOptionsProps[] = [
     label: 'Pendente'
   },
   {
-    value: 'APPROVED',
+    value: 'DONE',
     label: 'Aprovado'
-  },
-  {
-    value: 'REJECTED',
-    label: 'Rejeitado'
   }
 ]
 
@@ -41,81 +37,7 @@ export const usersQuantiryOptions: SelectOptionsProps[] = [
     label: '25'
   },
   {
-    value: 'all',
+    value: '100',
     label: 'Todos'
-  }
-]
-
-export const monthsOptions: SelectOptionsProps[] = [
-  {
-    value: 'january',
-    label: 'Janeiro'
-  },
-  {
-    value: 'february',
-    label: 'Fevereiro'
-  },
-  {
-    value: 'march',
-    label: 'Março'
-  },
-  {
-    value: 'april',
-    label: 'Abril'
-  },
-  {
-    value: 'may',
-    label: 'Maio'
-  },
-  {
-    value: 'june',
-    label: 'Junho'
-  },
-  {
-    value: 'july',
-    label: 'Julho'
-  },
-  {
-    value: 'august',
-    label: 'Agosto'
-  },
-  {
-    value: 'september',
-    label: 'Setembro'
-  },
-  {
-    value: 'octiber',
-    label: 'Outubro'
-  },
-  {
-    value: 'november',
-    label: 'Novembro'
-  },
-  {
-    value: 'dezember',
-    label: 'Dezembro'
-  }
-]
-
-export const banksOptions: SelectOptionsProps[] = [
-  {
-    value: 'BANCO_DO_BRASIL',
-    label: 'Banco do Brasil'
-  },
-  {
-    value: 'BRADESCO',
-    label: 'Bradesco'
-  },
-  {
-    value: 'ITAU',
-    label: 'Itaú'
-  },
-  {
-    value: 'SANTANDER',
-    label: 'Santander'
-  },
-  {
-    value: 'CAIXA',
-    label: 'Caixa Econômica Federal'
   }
 ]

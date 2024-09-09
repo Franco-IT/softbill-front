@@ -1,6 +1,6 @@
 import { SyntheticEvent, useState } from 'react'
 
-import { Button, useMediaQuery, styled, IconButton } from '@mui/material'
+import { Button, styled, IconButton } from '@mui/material'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary'
 import MuiAccordionDetails, { AccordionDetailsProps } from '@mui/material/AccordionDetails'
@@ -13,7 +13,6 @@ import TimelineBank from './TimelineBank'
 
 import { statusColorsMUI } from '../utils'
 
-import { DataProps } from '../types'
 import { formatName } from 'src/utils/formatName'
 
 const Accordion = styled(MuiAccordion)<AccordionProps>(({ theme }) => ({
@@ -75,13 +74,10 @@ const AccordionDetails = styled(MuiAccordionDetails)<AccordionDetailsProps>(({ t
 }))
 
 interface CustomUserAccordionProps {
-  user: DataProps
+  client: any
 }
 
-const CustomUserAccordion = ({ user }: CustomUserAccordionProps) => {
-  const isSmallerThan550 = useMediaQuery('(max-width:550px)')
-  const { avatar, banks, name, status } = user
-
+const CustomUserAccordion = ({ client }: CustomUserAccordionProps) => {
   const [expanded, setExpanded] = useState<string | false>(false)
 
   const handleChange = (panel: string) => (event: SyntheticEvent, isExpanded: boolean) => {
@@ -97,11 +93,11 @@ const CustomUserAccordion = ({ user }: CustomUserAccordionProps) => {
         sx={{
           '& .MuiAccordionSummary-content': {
             gap: '1rem',
-            justifyContent: !isSmallerThan550 ? 'flex-start' : 'space-between'
+            justifyContent: 'flex-start'
           }
         }}
       >
-        <Avatar src={avatar} color={statusColorsMUI[status]} />
+        <Avatar src={client.clientAvatar} color={statusColorsMUI[client.status]} />
         <Button
           variant='text'
           color='inherit'
@@ -110,18 +106,18 @@ const CustomUserAccordion = ({ user }: CustomUserAccordionProps) => {
             p: 0
           }}
         >
-          {formatName(name)}
+          {formatName(client.clientName)}
         </Button>
-        <GlowIcon status={status as any} />
-        {user.status === 'APPROVED' && (
+        <GlowIcon status={client.status} />
+        {client.status === 'APPROVED' && (
           <IconButton>
             <Icon icon='tabler:download' fontSize='1.5rem' />
           </IconButton>
         )}
       </AccordionSummary>
       <AccordionDetails>
-        {banks.map(bank => (
-          <TimelineBank key={bank.name} bank={bank} />
+        {client.monthlyFinancialCloseBanks.map((bank: any) => (
+          <TimelineBank key={bank.id} bank={bank} />
         ))}
       </AccordionDetails>
     </Accordion>

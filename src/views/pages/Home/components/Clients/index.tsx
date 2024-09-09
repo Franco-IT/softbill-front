@@ -1,26 +1,50 @@
-import { Card, CardContent, CardHeader, Grid } from '@mui/material'
+import { Card, CardContent, Grid } from '@mui/material'
 import { Box } from '@mui/system'
 
-import Avatar from 'src/@core/components/mui/avatar'
 import { useAuth } from 'src/hooks/useAuth'
 
 import Banks from './Banks'
-import Pendings from './Pendings'
 import Closing from './Closing'
+import { useQuery } from 'react-query'
+import { api } from 'src/services/api'
+import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
+import Error from 'src/components/FeedbackAPIs/Error'
+import Conciliations from './Conciliations'
 
 const Client = () => {
   const { user } = useAuth()
+
+  const { data, isLoading, isError } = useQuery(
+    ['dashboard-client'],
+    async () => {
+      const response = await api.get('monthlyFinancialCloses/dashboard-client')
+
+      return response.data
+    },
+    {
+      staleTime: 1000 * 60 * 5,
+      keepPreviousData: true
+    }
+  )
 
   const banksProps = {
     id: user?.id || ''
   }
 
+  if (isLoading) {
+    return <LoadingCard title='Carregando...' subtitle='Aguarde um momento' icon='tabler:loader-2' />
+  }
+
+  if (isError) {
+    return <Error />
+  }
+
+  const ConciliationsProps = {
+    data: data.monthlyFinancialCloseBank
+  }
+
   return (
     <Card>
-      <CardHeader
-        title={user?.name}
-        avatar={<Avatar src={user?.avatar || undefined} sx={{ width: 42, height: 42 }} />}
-      />
       <CardContent>
         <Grid container spacing={6}>
           <Grid item xs={12} md={6}>
@@ -32,7 +56,7 @@ const Client = () => {
               }}
             >
               <Banks {...banksProps} />
-              <Pendings />
+              <Conciliations {...ConciliationsProps} />
             </Box>
           </Grid>
           <Grid item xs={12} md={6}>

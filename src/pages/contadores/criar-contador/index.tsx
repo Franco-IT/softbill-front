@@ -40,7 +40,7 @@ const CreateCounter = () => {
       password: '',
       confirmPassword: '',
       accountingId: user?.id,
-      type: 'COUNTER'
+      type: 'ACCOUNTANT'
     } as ICreateCounterDTO,
     mode: 'onBlur',
     resolver: yupResolver(createCounterSchema)

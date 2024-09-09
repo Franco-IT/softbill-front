@@ -1,10 +1,42 @@
-export type StatusValue = 'ALL' | 'APPROVED' | 'ERROR' | 'PENDING'
+export type StatusValue = 'DONE' | 'PENDING' | 'PROCESSING' | 'TRANSACTION_UNTRACKED' | 'WAITING_VALIDATION'
+
+export type StatusKeys = keyof StatusMapProps
+
+export type SubStatusProps = {
+  status: boolean
+  isError: boolean
+  isPending: boolean
+}
+
+export type StatusProps = {
+  extract: SubStatusProps
+  conciliation: SubStatusProps
+  validation: SubStatusProps
+}
+
+export type StatusMapProps = {
+  PENDING: StatusProps
+  PROCESSING: StatusProps
+  TRANSACTION_UNTRACKED: StatusProps
+  WAITING_VALIDATION: StatusProps
+  DONE: StatusProps
+}
+export interface StepProps {
+  name: string
+  icon: React.ReactNode
+}
 
 export type ColorType = 'primary' | 'error' | 'success' | 'secondary' | 'info' | 'warning' | undefined
 
 export type SelectOptionsProps = {
   value: string
   label: string
+}
+
+export interface ClosureOptionsProps {
+  id: string
+  label: string
+  logo: string
 }
 
 export type bankProps = {

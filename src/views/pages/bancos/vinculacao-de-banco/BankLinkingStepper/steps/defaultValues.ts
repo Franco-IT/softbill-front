@@ -22,7 +22,10 @@ export type InterValues = {
 }
 
 export type OFXValues = {
-  importedBank: string | undefined
+  importedBank: {
+    id: string | undefined
+    name: string | undefined
+  }
   generatedBy: string | undefined
   clientId: string | undefined
 }

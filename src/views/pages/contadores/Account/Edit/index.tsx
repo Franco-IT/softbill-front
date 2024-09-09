@@ -49,7 +49,7 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProp
   const onSubmit = ({ name, email, status }: FormData) => {
     userController
       .updateCounter({
-        id: data._id,
+        id: data.id,
         name,
         email,
         status

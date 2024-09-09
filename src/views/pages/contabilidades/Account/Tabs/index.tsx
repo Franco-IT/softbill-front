@@ -92,7 +92,7 @@ const Tabs = ({ data }: TabsProps) => {
               <Info data={data} />
             </TabPanel>
             <TabPanel sx={{ p: 0 }} value='security'>
-              <ChangePassword id={data._id} />
+              <ChangePassword id={data.id} />
             </TabPanel>
           </>
         )}

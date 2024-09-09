@@ -25,6 +25,9 @@ export const OFX = {
   clientId: '',
   accountNumber: '',
   agencyNumber: '',
-  importedBank: undefined,
+  importedBank: {
+    id: '',
+    name: ''
+  },
   generatedBy: 'IMPORT'
 }

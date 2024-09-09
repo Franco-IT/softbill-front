@@ -28,7 +28,7 @@ const Summary = memo(({ client, payload }: SummaryProps) => {
         <CustomInfoField label='CNPJ' value={applyCnpjMask(client.documentNumber)} />
       </Grid>
       <Grid item xs={12} sm={6}>
-        <CustomInfoField label='Banco' value={bankName[payload.importedBank]} />
+        <CustomInfoField label='Banco' value={payload.importedBank.name || bankName[payload.importedBank]} />
       </Grid>
       <Grid item xs={12} sm={6}>
         <CustomInfoField label='Número da Conta' value={payload.accountNumber} />

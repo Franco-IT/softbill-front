@@ -1,7 +1,13 @@
+import { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
 import { Box, Button } from '@mui/material'
+
 import Avatar from 'src/@core/components/mui/avatar'
 import CustomStepper from './CustomStepper'
-import { useRouter } from 'next/router'
+
+import { statusMap } from '../utils'
+import { getInitials } from 'src/utils/getInitials'
+import { StatusMapProps, StatusProps } from '../types'
 
 interface BankStepperProps {
   bank: any
@@ -10,11 +16,35 @@ interface BankStepperProps {
 const BankStepper = ({ bank }: BankStepperProps) => {
   const router = useRouter()
 
-  const CustomStepperProps = {
-    extract: bank.extract,
-    conciliation: bank.conciliation,
-    exportation: bank.validation
-  }
+  const [statusObj, setStatusObj] = useState<StatusProps>({
+    extract: {
+      status: false,
+      isError: false,
+      isPending: false
+    },
+    conciliation: {
+      status: false,
+      isError: false,
+      isPending: false
+    },
+    validation: {
+      status: false,
+      isError: false,
+      isPending: false
+    }
+  })
+
+  useEffect(() => {
+    if (statusMap[bank.subStatus as keyof StatusMapProps])
+      setStatusObj(statusMap[bank.subStatus as keyof StatusMapProps])
+  }, [bank.subStatus])
+
+  const customStepperProps = useMemo(
+    () => ({
+      status: statusObj
+    }),
+    [statusObj]
+  )
 
   return (
     <Box
@@ -34,21 +64,21 @@ const BankStepper = ({ bank }: BankStepperProps) => {
           gap: 2
         }}
       >
-        <Avatar src={bank.avatar} />
+        <Avatar src={bank.bank.logo}>{getInitials(bank.bank.name)}</Avatar>
         <Button
           variant='text'
           color='inherit'
           onClick={() =>
             router.push({
               pathname: '/dashboard-fechamento/fechamento/[id]',
-              query: { id: bank.userId, bankId: bank.id }
+              query: { id: bank.id, clientId: bank.clientId }
             })
           }
         >
-          {bank.name}
+          {bank.bank.name}
         </Button>
       </Box>
-      <CustomStepper {...CustomStepperProps} />
+      <CustomStepper {...customStepperProps} />
     </Box>
   )
 }

@@ -5,17 +5,18 @@ import 'react-datepicker/dist/react-datepicker.css'
 import ptBR from 'date-fns/locale/pt-BR'
 
 import CustomInput from './PickersCustomInput'
+import { DatePickerProps } from '@mui/lab'
 
 type DateType = Date | null | undefined
 
-interface CustomDatePickerProps {
+interface CustomDatePickerProps extends DatePickerProps<Date> {
   label?: string
   placeholderText?: string
   value?: DateType
   onChange?: (date: Date) => void
 }
 
-const CustomDatePicker = ({ label, placeholderText, value, onChange }: CustomDatePickerProps) => {
+const CustomDatePicker = ({ label, placeholderText, value, onChange, ...rest }: CustomDatePickerProps) => {
   return (
     <DatePicker
       selected={value}
@@ -24,6 +25,7 @@ const CustomDatePicker = ({ label, placeholderText, value, onChange }: CustomDat
       popperPlacement='bottom-end'
       placeholderText={placeholderText || 'Selecione uma data'}
       customInput={<CustomInput label={label} fullWidth />}
+      {...rest}
     />
   )
 }
