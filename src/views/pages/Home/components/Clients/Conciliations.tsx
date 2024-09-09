@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardHeader, List } from '@mui/material'
+import { Button, Card, CardContent, CardHeader, List, ListItemButton, ListItemText } from '@mui/material'
 import CardPending from './CardPending'
 import { useRouter } from 'next/router'
 
@@ -38,13 +38,23 @@ const Conciliations = ({ data }: ConciliationsProps) => {
           }}
           subheader={<li />}
         >
-          {data.map((item: any) => (
-            <li key={`section-${item.bankAccountId}`}>
+          {data.length > 0 ? (
+            data.map((item: any) => (
+              <li key={`section-${item.bankAccountId}`}>
+                <ul>
+                  <CardPending data={item} />
+                </ul>
+              </li>
+            ))
+          ) : (
+            <li>
               <ul>
-                <CardPending data={item} />
+                <ListItemButton>
+                  <ListItemText primary={`Nenhuma conciliação pendente`} />
+                </ListItemButton>
               </ul>
             </li>
-          ))}
+          )}
         </List>
       </CardContent>
     </Card>

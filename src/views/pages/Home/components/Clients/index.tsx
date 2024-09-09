@@ -40,7 +40,7 @@ const Client = () => {
   }
 
   const ConciliationsProps = {
-    data: data.monthlyFinancialCloseBank
+    data: data.monthlyFinancialCloseBank || []
   }
 
   return (
