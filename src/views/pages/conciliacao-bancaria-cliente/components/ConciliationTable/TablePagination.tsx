@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { TablePagination } from '@mui/material'
+import { TablePagination, useMediaQuery } from '@mui/material'
 
 interface PaginationProps {
   rowsTotal: number
@@ -19,9 +19,11 @@ const Pagination = memo(
     handleChangePage,
     handleChangeRowsPerPage
   }: PaginationProps) => {
+    const isSmallerThanSm = useMediaQuery((theme: any) => theme.breakpoints.down('sm'))
+
     return (
       <TablePagination
-        labelRowsPerPage='Linhas por página:'
+        labelRowsPerPage={isSmallerThanSm ? '' : 'Fechamentos por página'}
         rowsPerPageOptions={rowsPerPageOptions}
         component='div'
         count={rowsTotal}

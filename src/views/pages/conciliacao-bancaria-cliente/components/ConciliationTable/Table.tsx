@@ -1,9 +1,8 @@
 import { Suspense, useMemo, memo, useState, useEffect } from 'react'
-import Link from 'next/link'
 import {
   Box,
   Paper,
-  Table,
+  Table as MuiTable,
   TableBody,
   TableCell,
   TableContainer,
@@ -18,13 +17,36 @@ import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
-import { formatName } from 'src/utils/formatName'
 import { Loading, Order, renderInitials } from 'src/utils/list'
 import DrawerAnchor from 'src/components/DrawerAnchor'
 import { useDrawer } from 'src/hooks/useDrawer'
-import Conciliation from '../DrawerComponents/Conciliation'
+import { formatAmount, formatNameBank } from 'src/utils/format'
+import { applyAccountNumberMask } from 'src/utils/inputs'
+import ConciliationItem from 'src/components/DrawerComponents/client/ConciliationItem'
 
-interface ReconciliationTableProps {
+export type ColorType = 'primary' | 'error' | 'success' | 'secondary' | 'info' | 'warning' | undefined
+
+const typeValues: { [key: string]: string } = {
+  CREDIT: 'Crédito',
+  DEBIT: 'Débito'
+}
+
+const typeColors: { [key: string]: ColorType } = {
+  CREDIT: 'success',
+  DEBIT: 'error'
+}
+
+const RowItemLimited = ({ item }: { item: string }) => {
+  const limitItem = (value: string) => (value.length > 25 ? value.substring(0, 25) + '...' : value)
+
+  return (
+    <Typography noWrap sx={{ color: 'text.secondary' }}>
+      {limitItem(item)}
+    </Typography>
+  )
+}
+
+interface TableProps {
   rows: any
   isLoading: boolean
   search: string
@@ -33,8 +55,8 @@ interface ReconciliationTableProps {
   handleStatus: (value: string) => void
   type: string
   handleType: (value: string) => void
-  bank: string
-  handleBank: (value: string) => void
+  validated: string
+  handleValidated: (value: string) => void
   order: Order
   orderBy: any
   handleRequestSort: (event: React.MouseEvent<unknown>, property: keyof any) => void
@@ -42,24 +64,24 @@ interface ReconciliationTableProps {
   paginationProps: any
 }
 
-const ReconciliationTable = memo(
+const Table = memo(
   ({
     rows,
     visibleRows,
     isLoading,
     search,
     handleSearch,
-    bank,
-    handleBank,
     handleStatus,
     handleType,
     status,
     type,
+    validated,
+    handleValidated,
     handleRequestSort,
     order,
     orderBy,
     paginationProps
-  }: ReconciliationTableProps) => {
+  }: TableProps) => {
     const { anchor, open, toggleDrawer, children } = useDrawer()
     const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
@@ -84,14 +106,14 @@ const ReconciliationTable = memo(
         return item.id === newSelected[0]
       })[0]
 
-      const conciliationProps = {
-        item
-      }
-
-      toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Conciliation {...conciliationProps} />)(e)
+      toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <ConciliationItem {...item} />)(e)
     }
 
     const isSelected = (id: string) => selected.indexOf(id) !== -1
+
+    const handleCheckRowValue = (value: string) => {
+      return value ? value : 'Não Informado'
+    }
 
     const tableHeaderProps = useMemo(
       () => ({
@@ -101,10 +123,10 @@ const ReconciliationTable = memo(
         handleStatus,
         type,
         handleType,
-        bank,
-        handleBank
+        validated,
+        handleValidated
       }),
-      [search, handleSearch, status, handleStatus, type, handleType, bank, handleBank]
+      [search, handleSearch, status, handleStatus, type, handleType, validated, handleValidated]
     )
 
     const drawerProps = {
@@ -122,7 +144,7 @@ const ReconciliationTable = memo(
       <Paper sx={{ width: '100%', mb: 2 }}>
         <TableHeader searchProps={tableHeaderProps} />
         <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={'medium'}>
+          <MuiTable sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={'medium'}>
             <EnhancedTableHead
               headCells={HeadCells}
               order={order}
@@ -144,14 +166,14 @@ const ReconciliationTable = memo(
                   <TableRow>
                     <TableCell colSpan={6}>
                       <Typography noWrap variant='h6' sx={{ color: 'text.secondary' }}>
-                        Nenhum banco encontrado
+                        Nenhuma conciliação encontrada
                       </Typography>
                     </TableCell>
                   </TableRow>
                 ) : (
                   visibleRows.map((row: any, index: number) => {
                     const isItemSelected = isSelected(row.id)
-                    const labelId = `enhanced-table-checkbox-${index}`
+                    const labelId = `enhanced-MuiTable-checkbox-${index}`
 
                     const handleRowClick = (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, id: string) => {
                       handleClick(e, id)
@@ -167,7 +189,7 @@ const ReconciliationTable = memo(
                       >
                         <TableCell component='th' id={labelId} scope='row' padding='none'>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            {renderInitials(row.bank, {
+                            {renderInitials(row.bankName, {
                               sx: {
                                 mr: 2.5,
                                 width: 38,
@@ -179,28 +201,25 @@ const ReconciliationTable = memo(
                             <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
                               <Typography
                                 noWrap
-                                component={Link}
-                                href={`/usuarios/${row.id}`}
                                 sx={{
                                   fontWeight: 500,
                                   textDecoration: 'none',
-                                  color: 'text.secondary',
-                                  '&:hover': { color: 'primary.main' }
+                                  color: 'text.secondary'
                                 }}
                               >
-                                {formatName(row.bank)}
+                                {formatNameBank(row.bankName)}
                               </Typography>
                             </Box>
                           </Box>
                         </TableCell>
                         <TableCell align='left'>
                           <Typography noWrap sx={{ color: 'text.secondary' }}>
-                            {row.cc}
+                            {handleCheckRowValue(applyAccountNumberMask(row.creditAccount))}
                           </Typography>
                         </TableCell>
                         <TableCell align='left'>
                           <Typography noWrap sx={{ color: 'text.secondary' }}>
-                            {row.cd}
+                            {handleCheckRowValue(applyAccountNumberMask(row.debitAccount))}
                           </Typography>
                         </TableCell>
                         <TableCell align='left'>
@@ -208,8 +227,8 @@ const ReconciliationTable = memo(
                             rounded
                             skin='light'
                             size='small'
-                            label={row.type}
-                            color='primary'
+                            label={handleCheckRowValue(typeValues[row.transactionTypeConciliation])}
+                            color={typeColors[row.transactionTypeConciliation]}
                             sx={{ textTransform: 'capitalize', minWidth: 85 }}
                           />
                         </TableCell>
@@ -218,20 +237,16 @@ const ReconciliationTable = memo(
                             rounded
                             skin='light'
                             size='small'
-                            label={row.value}
+                            label={formatAmount(row.amount)}
                             color='primary'
                             sx={{ textTransform: 'capitalize', minWidth: 85 }}
                           />
                         </TableCell>
                         <TableCell align='left'>
-                          <Typography noWrap sx={{ color: 'text.secondary' }}>
-                            {row.description}
-                          </Typography>
+                          <RowItemLimited item={handleCheckRowValue(row.extractDescription)} />
                         </TableCell>
                         <TableCell align='left'>
-                          <Typography noWrap sx={{ color: 'text.secondary' }}>
-                            {row.origin ? row.origin : 'Não informado'}
-                          </Typography>
+                          <RowItemLimited item={handleCheckRowValue(row.conciliationDescription)} />
                         </TableCell>
                       </TableRow>
                     )
@@ -239,7 +254,7 @@ const ReconciliationTable = memo(
                 )}
               </TableBody>
             </Suspense>
-          </Table>
+          </MuiTable>
         </TableContainer>
         <TablePagination {...paginationProps} />
         <DrawerAnchor {...drawerProps} />
@@ -248,4 +263,4 @@ const ReconciliationTable = memo(
   }
 )
 
-export default ReconciliationTable
+export default Table
