@@ -36,7 +36,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
 
   const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
 
-  const { monthlyFinancialCloseBankId } = monthlyFinancialClose.monthlyFinancialCloseBank
+  const { monthlyFinancialCloseBankId, validated: validatedBank } = monthlyFinancialClose.monthlyFinancialCloseBank
 
   const queryClient = useQueryClient()
 
@@ -137,7 +137,15 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
             <Button
               fullWidth
               variant='contained'
-              color='primary'
+              color={'primary'}
+              disabled={validatedBank}
+              sx={{
+                '&:disabled': {
+                  backgroundColor: theme => theme.palette.success.main,
+                  color: theme => theme.palette.common.white,
+                  opacity: 0.7
+                }
+              }}
               startIcon={<IconifyIcon icon='tabler:check' fontSize='1.7rem' />}
               onClick={() => handleValidate(monthlyFinancialCloseBankId)}
             >
