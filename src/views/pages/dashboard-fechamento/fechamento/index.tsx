@@ -1,7 +1,14 @@
+// React and Next.js
 import React, { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/router'
+
+// React Query
 import { useQuery, useQueryClient } from 'react-query'
+
+// MUI components
 import {
+  Box,
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -11,11 +18,10 @@ import {
   IconButton,
   MenuItem,
   Typography,
-  useMediaQuery,
-  Box,
-  Button
+  useMediaQuery
 } from '@mui/material'
 
+// Custom components
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import CustomTextField from 'src/@core/components/mui/text-field'
 import CustomChip from 'src/@core/components/mui/chip'
@@ -27,17 +33,25 @@ import StatementsTable from '../components/StatementsTable'
 import Export from '../components/DrawerComponents/Export'
 import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
 import Error from 'src/components/FeedbackAPIs/Error'
+import ConciliationTable from '../components/ConciliationTable'
 
+// Hooks
 import { useDrawer } from 'src/hooks/useDrawer'
+import { useAppDispatch } from 'src/hooks/useAppDispatch'
+import { useAppSelector } from 'src/hooks/useAppSelector'
+
+// Services and utilities
 import { api } from 'src/services/api'
 import { dateProvider } from 'src/shared/providers'
 import { getInitials } from 'src/utils/getInitials'
 import { statusColorsMUI, typesIntegration } from '../utils'
-import { ClosureOptionsProps } from '../types'
-import { useAppDispatch } from 'src/hooks/useAppDispatch'
-import { useAppSelector } from 'src/hooks/useAppSelector'
+
+// Redux actions
 import { setMonthlyFinancialClose, setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
-import ConciliationTable from '../components/ConciliationTable'
+
+// Types
+import { ClosureOptionsProps } from '../types'
+import { formatNameUser } from 'src/utils/format'
 
 const statusValues: any = {
   PENDING: true,
@@ -195,7 +209,7 @@ const Closure = () => {
                   src={monthlyFinancialClose?.clientAvatar}
                   color={statusColorsMUI[monthlyFinancialClose.status]}
                 />
-                <Typography variant='h5'>{monthlyFinancialClose?.clientName}</Typography>
+                <Typography variant='h5'>{formatNameUser(monthlyFinancialClose?.clientName)}</Typography>
                 <CustomChip
                   rounded
                   skin='light'
@@ -314,15 +328,21 @@ const Closure = () => {
             />
           </Grid>
           <Grid item xs={12} md={3} alignContent={'end'}>
-            <Button
-              fullWidth
-              variant='contained'
-              color='primary'
-              startIcon={<IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />}
-              onClick={handleInvalidationQueries}
-            >
-              Atualizar
-            </Button>
+            {isSmallerThanMd ? (
+              <Button
+                fullWidth
+                variant='contained'
+                color='primary'
+                startIcon={<IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />}
+                onClick={handleInvalidationQueries}
+              >
+                Atualizar Dados
+              </Button>
+            ) : (
+              <IconButton onClick={handleInvalidationQueries} title='Atualizar Dados'>
+                <IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />
+              </IconButton>
+            )}
           </Grid>
         </Grid>
       </CardActions>

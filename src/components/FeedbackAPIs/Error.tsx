@@ -13,7 +13,8 @@ const Error = () => {
         justifyContent: 'center',
         gap: 2,
         textAlign: 'center',
-        height: '100%'
+        height: '100%',
+        p: 6
       }}
     >
       <Typography variant='h4'>Ocorreu um erro ao buscar os dados </Typography>

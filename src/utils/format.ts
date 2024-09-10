@@ -10,3 +10,9 @@ export const formatNameBank = (name: string) => {
 
   return nameArray[0].length > 15 ? `${nameArray[0].slice(0, 15)}...` : name
 }
+
+export const formatNameUser = (name: string) => {
+  const nameArray = name.split(' ')
+
+  return nameArray[0].length > 15 ? `${nameArray[0].slice(0, 15)}...` : name
+}
