@@ -1,13 +1,20 @@
+// React
 import { memo } from 'react'
-import { CardHeader, Grid, MenuItem } from '@mui/material'
 
+// MUI components
+import { CardHeader, Grid, MenuItem, Button } from '@mui/material'
+
+// Custom components
 import CustomTextField from 'src/@core/components/mui/text-field'
+import IconifyIcon from 'src/@core/components/icon'
 
-// import IconifyIcon from 'src/@core/components/icon'
-// import { useQueryClient } from 'react-query'
-// import { id } from 'date-fns/locale'
-// import toast from 'react-hot-toast'
-// import { api } from 'src/services/api'
+// Hooks and services
+import { useQueryClient } from 'react-query'
+import { useAppSelector } from 'src/hooks/useAppSelector'
+import { api } from 'src/services/api'
+
+// Notifications
+import toast from 'react-hot-toast'
 
 interface SearchProps {
   search: string
@@ -27,23 +34,26 @@ interface TableHeaderProps {
 const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
   const { handleSearch, search, handleStatus, status, handleType, type, validated, handleValidated } = searchProps
 
-  // const queryClient = useQueryClient()
+  const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
 
-  // const handleValidate = (id: string) => {
-  //   api
-  //     .put('transactions/' + id, {
-  //       validated: true
-  //     })
-  //     .then(response => {
-  //       if (response.status === 200) {
-  //         queryClient.invalidateQueries('conciliations')
-  //         toast.success('Validado com sucesso')
-  //       }
-  //     })
-  //     .catch(() => {
-  //       toast.error('Erro ao validar conciliação')
-  //     })
-  // }
+  const { monthlyFinancialCloseBankId } = monthlyFinancialClose.monthlyFinancialCloseBank
+
+  const queryClient = useQueryClient()
+
+  const handleValidate = (id: string) => {
+    api
+      .put('monthlyFinancialCloseBanks/' + id, {
+        validated: true
+      })
+      .then(response => {
+        if (response.status === 200) {
+          queryClient.invalidateQueries(['conciliations'])
+          queryClient.invalidateQueries(['financial-closing'])
+          toast.success('Conciliações validadas com sucesso.')
+        }
+      })
+      .catch(() => toast.error('Erro ao validar conciliações.'))
+  }
 
   return (
     <Grid container gap={3} paddingX={6} paddingY={4}>
@@ -55,19 +65,9 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
           title='Conciliação Bancária'
         />
       </Grid>
-      {/* <Grid item xs={12} alignSelf={'end'}>
-        <Button
-          variant='contained'
-          color='primary'
-          startIcon={<IconifyIcon icon='tabler:check' fontSize='1.7rem' />}
-          onClick={() => handleValidate('id')}
-        >
-          Validar
-        </Button>
-      </Grid> */}
 
       <Grid item xs={12}>
-        <Grid container spacing={4}>
+        <Grid container gap={2} justifyContent={'space-between'}>
           <Grid item xs={12} md={3}>
             <CustomTextField
               fullWidth
@@ -78,7 +78,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
             />
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={2}>
             <CustomTextField
               select
               fullWidth
@@ -97,7 +97,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
             </CustomTextField>
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={2}>
             <CustomTextField
               select
               fullWidth
@@ -115,7 +115,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
             </CustomTextField>
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={2}>
             <CustomTextField
               select
               fullWidth
@@ -131,6 +131,18 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
               <MenuItem value='true'>Validado</MenuItem>
               <MenuItem value='false'>Não Validado</MenuItem>
             </CustomTextField>
+          </Grid>
+
+          <Grid item xs={12} md={2} alignSelf={'end'}>
+            <Button
+              fullWidth
+              variant='contained'
+              color='primary'
+              startIcon={<IconifyIcon icon='tabler:check' fontSize='1.7rem' />}
+              onClick={() => handleValidate(monthlyFinancialCloseBankId)}
+            >
+              Validar
+            </Button>
           </Grid>
         </Grid>
       </Grid>
