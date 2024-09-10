@@ -156,7 +156,7 @@ const Table = memo(
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={6}>
+                    <TableCell colSpan={7}>
                       <Typography noWrap variant='h6' sx={{ color: 'text.secondary' }}>
                         Carregando...
                       </Typography>
@@ -164,7 +164,7 @@ const Table = memo(
                   </TableRow>
                 ) : visibleRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6}>
+                    <TableCell colSpan={7}>
                       <Typography noWrap variant='h6' sx={{ color: 'text.secondary' }}>
                         Nenhuma conciliação encontrada
                       </Typography>
