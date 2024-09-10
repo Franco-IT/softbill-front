@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useRouter } from 'next/router'
+
+// import { useRouter } from 'next/router'
 
 import Icon from 'src/@core/components/icon'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
@@ -17,7 +18,7 @@ interface RowOptionsProps {
 }
 
 const RowOptions = ({ data, refreshData }: RowOptionsProps) => {
-  const router = useRouter()
+  // const router = useRouter()
 
   // const [openEdit, setOpenEdit] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
@@ -26,11 +27,11 @@ const RowOptions = ({ data, refreshData }: RowOptionsProps) => {
 
   const handleClickDelete = () => setOpenDelete(true)
 
-  const handleStatement = () =>
-    router.push({
-      pathname: '/clientes/banco/extrato/[id]',
-      query: { id: data.id, slug: data?.bank?.slug || data.importedBank, client: data.clientId }
-    })
+  // const handleStatement = () =>
+  //   router.push({
+  //     pathname: '/clientes/banco/extrato/[id]',
+  //     query: { id: data.id, slug: data?.bank?.slug || data.importedBank, client: data.clientId }
+  //   })
 
   const handleDelete = () => {
     api
@@ -41,11 +42,11 @@ const RowOptions = ({ data, refreshData }: RowOptionsProps) => {
   }
 
   const menuItems = [
-    {
-      label: 'Extrato',
-      icon: <Icon icon='tabler:building-bank' fontSize={20} />,
-      action: handleStatement
-    },
+    // {
+    //   label: 'Extrato',
+    //   icon: <Icon icon='tabler:building-bank' fontSize={20} />,
+    //   action: handleStatement
+    // },
     {
       label: 'Deletar',
       icon: <Icon icon='tabler:trash' fontSize={20} />,

@@ -6,7 +6,10 @@ export const BB = {
   bankId: '',
   clientId: '',
   generatedBy: 'API',
-  importedBank: 'BB'
+  bank: {
+    id: '',
+    name: ''
+  }
 }
 
 export const INTER = {
@@ -17,7 +20,10 @@ export const INTER = {
   bankId: '',
   clientId: '',
   generatedBy: 'API',
-  importedBank: 'INTER',
+  bank: {
+    id: '',
+    name: ''
+  },
   files: []
 }
 
@@ -25,7 +31,7 @@ export const OFX = {
   clientId: '',
   accountNumber: '',
   agencyNumber: '',
-  importedBank: {
+  bank: {
     id: '',
     name: ''
   },

@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid'
 
 import CustomInfoField from 'src/components/CustomInfoField'
 
-import { bankName } from './utils'
 import { applyCnpjMask } from 'src/utils/inputs'
 import { ClientProps } from 'src/types/clients'
 
@@ -28,7 +27,7 @@ const Summary = memo(({ client, payload }: SummaryProps) => {
         <CustomInfoField label='CNPJ' value={applyCnpjMask(client.documentNumber)} />
       </Grid>
       <Grid item xs={12} sm={6}>
-        <CustomInfoField label='Banco' value={payload.importedBank.name || bankName[payload.importedBank]} />
+        <CustomInfoField label='Banco' value={payload.bank.name} />
       </Grid>
       <Grid item xs={12} sm={6}>
         <CustomInfoField label='Número da Conta' value={payload.accountNumber} />

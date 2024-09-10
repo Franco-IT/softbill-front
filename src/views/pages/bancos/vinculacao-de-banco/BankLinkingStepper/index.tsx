@@ -33,13 +33,15 @@ const BackButton = memo(({ activeStep, handleBack }: { activeStep: number; handl
   )
 })
 
-const NextButton = memo(({ activeStep, stepsOptions }: { activeStep: number; stepsOptions: any[] }) => {
-  return (
-    <Button type='submit' variant='contained'>
-      {activeStep === stepsOptions.length - 1 ? 'Finalizar' : 'Próximo'}
-    </Button>
-  )
-})
+const NextButton = memo(
+  ({ activeStep, stepsOptions, loading }: { activeStep: number; stepsOptions: any[]; loading: boolean }) => {
+    return (
+      <Button type='submit' variant='contained' disabled={loading}>
+        {activeStep === stepsOptions.length - 1 ? 'Finalizar' : 'Próximo'}
+      </Button>
+    )
+  }
+)
 
 interface BankLinkingStepperProps {
   client: ClientProps
@@ -48,22 +50,23 @@ interface BankLinkingStepperProps {
 const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
   const router = useRouter()
 
+  const [loading, setLoading] = useState(false)
   const [activeStep, setActiveStep] = useState<number>(0)
   const [formValues, setFormValues] = useState<Partial<Step1DefaultValues>>()
   const [operationType, setOperationType] = useState<string | null>(null)
-  const [bank, setBank] = useState<{ id: string; name: string }>({
+  const [bank, setBank] = useState<{ id: string; code: string }>({
     id: '',
-    name: ''
+    code: ''
   })
 
   const methods = useForm({
     defaultValues:
-      defaultValuesByStep[activeStep][(operationType === 'IMPORT' ? 'OFX' : bank.name) as keyof Step1DefaultValues] ||
+      defaultValuesByStep[activeStep][(operationType === 'IMPORT' ? 'OFX' : bank.code) as keyof Step1DefaultValues] ||
       defaultValuesByStep[activeStep],
     resolver: yupResolver(
       getValidationSchema(
         activeStep,
-        bank.name,
+        bank.code,
         operationType || '',
         baseValidationSchemaByStep,
         validationSchemaByBank,
@@ -92,7 +95,7 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
       handleResetData(values)
 
       if (value === 'IMPORT') {
-        setBank({ id: '', name: '' })
+        setBank({ id: '', code: '' })
 
         const defaultValue = defaultValuesByStep[1]['OFX' as keyof Step1DefaultValues]
 
@@ -122,15 +125,23 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
       setBank(bank)
 
       setFormValues(() => {
-        const bankValues = defaultValuesByStep[1][bank.name as keyof Step1DefaultValues]
+        const bankValues = defaultValuesByStep[1][bank.code as keyof Step1DefaultValues]
 
         const newValues = Object.assign(bankValues, {
-          ...values,
+          bank: {
+            id: bank.id,
+            name: bank.name
+          },
           bankId: bank.id,
           clientId: client.id
         })
 
-        return bank.name && { [bank.name]: newValues }
+        return bank.code && { [bank.code]: newValues }
+      })
+
+      methods.setValue('bank', {
+        id: bank.id,
+        name: bank.name
       })
     },
     [client.id, handleResetData, methods]
@@ -145,7 +156,7 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
           if (!prevValues) return prevValues
 
           if (operationType === 'INTEGRATION') {
-            const bankKey = bank.name as keyof Step1DefaultValues
+            const bankKey = bank.code as keyof Step1DefaultValues
 
             return {
               [bankKey]: {
@@ -166,14 +177,14 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
 
       setActiveStep(prevActiveStep => prevActiveStep + 1)
     },
-    [activeStep, bank.name, operationType]
+    [activeStep, bank.code, operationType]
   )
 
   const handleBack = useCallback(() => {
     methods.clearErrors()
 
     if (activeStep - 1 === 0) {
-      if (operationType === 'INTEGRATION') setBank({ id: '', name: '' })
+      if (operationType === 'INTEGRATION') setBank({ id: '', code: '' })
 
       setOperationType(null)
 
@@ -185,6 +196,7 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
 
   const handleFinalSubmit = useCallback(
     (data: any) => {
+      setLoading(true)
       const dataKeys = Object.keys(data)
 
       const formData = new FormData()
@@ -193,8 +205,8 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
         if (data[key]) {
           if (key === 'files') {
             data[key].map((file: any) => formData.append(key, file))
-          } else if (key === 'importedBank') {
-            formData.append('bankId', data[key].id)
+          } else if (key === 'bank') {
+            operationType === 'IMPORT' ? formData.append('bankId', data[key].id) : delete data[key]
           } else {
             formData.append(key, data[key])
           }
@@ -216,20 +228,21 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
         .catch(() => {
           toast.error('Erro ao vincular banco, tente novamente mais tarde')
         })
+        .finally(() => setLoading(false))
     },
-    [client.id, router]
+    [client.id, operationType, router]
   )
 
   const onSubmit = useCallback(
     (data: any) => {
       if (activeStep === stepsOptions.length - 1) {
-        const key = bank.name || 'OFX'
+        const key = bank.code || 'OFX'
         handleFinalSubmit(formValues?.[key as keyof Step1DefaultValues])
       } else {
         handleNext(data)
       }
     },
-    [activeStep, bank.name, formValues, handleFinalSubmit, handleNext]
+    [activeStep, bank.code, formValues, handleFinalSubmit, handleNext]
   )
 
   const banksProps = useMemo(
@@ -258,12 +271,12 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
         case 1:
           return <OperationsTypes {...operationsTypesProps} />
         case 2:
-          return <Summary client={client} payload={formValues?.[(bank.name || 'OFX') as keyof Step1DefaultValues]} />
+          return <Summary client={client} payload={formValues?.[(bank.code || 'OFX') as keyof Step1DefaultValues]} />
         default:
           return null
       }
     },
-    [bank.name, client, formValues, operationsTypesProps]
+    [bank.code, client, formValues, operationsTypesProps]
   )
 
   const backButtonProps = useMemo(
@@ -277,9 +290,10 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
   const NextButtonProps = useMemo(
     () => ({
       activeStep,
-      stepsOptions
+      stepsOptions,
+      loading
     }),
-    [activeStep]
+    [activeStep, loading]
   )
 
   const renderContent = () => {

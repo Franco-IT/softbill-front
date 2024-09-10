@@ -9,20 +9,26 @@ import { defaultValuesByStep, Step1DefaultValues } from '../../defaultValues'
 import { UseFormReturn } from 'react-hook-form'
 
 const formComponents: { [key: string]: any } = {
-  BB: bbTypeMap,
-  INTER: interTypeMap
+  '001': bbTypeMap,
+  '077': interTypeMap
 }
 
 interface BanksProps {
   methods: UseFormReturn<any, any>
-  bank: { id: string; name: string }
+  bank: { id: string; code: string }
   handleSelectBank: (bankId: string, banks: any) => void
 }
 
 const Banks = ({ handleSelectBank, methods, bank }: BanksProps) => {
   const router = useRouter()
 
-  const { data: banks } = useGetDataApi<any>({ url: '/banks', callInit: router.isReady })
+  const { data: banks } = useGetDataApi<any>({
+    url: '/banks',
+    params: {
+      perPage: 1000
+    },
+    callInit: router.isReady
+  })
 
   const { data: userBanks } = useGetDataApi<any>({
     url: `/bankAccounts/by-client/${router.query.id}`,
@@ -54,10 +60,10 @@ const Banks = ({ handleSelectBank, methods, bank }: BanksProps) => {
           </MenuItem>
           {handleCheckBanksAvailable(banks?.data, userBanks?.data)}
         </CustomTextField>
-        {bank.id && formComponents[bank.name] ? (
+        {bank.id && formComponents[bank.code] ? (
           <DynamicFormFields
-            typeMap={formComponents[bank.name]}
-            fields={Object.keys(defaultValuesByStep[1][bank.name as keyof Step1DefaultValues])}
+            typeMap={formComponents[bank.code]}
+            fields={Object.keys(defaultValuesByStep[1][bank.code as keyof Step1DefaultValues])}
           />
         ) : null}
       </Box>

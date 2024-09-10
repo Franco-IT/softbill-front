@@ -8,7 +8,10 @@ export type BBValues = {
   bankId: string | undefined
   clientId: string | undefined
   generatedBy: string | undefined
-  importedBank: string | undefined
+  bank: {
+    id: string | undefined
+    name: string | undefined
+  }
 }
 
 export type InterValues = {
@@ -17,12 +20,15 @@ export type InterValues = {
   bankId: string | undefined
   clientId: string | undefined
   generatedBy: string | undefined
-  importedBank: string | undefined
+  bank: {
+    id: string | undefined
+    name: string | undefined
+  }
   files: File[] | undefined
 }
 
 export type OFXValues = {
-  importedBank: {
+  bank: {
     id: string | undefined
     name: string | undefined
   }
@@ -33,8 +39,8 @@ export type OFXValues = {
 export type Step0DefaultValues = Record<string, any>
 
 export type Step1DefaultValues = {
-  BB: BBValues
-  inter: InterValues
+  '001': BBValues
+  '077': InterValues
   OFX: OFXValues
 }
 
@@ -45,8 +51,8 @@ export type DefaultValuesByStep = Step0DefaultValues | Step1DefaultValues | Step
 export const defaultValuesByStep: DefaultValuesByStep[] = [
   {},
   {
-    BB: BB,
-    INTER: INTER,
+    '001': BB,
+    '077': INTER,
     OFX: OFX
   },
   {}
