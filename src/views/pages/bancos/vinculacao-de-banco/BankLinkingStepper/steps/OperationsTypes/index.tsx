@@ -19,7 +19,7 @@ import OFX from './operations/OFX'
 import { UseFormReturn } from 'react-hook-form'
 
 interface BanksProps {
-  bank: { id: string; name: string }
+  bank: { id: string; code: string }
   handleSelectBank: (bankId: string, banks: any) => void
 }
 
@@ -104,7 +104,7 @@ const OperationsTypes = ({ banksProps, methods, operationType, handleSetOperatio
             Selecione o tipo de operação
           </Typography>
           <ToggleButtonGroup color='primary' value={operationType} exclusive onChange={handleChangeOperation}>
-            <ToggleButton value='INTEGRATION' disabled>
+            <ToggleButton value='INTEGRATION'>
               Integração
             </ToggleButton>
             <ToggleButton value='IMPORT'>Importação</ToggleButton>

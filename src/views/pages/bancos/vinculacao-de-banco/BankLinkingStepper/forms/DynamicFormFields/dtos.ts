@@ -18,7 +18,7 @@ export type InterValues = {
 export type OFXValues = {
   accountNumber: string | undefined
   agencyNumber: string | undefined
-  importedBank: {
+  bank: {
     id: string | undefined
     name: string | undefined
   }

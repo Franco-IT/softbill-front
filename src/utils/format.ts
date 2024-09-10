@@ -5,14 +5,6 @@ export const formatAmount = (amount: number) => {
   }).format(amount)
 }
 
-export const formatNameBank = (name: string) => {
-  const nameArray = name.split(' ')
+export const formatNameBank = (name: string) => (name.length > 20 ? `${name.slice(0, 20)}...` : name)
 
-  return nameArray[0].length > 15 ? `${nameArray[0].slice(0, 15)}...` : name
-}
-
-export const formatNameUser = (name: string) => {
-  const nameArray = name.split(' ')
-
-  return nameArray[0].length > 15 ? `${nameArray[0].slice(0, 15)}...` : name
-}
+export const formatNameUser = (name: string) => (name.length > 20 ? `${name.slice(0, 20)}...` : name)
