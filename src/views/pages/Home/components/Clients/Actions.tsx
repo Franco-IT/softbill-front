@@ -6,6 +6,9 @@ import { yupResolver } from '@hookform/resolvers/yup'
 
 import DropzoneWrapper from 'src/@core/styles/libs/react-dropzone'
 import FileUploaderRestrictions from 'src/components/FileUploaderRestrictions'
+import { useQueryClient } from 'react-query'
+import { api } from 'src/services/api'
+import toast from 'react-hot-toast'
 
 export const FILE_TYPES: { [key: string]: string[] } = {
   'application/ofx': ['.ofx']
@@ -38,7 +41,13 @@ const schema = yup.object().shape({
     .min(1, 'Você deve fornecer pelo menos um arquivo do tipo .ofx')
 })
 
+interface FormData {
+  files: File[]
+}
+
 const Actions = () => {
+  const queryClient = useQueryClient()
+
   const {
     control,
     handleSubmit,
@@ -46,12 +55,24 @@ const Actions = () => {
   } = useForm({
     defaultValues: {
       files: []
-    },
+    } as FormData,
     mode: 'onBlur',
     resolver: yupResolver(schema)
   })
 
-  const onSubmit = (data: any) => console.log(data)
+  const onSubmit = (data: FormData) => {
+    const formData = new FormData()
+
+    data.files.forEach(file => formData.append('files', file))
+
+    api
+      .post('/monthlyFinancialCloseBanks/multiple-bank-monthly-financial-close', formData)
+      .then(() => {
+        queryClient.invalidateQueries('dashboard-client')
+        toast.success('Arquivos enviados com sucesso.')
+      })
+      .catch(() => toast.error('Erro ao enviar arquivos.'))
+  }
 
   return (
     <CardActions

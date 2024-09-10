@@ -1,5 +1,5 @@
 import { Button, Card, CardContent, CardHeader, List, ListItemButton, ListItemText } from '@mui/material'
-import CardPending from './CardPending'
+import Conciliation from './Conciliation'
 import { useRouter } from 'next/router'
 
 interface ConciliationsProps {
@@ -42,7 +42,7 @@ const Conciliations = ({ data }: ConciliationsProps) => {
             data.map((item: any) => (
               <li key={`section-${item.bankAccountId}`}>
                 <ul>
-                  <CardPending data={item} />
+                  <Conciliation data={item} />
                 </ul>
               </li>
             ))

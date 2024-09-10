@@ -1,58 +1,41 @@
+import { Card, CardContent, Typography } from '@mui/material'
+
+import PendingsContent from './PendingsContent'
+import Actions from './Actions'
+import useGetFetchQuery from 'src/hooks/useGetFetchQuery'
 import { Fragment } from 'react'
 
-import { ListItemButton, ListItemText, useMediaQuery } from '@mui/material'
+const CardPending = () => {
+  const data = useGetFetchQuery<any>('dashboard-client')
 
-import DrawerAnchor from 'src/components/DrawerAnchor'
+  const bankAccounts = data.bankAccounts || []
 
-import { useDrawer } from 'src/hooks/useDrawer'
-import { formatAmount } from 'src/utils/format'
-import Chip from 'src/@core/components/mui/chip'
-import ConciliationItem from 'src/components/DrawerComponents/client/ConciliationItem'
-
-const CardPending = (props: any) => {
-  const { anchor, open, toggleDrawer, children } = useDrawer()
-  const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
-
-  const drawerProps = {
-    anchor,
-    open,
-    toggleDrawer,
-    children
+  const pendingsContentProps = {
+    bankAccounts
   }
 
-  const { data } = props
-
   return (
-    <Fragment>
-      {data?.transactions?.map((item: any, index: number) => {
-        const itemProps = {
-          ...item
-        }
-
-        return (
-          <ListItemButton
-            key={`item-${index}-${item}`}
-            onClick={e => {
-              toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <ConciliationItem {...itemProps} />)(e)
-            }}
-          >
-            <ListItemText
-              primary={`${item.extractDescription}`}
-              secondary={
-                <Chip
-                  rounded
-                  size='small'
-                  sx={{ mt: 0.5 }}
-                  label={formatAmount(item.amount)}
-                  color={item.transactionTypeConciliation === 'CREDIT' ? 'success' : 'error'}
-                />
-              }
-            />
-          </ListItemButton>
-        )
-      })}
-      <DrawerAnchor {...drawerProps} />
-    </Fragment>
+    <Card>
+      <CardContent
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4
+        }}
+      >
+        <Typography variant='h5' color='text.secondary'>
+          Pendências
+        </Typography>
+        {data && bankAccounts.length > 0 ? (
+          <Fragment>
+            <PendingsContent {...pendingsContentProps} />
+            <Actions />
+          </Fragment>
+        ) : (
+          <Typography>Nenhuma pendência encontrada.</Typography>
+        )}
+      </CardContent>
+    </Card>
   )
 }
 

@@ -4,7 +4,7 @@ import { Box } from '@mui/system'
 import { useAuth } from 'src/hooks/useAuth'
 
 import Banks from './Banks'
-import Closing from './Closing'
+import Pendings from './Pendings'
 import { useQuery } from 'react-query'
 import { api } from 'src/services/api'
 import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
@@ -27,16 +27,16 @@ const Client = () => {
     }
   )
 
-  const banksProps = {
-    id: user?.id || ''
-  }
-
   if (isLoading) {
     return <LoadingCard title='Carregando...' subtitle='Aguarde um momento' icon='tabler:loader-2' />
   }
 
   if (isError) {
     return <Error />
+  }
+
+  const banksProps = {
+    id: user?.id || ''
   }
 
   const ConciliationsProps = {
@@ -60,7 +60,7 @@ const Client = () => {
             </Box>
           </Grid>
           <Grid item xs={12} md={6}>
-            <Closing />
+            <Pendings />
           </Grid>
         </Grid>
       </CardContent>
