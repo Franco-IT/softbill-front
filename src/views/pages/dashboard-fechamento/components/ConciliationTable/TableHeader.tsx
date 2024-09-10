@@ -52,7 +52,13 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
           toast.success('Conciliações validadas com sucesso.')
         }
       })
-      .catch(() => toast.error('Erro ao validar conciliações.'))
+      .catch(error => {
+        if (error.response.status === 409) {
+          toast.error('Erro ao validar conciliações, ainda existem conciliações pendentes.')
+        } else {
+          toast.error('Erro ao validar conciliações.')
+        }
+      })
   }
 
   return (
