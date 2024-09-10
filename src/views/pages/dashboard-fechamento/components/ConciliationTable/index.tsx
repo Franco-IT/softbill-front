@@ -30,11 +30,12 @@ const ConciliationTable = () => {
       perPage: rowsPerPage,
       search: filter,
       validated,
+      status,
       transactionTypeConciliation: type,
       bankAccountId: monthlyFinancialCloseBank.bankAccountId,
       step: 'MONTHLY_FINANCIAL_CLOSE'
     }),
-    [page, rowsPerPage, filter, validated, type, monthlyFinancialCloseBank.bankAccountId]
+    [page, rowsPerPage, filter, validated, status, type, monthlyFinancialCloseBank.bankAccountId]
   )
 
   const {
