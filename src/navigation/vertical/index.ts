@@ -54,7 +54,7 @@ const navigation = (): VerticalNavItemsType => {
       subtitle: 'Ver Contadores',
       action: 'read',
       auth: true,
-      subject: ['ACCOUNTING', 'ACCOUNTANT'],
+      subject: ['ACCOUNTING'],
       path: '/contadores',
       icon: 'tabler:user-dollar',
       avatarColor: 'primary'
