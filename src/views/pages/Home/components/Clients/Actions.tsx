@@ -68,10 +68,7 @@ const Actions = () => {
     data.files.forEach(file => formData.append('files', file))
 
     api
-      .post('/monthlyFinancialCloseBanks/multiple-bank-monthly-financial-close', formData, {
-        params: {
-          clientId: user?.id
-        },
+      .post('/monthlyFinancialCloseBanks/multiple-bank-monthly-financial-close/' + user?.id, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
