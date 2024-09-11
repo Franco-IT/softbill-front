@@ -68,9 +68,15 @@ const CreateUser = () => {
       onError: error => {
         if (error instanceof AppError) {
           if (error.statusCode === 409) {
-            setError('email', { type: 'manual', message: 'E-mail já cadastrado' })
+            if (error.message === 'E-mail já cadastrado, por favor, verifique o e-mail informado') {
+              setError('email', { type: 'manual', message: 'E-mail já cadastrado' })
+            }
 
-            toast.error('E-mail já cadastrado')
+            if (error.message === 'Documento Inválido, por favor, verifique o número informado') {
+              setError('documentNumber', { type: 'manual', message: 'Documento Inválido' })
+            }
+
+            toast.error(error.message)
           } else {
             toast.error(error.message)
           }
@@ -162,7 +168,8 @@ const CreateUser = () => {
                     onBlur={onBlur}
                     label='Número do Documento'
                     onChange={e => onChange(applyDocumentMask(e.target.value, watch('documentType')))}
-                    placeholder='Número do Documento'
+                    placeholder={!watch('documentType') ? 'Selecione o tipo de documento' : 'Número do Documento'}
+                    disabled={!watch('documentType')}
                     error={Boolean(errors.documentNumber)}
                     {...(errors.documentNumber && { helperText: errors.documentNumber.message })}
                   />

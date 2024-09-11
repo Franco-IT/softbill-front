@@ -103,9 +103,9 @@ const ChangePassword = () => {
                         fullWidth
                         value={value}
                         onBlur={onBlur}
-                        label='Senha'
+                        label='Senha Atual'
                         onChange={onChange}
-                        placeholder='Senha'
+                        placeholder='Senha Atual'
                         error={Boolean(errors.oldPassword)}
                         {...(errors.oldPassword && { helperText: errors.oldPassword.message })}
                         type={showPassword ? 'text' : 'password'}
@@ -169,9 +169,9 @@ const ChangePassword = () => {
                         fullWidth
                         value={value}
                         onBlur={onBlur}
-                        label='Confirmar nova Senha'
+                        label='Confirmar Nova Senha'
                         onChange={onChange}
-                        placeholder='Confirmação de nova Senha'
+                        placeholder='Confirmação de Nova Senha'
                         error={Boolean(errors.confirmPassword)}
                         {...(errors.confirmPassword && { helperText: errors.confirmPassword.message })}
                         type={showConfirmPassword ? 'text' : 'password'}

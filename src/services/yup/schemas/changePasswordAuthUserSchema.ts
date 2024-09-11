@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
 export const changePasswordAuthUserSchema = yup.object().shape({
-  oldPassword: yup.string().required('Senha obrigatória'),
+  oldPassword: yup.string().required('Senha atual obrigatória'),
   newPassword: yup
     .string()
     .required('Nova senha obrigatória')

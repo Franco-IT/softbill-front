@@ -54,7 +54,7 @@ const navigation = (): VerticalNavItemsType => {
       subtitle: 'Ver Contadores',
       action: 'read',
       auth: true,
-      subject: ['ACCOUNTING', 'ACCOUNTANT'],
+      subject: ['ACCOUNTING'],
       path: '/contadores',
       icon: 'tabler:user-dollar',
       avatarColor: 'primary'
@@ -68,16 +68,6 @@ const navigation = (): VerticalNavItemsType => {
       path: '/clientes',
       icon: 'tabler:users',
       avatarColor: 'success'
-    },
-    {
-      title: 'Bancos do Cliente',
-      subtitle: 'Ver Bancos do Cliente',
-      action: 'read',
-      auth: true,
-      subject: ['ACCOUNTING', 'ACCOUNTANT'],
-      path: '/bancos/extrato',
-      icon: 'tabler:building-bank',
-      avatarColor: 'warning'
     },
     {
       title: 'Conciliação Bancária',

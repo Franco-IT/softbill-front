@@ -49,9 +49,11 @@ const applyCnpjMask = (value: string) => {
 }
 
 const applyCpfMask = (value: string) => {
-  value = value.replace(/\D/g, '')
+  if (!value) return value
 
   value = value.slice(0, 14)
+
+  value = value.replace(/\D/g, '')
 
   if (value.length > 9) {
     value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')

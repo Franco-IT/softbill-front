@@ -1,8 +1,6 @@
 import { Suspense, useEffect, useState, useMemo, useCallback, ChangeEvent, MouseEvent } from 'react'
 
-import Link from 'next/link'
-
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, Typography } from '@mui/material'
 
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 
@@ -18,10 +16,10 @@ import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
-import { formatName } from 'src/utils/formatName'
+import { formatNameBank } from 'src/utils/format'
 import { formatDate } from 'src/@core/utils/format'
-import { Loading, Order, getComparator, stableSort } from 'src/utils/list'
 import { getInitials } from 'src/@core/utils/get-initials'
+import { Loading, Order, getComparator, stableSort } from 'src/utils/list'
 
 import { ThemeColor } from 'src/@core/layouts/types'
 import { IBankDTO } from 'src/modules/banks/dtos/IBankDTO'
@@ -202,19 +200,18 @@ const List = () => {
                               onClick={() => handleClickEdit(row)}
                             />
                             <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-                              <Typography
-                                noWrap
-                                component={Link}
-                                href={`/usuarios/${row.id}`}
-                                sx={{
-                                  fontWeight: 500,
-                                  textDecoration: 'none',
-                                  color: 'text.secondary',
-                                  '&:hover': { color: 'primary.main' }
-                                }}
-                              >
-                                {formatName(row.name)}
-                              </Typography>
+                              <Tooltip title={row.name}>
+                                <Typography
+                                  noWrap
+                                  sx={{
+                                    fontWeight: 500,
+                                    textDecoration: 'none',
+                                    color: 'text.secondary'
+                                  }}
+                                >
+                                  {formatNameBank(row.name, 40)}
+                                </Typography>
+                              </Tooltip>
                             </Box>
                           </Box>
                         </TableCell>

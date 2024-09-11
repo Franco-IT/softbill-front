@@ -5,6 +5,14 @@ export const formatAmount = (amount: number) => {
   }).format(amount)
 }
 
-export const formatNameBank = (name: string) => (name.length > 20 ? `${name.slice(0, 20)}...` : name)
+export const formatNameBank = (name: string, limit?: number) => {
+  if (!limit) limit = 20
 
-export const formatNameUser = (name: string) => (name.length > 20 ? `${name.slice(0, 20)}...` : name)
+  return name.length > limit ? `${name.slice(0, limit)}...` : name
+}
+
+export const formatNameUser = (name: string, limit?: number) => {
+  if (!limit) limit = 20
+
+  return name.length > limit ? `${name.slice(0, limit)}...` : name
+}
