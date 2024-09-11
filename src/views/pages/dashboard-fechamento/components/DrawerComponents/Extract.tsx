@@ -71,6 +71,7 @@ const Extract = () => {
   const dispatch = useAppDispatch()
   const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
 
+  const monthlyFinancialCloseBankId = monthlyFinancialClose.monthlyFinancialCloseBank.monthlyFinancialCloseBankId
   const status = monthlyFinancialClose.monthlyFinancialCloseBank.subStatus
   const method = monthlyFinancialClose.monthlyFinancialCloseBank.bankAccount.generatedBy
   const receivedAt = new Date(monthlyFinancialClose.monthlyFinancialCloseBank.referenceDate)
@@ -135,11 +136,11 @@ const Extract = () => {
       .catch(() => toast.error('Erro ao baixar o arquivo, tente novamente mais tarde'))
   }
 
-  const handleDeleteImportedFile = (fileId: string) => {
+  const handleDeleteImportedFile = (monthlyFinancialCloseBankId: string) => {
     api
-      .delete('/files/' + fileId)
+      .delete('monthlyFinancialCloseBanks/imported-file/' + monthlyFinancialCloseBankId)
       .then(() => queryClient.invalidateQueries(['financial-closing']))
-      .catch(() => toast.error('Erro ao baixar o arquivo, tente novamente mais tarde'))
+      .catch(() => toast.error('Erro ao deletar o arquivo, tente novamente mais tarde'))
   }
 
   const handleGenerateExtract = (e: React.KeyboardEvent | React.MouseEvent) => {
@@ -158,10 +159,7 @@ const Extract = () => {
     })
 
     api
-      .post('/monthlyFinancialCloseBanks/bank-monthly-financial-close', formData, {
-        params: {
-          clientId: monthlyFinancialClose.clientId
-        },
+      .post('/monthlyFinancialCloseBanks/bank-monthly-financial-close/' + monthlyFinancialClose.clientId, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -272,7 +270,7 @@ const Extract = () => {
                   color='primary'
                   disabled={statusValues[status] || false}
                   startIcon={<IconifyIcon icon='tabler:trash' fontSize='1.7rem' />}
-                  onClick={() => handleDeleteImportedFile(importedFileId as string)}
+                  onClick={() => handleDeleteImportedFile(monthlyFinancialCloseBankId as string)}
                 >
                   Deletar
                 </Button>
