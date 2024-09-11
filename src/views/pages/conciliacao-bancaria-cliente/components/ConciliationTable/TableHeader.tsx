@@ -58,6 +58,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
               placeholder='Selecione'
               value={status || 'default'}
               onChange={e => handleStatus(e.target.value)}
+              disabled
             >
               <MenuItem disabled value='default'>
                 <em>selecione</em>
@@ -77,6 +78,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
               placeholder='Selecione'
               value={type || 'default'}
               onChange={e => handleType(e.target.value)}
+              disabled
             >
               <MenuItem disabled value='default'>
                 <em>selecione</em>
@@ -95,6 +97,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
               placeholder='Selecione'
               value={validated || 'default'}
               onChange={e => handleValidated(e.target.value)}
+              disabled
             >
               <MenuItem disabled value='default'>
                 <em>selecione</em>
