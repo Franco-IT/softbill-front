@@ -9,6 +9,7 @@ import FileUploaderRestrictions from 'src/components/FileUploaderRestrictions'
 import { useQueryClient } from 'react-query'
 import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
+import { useAuth } from 'src/hooks/useAuth'
 
 export const FILE_TYPES: { [key: string]: string[] } = {
   'application/ofx': ['.ofx']
@@ -46,6 +47,7 @@ interface FormData {
 }
 
 const Actions = () => {
+  const { user } = useAuth()
   const queryClient = useQueryClient()
 
   const {
@@ -66,7 +68,14 @@ const Actions = () => {
     data.files.forEach(file => formData.append('files', file))
 
     api
-      .post('/monthlyFinancialCloseBanks/multiple-bank-monthly-financial-close', formData)
+      .post('/monthlyFinancialCloseBanks/multiple-bank-monthly-financial-close', formData, {
+        params: {
+          clientId: user?.id
+        },
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
       .then(() => {
         queryClient.invalidateQueries('dashboard-client')
         toast.success('Arquivos enviados com sucesso.')

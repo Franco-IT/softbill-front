@@ -45,7 +45,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
               fullWidth
               label='Buscar'
               value={search}
-              placeholder='Buscar Conciliação'
+              placeholder='Buscar por descrição ou origem'
               onChange={e => handleSearch(e.target.value)}
             />
           </Grid>
