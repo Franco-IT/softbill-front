@@ -70,16 +70,6 @@ const navigation = (): VerticalNavItemsType => {
       avatarColor: 'success'
     },
     {
-      title: 'Bancos do Cliente',
-      subtitle: 'Ver Bancos do Cliente',
-      action: 'read',
-      auth: true,
-      subject: ['ACCOUNTING', 'ACCOUNTANT'],
-      path: '/bancos/extrato',
-      icon: 'tabler:building-bank',
-      avatarColor: 'warning'
-    },
-    {
       title: 'Conciliação Bancária',
       subtitle: 'Ver Conciliação Bancária',
       action: ['client:read', 'client:update'],
