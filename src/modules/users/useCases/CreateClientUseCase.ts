@@ -1,6 +1,7 @@
 import { errorProvider } from 'src/shared/providers'
 import { ICreateClientDTO } from '../dtos/ICreateClientDTO'
 import { IUserRepository } from '../repositories/IUserRepository'
+import { errors } from '../errors'
 
 export class CreateClientUseCase {
   private userRepository: IUserRepository
@@ -15,7 +16,7 @@ export class CreateClientUseCase {
 
       return response.data
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao criar cliente, tente novamente mais tarde.')
+      errorProvider.handle(error, errors, 'Erro ao criar cliente, tente novamente mais tarde.')
     }
   }
 }

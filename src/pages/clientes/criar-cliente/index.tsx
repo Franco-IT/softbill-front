@@ -24,6 +24,7 @@ const CreateClient = () => {
     control,
     handleSubmit,
     watch,
+    setError,
     formState: { errors }
   } = useForm({
     defaultValues: {
@@ -57,7 +58,21 @@ const CreateClient = () => {
         }
       },
       onError: error => {
-        if (error instanceof AppError) toast.error(error.message)
+        if (error instanceof AppError) {
+          if (error.statusCode === 409) {
+            if (error.message === 'E-mail já cadastrado, por favor, verifique o e-mail informado') {
+              setError('email', { type: 'manual', message: 'E-mail já cadastrado' })
+            }
+
+            if (error.message === 'Documento Inválido, por favor, verifique o número informado') {
+              setError('documentNumber', { type: 'manual', message: 'Documento Inválido' })
+            }
+
+            toast.error(error.message)
+          } else {
+            toast.error(error.message)
+          }
+        }
       }
     }
   )

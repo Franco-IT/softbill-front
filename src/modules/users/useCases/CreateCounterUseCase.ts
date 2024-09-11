@@ -1,6 +1,7 @@
 import { errorProvider } from 'src/shared/providers'
 import { ICreateCounterDTO } from '../dtos/ICreateCounterDTO'
 import { IUserRepository } from '../repositories/IUserRepository'
+import { errors } from '../errors'
 
 export class CreateCounterUseCase {
   private userRepository: IUserRepository
@@ -13,7 +14,7 @@ export class CreateCounterUseCase {
     try {
       return await this.userRepository.create(data)
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao criar contador, tente novamente mais tarde.')
+      errorProvider.handle(error, errors, 'Erro ao criar contador, tente novamente mais tarde.')
     }
   }
 }
