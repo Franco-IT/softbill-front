@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogContentText,
   Grid,
-  InputAdornment,
   MenuItem,
   DialogActions,
   Button
@@ -117,7 +116,6 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProp
                     placeholder='Nome'
                     error={Boolean(errors.name)}
                     {...(errors.name && { helperText: errors.name.message })}
-                    InputProps={{ startAdornment: <InputAdornment position='start'>@</InputAdornment> }}
                   />
                 )}
               />

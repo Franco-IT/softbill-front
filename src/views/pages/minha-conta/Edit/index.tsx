@@ -6,7 +6,6 @@ import {
   DialogContentText,
   DialogActions,
   Grid,
-  InputAdornment,
   MenuItem,
   Button
 } from '@mui/material'
@@ -126,7 +125,6 @@ const Edit = memo(({ openEdit, handleEditClose, data }: EditProps) => {
                     placeholder='Nome'
                     error={Boolean(errors.name)}
                     {...(errors.name && { helperText: errors.name.message })}
-                    InputProps={{ startAdornment: <InputAdornment position='start'>@</InputAdornment> }}
                   />
                 )}
               />
