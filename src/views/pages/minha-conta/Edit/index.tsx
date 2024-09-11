@@ -65,6 +65,7 @@ const Edit = memo(({ openEdit, handleEditClose, data }: EditProps) => {
       onSuccess: response => {
         if (response.status === 200) {
           queryClient.invalidateQueries(['profile'])
+          queryClient.invalidateQueries(['auth-user'])
 
           handleEditClose()
           toast.success('Conta atualizada com sucesso!')
