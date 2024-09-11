@@ -14,8 +14,10 @@ import { LayoutProps } from 'src/@core/layouts/types'
 import Icon from 'src/@core/components/icon'
 
 // ** Configs
-import themeConfig from 'src/configs/themeConfig'
-import IconLogo from 'src/components/IconLogo'
+import CustomAvatar from 'src/components/CustomAvatar'
+import { useAuth } from 'src/hooks/useAuth'
+import { getInitials } from 'src/utils/getInitials'
+import { formatName } from 'src/utils/formatName'
 
 interface Props {
   navHover: boolean
@@ -53,6 +55,8 @@ const LinkStyled = styled(Link)({
 })
 
 const VerticalNavHeader = (props: Props) => {
+  const { user } = useAuth()
+
   // ** Props
   const {
     hidden,
@@ -94,9 +98,9 @@ const VerticalNavHeader = (props: Props) => {
         userNavMenuBranding(props)
       ) : (
         <LinkStyled href='/'>
-          <IconLogo />
-          <HeaderTitle variant='h4' sx={{ ...menuCollapsedStyles, ...(navCollapsed && !navHover ? {} : { ml: 2.5 }) }}>
-            {themeConfig.templateName}
+          <CustomAvatar src={user?.avatar || undefined} content={getInitials(user?.name as string)} />
+          <HeaderTitle variant='h5' sx={{ ...menuCollapsedStyles, ...(navCollapsed && !navHover ? {} : { ml: 2.5 }) }}>
+            {formatName(user?.name as string)}
           </HeaderTitle>
         </LinkStyled>
       )}
