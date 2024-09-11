@@ -45,7 +45,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
               fullWidth
               label='Buscar'
               value={search}
-              placeholder='Buscar Conciliação'
+              placeholder='Buscar por descrição ou origem'
               onChange={e => handleSearch(e.target.value)}
             />
           </Grid>
@@ -58,7 +58,6 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
               placeholder='Selecione'
               value={status || 'default'}
               onChange={e => handleStatus(e.target.value)}
-              disabled
             >
               <MenuItem disabled value='default'>
                 <em>selecione</em>
@@ -78,7 +77,6 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
               placeholder='Selecione'
               value={type || 'default'}
               onChange={e => handleType(e.target.value)}
-              disabled
             >
               <MenuItem disabled value='default'>
                 <em>selecione</em>
@@ -97,7 +95,6 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
               placeholder='Selecione'
               value={validated || 'default'}
               onChange={e => handleValidated(e.target.value)}
-              disabled
             >
               <MenuItem disabled value='default'>
                 <em>selecione</em>
