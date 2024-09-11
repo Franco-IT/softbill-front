@@ -159,6 +159,9 @@ const Extract = () => {
 
     api
       .post('/monthlyFinancialCloseBanks/bank-monthly-financial-close', formData, {
+        params: {
+          clientId: monthlyFinancialClose.clientId
+        },
         headers: {
           'Content-Type': 'multipart/form-data'
         }
