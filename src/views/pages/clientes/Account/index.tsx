@@ -81,6 +81,7 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
               skin='light'
               variant='rounded'
               color={'info'}
+              src={data.avatar || undefined}
               sx={{ width: 100, height: 100, mb: 4, fontSize: '3rem' }}
             >
               {getInitials(data.name)}
