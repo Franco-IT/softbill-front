@@ -21,6 +21,7 @@ import CustomTextField from 'src/@core/components/mui/text-field'
 
 import { api } from 'src/services/api'
 import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
+import { useAuth } from 'src/hooks/useAuth'
 
 const schema = yup.object().shape({
   name: yup.string().required('Nome obrigatório'),
@@ -41,6 +42,7 @@ interface EditProps {
 }
 
 const Edit = memo(({ openEdit, handleEditClose, data }: EditProps) => {
+  const { refetchAuthUser } = useAuth()
   const queryClient = useQueryClient()
 
   const {
@@ -63,17 +65,21 @@ const Edit = memo(({ openEdit, handleEditClose, data }: EditProps) => {
     },
     {
       onSuccess: response => {
-        if (response.status === 200) {
-          queryClient.invalidateQueries(['profile'])
-          queryClient.invalidateQueries(['auth-user'])
+        if (response) {
+          const { status } = response
 
-          handleEditClose()
-          toast.success('Conta atualizada com sucesso!')
+          if (status === 200) {
+            queryClient.invalidateQueries(['profile'])
+            refetchAuthUser()
+
+            handleEditClose()
+            toast.success('Conta atualizada com sucesso!')
+          }
         }
       },
       onError: () => {
         handleEditClose()
-        toast.error('Erro ao atualizar conta, tente novamente mais tarde')
+        toast.error('Erro ao atualizar conta, tente novamente mais tarde.')
       }
     }
   )
