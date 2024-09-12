@@ -1,19 +1,27 @@
+// React e hooks
 import { SyntheticEvent, useState, useEffect } from 'react'
 
+// MUI
 import Box from '@mui/material/Box'
-import TabPanel from '@mui/lab/TabPanel'
-import TabContext from '@mui/lab/TabContext'
-import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import MuiTab, { TabProps } from '@mui/material/Tab'
-import MuiTabList, { TabListProps } from '@mui/lab/TabList'
 import CircularProgress from '@mui/material/CircularProgress'
+import { styled } from '@mui/material/styles'
+import MuiTab, { TabProps } from '@mui/material/Tab'
+import TabContext from '@mui/lab/TabContext'
+import TabPanel from '@mui/lab/TabPanel'
+import MuiTabList, { TabListProps } from '@mui/lab/TabList'
 
+// Componentes internos
 import InfoAccount from '../Info'
 import ChangePassword from '../changePassword'
+import ClientInfo from '../Info/ClientInfo'
 
+// Outros componentes
 import Icon from 'src/@core/components/icon'
-import { UserProps } from 'src/types/users'
+
+// Tipos
+import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
+import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
@@ -49,7 +57,7 @@ const TabList = styled(MuiTabList)<TabListProps>(({ theme }) => ({
 }))
 
 interface TabsProps {
-  data: UserProps
+  data: IUserDTO | IClientDTO
 }
 
 const Tabs = ({ data }: TabsProps) => {
@@ -87,7 +95,7 @@ const Tabs = ({ data }: TabsProps) => {
         ) : (
           <>
             <TabPanel sx={{ p: 0 }} value='account'>
-              <InfoAccount data={data} />
+              {data.type !== 'CLIENT' ? <InfoAccount data={data} /> : <ClientInfo data={data as IClientDTO} />}
             </TabPanel>
             <TabPanel sx={{ p: 0 }} value='security'>
               <ChangePassword />

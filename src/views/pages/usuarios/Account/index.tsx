@@ -1,27 +1,32 @@
+// React e hooks
 import { Suspense, useState } from 'react'
 import { useRouter } from 'next/router'
 
+// MUI
 import { Grid, Card, CardContent, Typography, Divider, CardActions, Button, Box } from '@mui/material'
 
+// Componentes internos
 import Chip from 'src/@core/components/mui/chip'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
-
 import Edit from './Edit'
 
+// Tipos e layouts
 import { UserProps } from 'src/types/users'
 import { ThemeColor } from 'src/@core/layouts/types'
+
+// Utilidades
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
-
-import { api } from 'src/services/api'
-
-import toast from 'react-hot-toast'
-
-import { delay } from 'src/utils/delay'
 import { renderInitials, renderUser } from 'src/utils/list'
 import { formatName } from 'src/utils/formatName'
-import { applyPhoneMask } from 'src/utils/inputs'
 import { formatDate } from 'src/@core/utils/format'
 import verifyDataValue from 'src/utils/verifyDataValue'
+import { delay } from 'src/utils/delay'
+
+// Serviços
+import { api } from 'src/services/api'
+
+// Toast
+import toast from 'react-hot-toast'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -154,12 +159,6 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
               <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>E-mail:</Typography>
                 <Typography sx={{ ml: 3, color: 'text.secondary' }}>{verifyDataValue(data.email)}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
-                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone:</Typography>
-                <Typography sx={{ ml: 3, color: 'text.secondary' }}>
-                  {verifyDataValue(applyPhoneMask(data.cellphone))}
-                </Typography>
               </Box>
             </Box>
           </CardContent>

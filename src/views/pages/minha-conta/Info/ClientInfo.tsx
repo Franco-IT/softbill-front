@@ -1,18 +1,21 @@
+// React e hooks
+import { memo } from 'react'
+
 // MUI
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material'
-
-// Tipos
-import { ClientProps } from 'src/types/clients'
 
 // Utilidades
 import verifyDataValue from 'src/utils/verifyDataValue'
 import { applyCnpjMask, applyPhoneMask } from 'src/utils/inputs'
 
-interface InfoProps {
-  data: ClientProps
+// Tipos
+import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
+
+interface ClientInfoProps {
+  data: IClientDTO
 }
 
-const Info = ({ data }: InfoProps) => {
+const ClientInfo = memo(({ data }: ClientInfoProps) => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -76,6 +79,6 @@ const Info = ({ data }: InfoProps) => {
       </Grid>
     </Grid>
   )
-}
+})
 
-export default Info
+export default ClientInfo
