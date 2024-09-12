@@ -9,7 +9,7 @@ const Content = ({ banks }: ContentProps) => {
   return (
     <CardContent
       sx={{
-        maxHeight: '354px',
+        maxHeight: '240px',
         height: '100%',
         overflow: 'auto',
         '&::-webkit-scrollbar': {

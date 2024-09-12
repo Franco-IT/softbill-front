@@ -55,7 +55,7 @@ const Dashboard = () => {
     isError: isErrorDashboardData
   } = useQuery(['financial-closing-dashboard'], async () => await api.get('/monthlyFinancialCloses/statistics'), {
     staleTime: 1000 * 60 * 5,
-    keepPreviousData: true,
+    keepPreviousData: true
   })
 
   const params = useMemo(
@@ -81,7 +81,7 @@ const Dashboard = () => {
     },
     {
       staleTime: 1000 * 60 * 5,
-      keepPreviousData: true,
+      keepPreviousData: true
     }
   )
 
@@ -221,7 +221,7 @@ const Dashboard = () => {
             ) : (
               <CardOptionHorizontal
                 title={dashboardData.totalUsers}
-                subtitle='Total de Clientes'
+                subtitle='Total de Fechamentos'
                 avatarColor='primary'
                 icon='tabler:user'
               />
@@ -238,7 +238,7 @@ const Dashboard = () => {
             ) : (
               <CardOptionHorizontal
                 title={dashboardData.totalApproved}
-                subtitle='Clientes Aprovados'
+                subtitle='Fechamentos Aprovados'
                 avatarColor='success'
                 icon='tabler:user-check'
               />
@@ -255,7 +255,7 @@ const Dashboard = () => {
             ) : (
               <CardOptionHorizontal
                 title={dashboardData.totalPending}
-                subtitle='Clientes Pendentes'
+                subtitle='Fechamentos Pendentes'
                 avatarColor='warning'
                 icon='tabler:user-exclamation'
               />

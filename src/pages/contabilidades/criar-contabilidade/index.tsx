@@ -51,8 +51,6 @@ const CreateAccounting = () => {
     resolver: yupResolver(createAccountingSchema)
   })
 
-  console.log(watch('documentType'))
-
   const handleCreateAccounting = useMutation(
     (data: FormData) => {
       return userController.create(data)

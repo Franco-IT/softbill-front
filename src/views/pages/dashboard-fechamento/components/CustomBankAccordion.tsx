@@ -1,3 +1,4 @@
+import { MouseEvent } from 'react'
 import { useRouter } from 'next/router'
 
 import Icon from 'src/@core/components/icon'
@@ -19,6 +20,7 @@ import { TimelineDot, TimelineItem, TimelineContent, TimelineSeparator, Timeline
 
 import { bankStatusLabel, formatNameBank, statusColorsMUI, statusMap } from '../utils'
 import { ColorType, StatusMapProps, SubStatusProps } from '../types'
+import { getInitials } from 'src/utils/getInitials'
 
 interface CustomBankAccordionProps {
   bank: any
@@ -36,21 +38,20 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
     if (status.status) return 'success'
   }
 
+  const handleClickBank = (e: MouseEvent<HTMLButtonElement>, bankId: string, clientId: string) => {
+    e.stopPropagation()
+    router.push({
+      pathname: '/dashboard-fechamento/fechamento/[id]',
+      query: { id: bankId, clientId }
+    })
+  }
+
   return (
     <Accordion>
       <AccordionSummary expandIcon={<Icon fontSize='1.25rem' icon='tabler:chevron-down' />}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 2 }}>
-          <Avatar src={bank.bank.logo} sx={{ width: '2rem', height: '2rem', mr: 2 }} />
-          <Button
-            variant='text'
-            color='inherit'
-            onClick={() =>
-              router.push({
-                pathname: '/dashboard-fechamento/fechamento/[id]',
-                query: { id: bank.id, clientId: bank.clientId }
-              })
-            }
-          >
+          <Avatar src={bank.bank.logo}>{getInitials(bank.bank.name)}</Avatar>
+          <Button variant='text' color='inherit' onClick={e => handleClickBank(e, bank.id, bank.clientId)}>
             {formatNameBank(bank.bank.name)}
           </Button>
           {isSmallerThan550 ? (
