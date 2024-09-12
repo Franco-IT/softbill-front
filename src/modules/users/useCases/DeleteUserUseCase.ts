@@ -11,7 +11,7 @@ export class DeleteUserUseCase {
 
   async execute(data: IDeleteUserDTO) {
     try {
-      return await this.usersRepository.delete(data)
+      return this.usersRepository.delete(data)
     } catch (error: any) {
       errorProvider.handle(error, {}, 'Erro ao deletar usuário, tente novamente mais tarde.')
     }

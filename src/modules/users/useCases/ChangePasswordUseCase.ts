@@ -11,7 +11,7 @@ export class ChangePasswordUseCase {
 
   async execute(data: IChangeUserPasswordDTO) {
     try {
-      return await this.userRepository.changePassword(data)
+      return this.userRepository.changePassword(data)
     } catch (error: any) {
       errorProvider.handle(error, {}, 'Erro ao alterar senha, tente novamente mais tarde.')
     }

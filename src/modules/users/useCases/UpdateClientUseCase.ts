@@ -1,20 +1,20 @@
 import { errorProvider } from 'src/shared/providers'
-import { ICreateClientDTO } from '../dtos/ICreateClientDTO'
 import { IUserRepository } from '../repositories/IUserRepository'
+import { IUpdateClientDTO } from '../dtos/IUpdateClientDTO'
 import { errors } from '../errors'
 
-export class CreateClientUseCase {
+export class UpdateClientUseCase {
   private userRepository: IUserRepository
 
   constructor(userRepository: IUserRepository) {
     this.userRepository = userRepository
   }
 
-  async execute(data: ICreateClientDTO) {
+  async execute(data: IUpdateClientDTO) {
     try {
-      return this.userRepository.createClient(data)
+      return this.userRepository.updateClient(data)
     } catch (error: any) {
-      errorProvider.handle(error, errors, 'Erro ao criar cliente, tente novamente mais tarde.')
+      errorProvider.handle(error, errors, 'Erro ao atualizar cliente, tente novamente mais tarde.')
     }
   }
 }

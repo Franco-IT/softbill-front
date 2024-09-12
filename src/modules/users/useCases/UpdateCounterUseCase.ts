@@ -11,7 +11,7 @@ export class UpdateCounterUseCase {
 
   async execute(data: IUpdateCounterDTO) {
     try {
-      return await this.userRepository.update(data)
+      return this.userRepository.update(data)
     } catch (error: any) {
       errorProvider.handle(error, {}, 'Erro ao atualizar contador, tente novamente mais tarde.')
     }

@@ -12,6 +12,7 @@ import { IGetUserDTO } from '../dtos/IGetUserDTO'
 import { IGetUsersDTO } from '../dtos/IGetUsersDTO'
 import { IGetClientsDTO } from '../dtos/IGetClientsDTO'
 import { ICreateClientDTO } from '../dtos/ICreateClientDTO'
+import { IUpdateClientDTO } from '../dtos/IUpdateClientDTO'
 
 export class UserRepository implements IUserRepository {
   async getUsers(params: IGetUsersDTO): Promise<AxiosResponse> {
@@ -23,34 +24,38 @@ export class UserRepository implements IUserRepository {
   }
 
   async findByID(data: IGetUserDTO): Promise<AxiosResponse<any, any>> {
-    return await api.get(`/users/${data.id}`)
+    return api.get(`/users/${data.id}`)
   }
 
   async create(data: ICreateUserDTO | ICreateCounterDTO): Promise<AxiosResponse<any, any>> {
-    return await api.post('/users', data)
+    return api.post('/users', data)
   }
 
   async createClient(data: ICreateClientDTO): Promise<AxiosResponse> {
-    return await api.post('/users', data)
+    return api.post('/users', data)
+  }
+
+  async updateClient(data: IUpdateClientDTO): Promise<AxiosResponse> {
+    return api.put(`/users/${data.id}`, data)
   }
 
   async update(data: IUpdateCounterDTO): Promise<AxiosResponse<any, any>> {
-    return await api.put(`/users/${data.id}`, data)
+    return api.put(`/users/${data.id}`, data)
   }
 
   async delete(data: IDeleteUserDTO): Promise<AxiosResponse<any, any>> {
-    return await api.delete(`/users/${data.id}`)
+    return api.delete(`/users/${data.id}`)
   }
 
   async changePassword({ id, newPassword, confirmPassword }: IChangeUserPasswordDTO): Promise<AxiosResponse<any, any>> {
-    return await api.put(`/auth/change-auth-password/${id}`, {
+    return api.put(`/auth/change-auth-password/${id}`, {
       newPassword,
       confirmPassword
     })
   }
 
   async setAvatar(data: ISetUserAvatarDTO): Promise<AxiosResponse<any, any>> {
-    return await api.post('/files', data, {
+    return api.post('/files', data, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -58,6 +63,6 @@ export class UserRepository implements IUserRepository {
   }
 
   async firstAccess({ id }: IFirstAccessUserDTO): Promise<AxiosResponse<any, any>> {
-    return await api.get(`/users/first-access/${id}`)
+    return api.get(`/users/first-access/${id}`)
   }
 }

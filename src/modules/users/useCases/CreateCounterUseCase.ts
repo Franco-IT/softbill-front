@@ -12,7 +12,7 @@ export class CreateCounterUseCase {
 
   async execute(data: ICreateCounterDTO) {
     try {
-      return await this.userRepository.create(data)
+      return this.userRepository.create(data)
     } catch (error: any) {
       errorProvider.handle(error, errors, 'Erro ao criar contador, tente novamente mais tarde.')
     }

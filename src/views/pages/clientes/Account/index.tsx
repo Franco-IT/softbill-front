@@ -1,24 +1,37 @@
-import { useState } from 'react'
+// React e hooks
+import { Suspense, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useMutation, useQueryClient } from 'react-query'
+
+// MUI
 import { Grid, Card, CardContent, Typography, Divider, CardActions, Button, Box } from '@mui/material'
 
+// Componentes internos
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
-import Avatar from 'src/@core/components/mui/avatar'
 import Chip from 'src/@core/components/mui/chip'
-
 import Edit from './Edit'
+import ImageCropper from 'src/components/ImageCropper'
+import CustomBadge from 'src/components/CustomBadge'
+import Icon from 'src/@core/components/icon'
 
-import { getInitials } from 'src/@core/utils/get-initials'
-
+// Tipos e layouts
 import { ThemeColor } from 'src/@core/layouts/types'
-import { ClientProps } from 'src/types/clients'
+import { ISetUserAvatarDTO } from 'src/modules/users/dtos/ISetUserAvatarDTO'
+
+// Utilidades
 import verifyDataValue from 'src/utils/verifyDataValue'
 import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
 import { delay } from 'src/utils/delay'
-import { useRouter } from 'next/router'
 import { formatName } from 'src/utils/formatName'
 import { applyPhoneMask } from 'src/utils/inputs'
 import { formatDate } from 'src/@core/utils/format'
+import { renderInitials, renderUser } from 'src/utils/list'
+
+// Controladores e erros
+import { userController } from 'src/modules/users'
+import { AppError } from 'src/shared/errors/AppError'
+import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -39,16 +52,16 @@ const status: ClientStatusType = {
 }
 
 interface AccountProps {
-  data: ClientProps
-  refresh: boolean
-  setRefresh: (value: boolean) => void
+  data: IClientDTO
 }
 
-const Account = ({ data, refresh, setRefresh }: AccountProps) => {
+const Account = ({ data }: AccountProps) => {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const [openEdit, setOpenEdit] = useState<boolean>(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
+  const [openImageCropper, setOpenImageCropper] = useState<boolean>(false)
 
   const handleEditClickOpen = () => setOpenEdit(true)
   const handleEditClose = () => setOpenEdit(false)
@@ -59,6 +72,7 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
       .then(response => {
         if (response.status === 200) {
           setDeleteDialogOpen(false)
+          queryClient.invalidateQueries(['clients'])
           toast.success('Cliente deletado com sucesso!')
           delay(2000).then(() => {
             router.push('/clientes')
@@ -70,6 +84,34 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
       })
   }
 
+  const handleSetAvatar = useMutation(
+    (file: File) => {
+      const formData: ISetUserAvatarDTO = {
+        file,
+        userId: data.id,
+        uploadType: 'PROFILE'
+      }
+
+      return userController.setAvatar(formData)
+    },
+    {
+      onSuccess: response => {
+        if (response && response.status === 201) {
+          queryClient.invalidateQueries(['client-data'])
+          toast.success('Imagem alterada com sucesso!')
+        }
+      },
+      onError: error => {
+        if (error instanceof AppError) toast.error(error.message)
+      },
+      onSettled: () => {
+        setOpenImageCropper(false)
+      }
+    }
+  )
+
+  const onSubmit = async (file: File) => await handleSetAvatar.mutateAsync(file)
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -77,15 +119,44 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
           <CardContent
             sx={{ padding: '40px 40px 20px', display: 'flex', alignItems: 'center', flexDirection: 'column' }}
           >
-            <Avatar
-              skin='light'
-              variant='rounded'
-              color={'info'}
-              src={data.avatar || undefined}
-              sx={{ width: 100, height: 100, mb: 4, fontSize: '3rem' }}
+            <Suspense
+              fallback={renderInitials(data, {
+                skin: 'light',
+                variant: 'rounded',
+                sx: {
+                  width: 100,
+                  height: 100,
+                  mb: 4,
+                  fontSize: '3rem'
+                },
+                color: 'info'
+              })}
             >
-              {getInitials(data.name)}
-            </Avatar>
+              <CustomBadge
+                badgeContent={<Icon fontSize='1rem' icon='tabler:edit' />}
+                onClick={() => setOpenImageCropper(true)}
+                color='secondary'
+                variant='standard'
+                overlap={'circular'}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
+                }}
+              >
+                {renderUser(data, {
+                  skin: 'light',
+                  variant: 'rounded',
+                  sx: {
+                    width: 100,
+                    height: 100,
+                    mb: 4,
+                    fontSize: '3rem'
+                  },
+                  color: 'info'
+                })}
+              </CustomBadge>
+            </Suspense>
+            <ImageCropper open={openImageCropper} onClose={() => setOpenImageCropper(false)} onSubmit={onSubmit} />
             <Typography variant='h4' sx={{ mb: 3 }}>
               {formatName(data.name)}
             </Typography>
@@ -154,13 +225,7 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
               Editar
             </Button>
           </CardActions>
-          <Edit
-            data={data}
-            handleEditClose={handleEditClose}
-            openEdit={openEdit}
-            refresh={refresh}
-            setRefresh={setRefresh}
-          />
+          <Edit data={data} handleEditClose={handleEditClose} openEdit={openEdit} />
           <DialogAlert
             open={deleteDialogOpen}
             setOpen={setDeleteDialogOpen}

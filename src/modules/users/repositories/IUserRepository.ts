@@ -10,12 +10,14 @@ import { IGetUserDTO } from '../dtos/IGetUserDTO'
 import { IGetUsersDTO } from '../dtos/IGetUsersDTO'
 import { IGetClientsDTO } from '../dtos/IGetClientsDTO'
 import { ICreateClientDTO } from '../dtos/ICreateClientDTO'
+import { IUpdateClientDTO } from '../dtos/IUpdateClientDTO'
 
 export interface IUserRepository {
   findByID(data: IGetUserDTO): Promise<AxiosResponse>
   getUsers(params: IGetUsersDTO): Promise<AxiosResponse>
   getClients(params: IGetClientsDTO): Promise<AxiosResponse>
   createClient(data: ICreateClientDTO): Promise<AxiosResponse>
+  updateClient(data: IUpdateClientDTO): Promise<AxiosResponse>
   create(data: ICreateUserDTO | ICreateCounterDTO): Promise<AxiosResponse>
   update(data: IUpdateCounterDTO): Promise<AxiosResponse>
   delete(data: IDeleteUserDTO): Promise<AxiosResponse>

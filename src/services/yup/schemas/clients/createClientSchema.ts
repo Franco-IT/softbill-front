@@ -12,7 +12,9 @@ export const createClientSchema = yup.object().shape({
   clientCompanyPhone: yup
     .string()
     .required('Telefone da empresa obrigatório')
-    .matches(/^(\(?\d{2}\)?\s)?(\d{4,5}\-?\d{4})$/, 'Telefone inválido'),
+    .matches(/^(\(?\d{2}\)?\s)?(\d{4,5}\-?\d{4})$/, 'Telefone inválido')
+    .min(14, 'Telefone inválido')
+    .max(15, 'Telefone inválido'),
   financialResponsible: yup.string().required('Responsável financeiro obrigatório'),
   fantasyName: yup.string().required('Nome fantasia obrigatório'),
   observations: yup.string()
