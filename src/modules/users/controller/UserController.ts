@@ -61,46 +61,46 @@ export class UserController {
   }
 
   async getUsers(params: IGetUsersDTO) {
-    return await this.getUsersUseCase.execute(params)
+    return this.getUsersUseCase.execute(params)
   }
 
   async getClients(params: IGetClientsDTO) {
-    return await this.getClientsUseCase.execute(params)
+    return this.getClientsUseCase.execute(params)
   }
 
   async findByID(data: IGetUserDTO) {
-    return await this.findByIDUseCase.execute(data)
+    return this.findByIDUseCase.execute(data)
   }
 
   async create(data: ICreateUserDTO) {
-    return await this.createUserUseCase.execute(data)
+    return this.createUserUseCase.execute(data)
   }
 
   async createClient(data: ICreateClientDTO) {
-    return await this.createClientUseCase.execute(data)
+    return this.createClientUseCase.execute(data)
   }
 
   async createCounter(data: ICreateCounterDTO) {
-    return await this.createCounterUseCase.execute(data)
+    return this.createCounterUseCase.execute(data)
   }
 
   async updateCounter(data: IUpdateCounterDTO) {
-    return await this.updateCounterUseCase.execute(data)
+    return this.updateCounterUseCase.execute(data)
   }
 
   async delete(data: IDeleteUserDTO) {
-    return await this.deleteUserUseCase.execute(data)
+    return this.deleteUserUseCase.execute(data)
   }
 
   async changePassword(data: IChangeUserPasswordDTO) {
-    return await this.changePasswordUseCase.execute(data)
+    return this.changePasswordUseCase.execute(data)
   }
 
   async setAvatar(data: ISetUserAvatarDTO) {
-    return await this.setUserAvatarUseCase.execute(data)
+    return this.setUserAvatarUseCase.execute(data)
   }
 
   async firstAccess(data: IFirstAccessUserDTO) {
-    return await this.firstAccessUserUseCase.execute(data)
+    return this.firstAccessUserUseCase.execute(data)
   }
 }

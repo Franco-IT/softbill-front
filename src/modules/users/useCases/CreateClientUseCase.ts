@@ -12,9 +12,7 @@ export class CreateClientUseCase {
 
   async execute(data: ICreateClientDTO) {
     try {
-      const response = await this.userRepository.createClient(data)
-
-      return response.data
+      return this.userRepository.createClient(data)
     } catch (error: any) {
       errorProvider.handle(error, errors, 'Erro ao criar cliente, tente novamente mais tarde.')
     }

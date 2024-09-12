@@ -17,7 +17,7 @@ import Icon from 'src/@core/components/icon'
 import CustomAvatar from 'src/components/CustomAvatar'
 import { useAuth } from 'src/hooks/useAuth'
 import { getInitials } from 'src/utils/getInitials'
-import { formatName } from 'src/utils/formatName'
+import { formatName } from 'src/utils/format'
 
 interface Props {
   navHover: boolean

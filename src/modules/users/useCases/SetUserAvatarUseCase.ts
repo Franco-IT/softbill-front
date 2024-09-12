@@ -12,7 +12,7 @@ export class SetUserAvatarUseCase {
 
   async execute(data: ISetUserAvatarDTO): Promise<AxiosResponse | undefined> {
     try {
-      return await this.userRepository.setAvatar(data)
+      return this.userRepository.setAvatar(data)
     } catch (error: any) {
       errorProvider.handle(error, {}, 'Erro ao enviar imagem, tente novamente mais tarde.')
     }

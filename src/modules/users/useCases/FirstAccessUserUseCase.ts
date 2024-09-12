@@ -12,7 +12,7 @@ export class FirstAccessUserUseCase {
 
   async execute(data: IFirstAccessUserDTO): Promise<AxiosResponse | undefined> {
     try {
-      return await this.userRepository.firstAccess(data)
+      return this.userRepository.firstAccess(data)
     } catch (error: any) {
       errorProvider.handle(error, {}, 'Erro ao realizar o primeiro acesso.')
     }

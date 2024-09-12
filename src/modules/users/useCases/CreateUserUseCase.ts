@@ -12,7 +12,7 @@ export class CreateUserUseCase {
 
   async execute(data: ICreateUserDTO) {
     try {
-      return await this.userRepository.create(data)
+      return this.userRepository.create(data)
     } catch (error: any) {
       errorProvider.handle(error, errors, 'Erro ao criar usuário, tente novamente mais tarde.')
     }
