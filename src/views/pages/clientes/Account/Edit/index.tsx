@@ -1,3 +1,4 @@
+// MUI
 import {
   Dialog,
   DialogTitle,
@@ -9,108 +10,102 @@ import {
   MenuItem
 } from '@mui/material'
 
+// Componentes internos
 import CustomTextField from 'src/@core/components/mui/text-field'
 
-import * as yup from 'yup'
+// Bibliotecas de validação e formulários
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-import { ClientProps } from 'src/types/clients'
-import { api } from 'src/services/api'
+// Tipos e dados
+import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
+import { IUpdateClientDTO } from 'src/modules/users/dtos/IUpdateClientDTO'
+
+// Serviços e utilidades
 import toast from 'react-hot-toast'
 import { applyDocumentMask, applyPhoneMask } from 'src/utils/inputs'
 
-const schema = yup.object().shape({
-  name: yup.string().required('Nome obrigatório'),
-  status: yup.string().required('Status obrigatório'),
-  email: yup.string().email('E-mail inválido').required('E-mail obrigatório'),
-  documentType: yup.string().required('Tipo de documento obrigatório'),
-  documentNumber: yup
-    .string()
-    .required('Número do documento obrigatório')
-    .matches(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido')
-    .max(18, 'CNPJ inválido'),
-  collaboratorName: yup.string().required('Nome do colaborador obrigatório'),
-  clientCompanyPhone: yup
-    .string()
-    .required('Telefone da empresa obrigatório')
-    .matches(/^(\(?\d{2}\)?\s)?(\d{4,5}\-?\d{4})$/, 'Telefone inválido'),
-  financialResponsible: yup.string().required('Responsável financeiro obrigatório'),
-  fantasyName: yup.string().required('Nome fantasia obrigatório'),
-  observations: yup.string()
-})
+// React Query
+import { useMutation, useQueryClient } from 'react-query'
 
-interface FormData {
-  accountingId: string
-  clientCompanyPhone: string
-  collaboratorName: string
-  financialResponsible: string
-  fantasyName: string
-  observations: string
-  status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
-}
+// Erros
+import { AppError } from 'src/shared/errors/AppError'
+import { updateClientSchema } from 'src/services/yup/schemas/clients/updateClientSchema'
+import { userController } from 'src/modules/users'
 
 interface EditProfileProps {
   openEdit: boolean
   handleEditClose: () => void
-  data: ClientProps
-  refresh: boolean
-  setRefresh: (value: boolean) => void
+  data: IClientDTO
 }
 
-const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProfileProps) => {
+const Edit = ({ openEdit, handleEditClose, data }: EditProfileProps) => {
+  const queryClient = useQueryClient()
+
   const {
     control,
     handleSubmit,
     watch,
+    setError,
     formState: { errors }
   } = useForm({
     defaultValues: {
+      id: data.id,
       name: data.name,
       status: data.status,
       email: data.email,
       documentType: 'CNPJ',
-      financialResponsible: data.additionalData.financialResponsible,
-      fantasyName: data.additionalData.fantasyName,
-      collaboratorName: data.additionalData.collaboratorName,
       documentNumber: applyDocumentMask(data.documentNumber, data.documentType),
-      clientCompanyPhone: applyPhoneMask(data.additionalData.clientCompanyPhone || ''),
-      observations: data.additionalData.observations || '',
-      accountingId: data.additionalData.accountingId
-    },
+      additionalData: {
+        fantasyName: data.additionalData.fantasyName,
+        observations: data.additionalData.observations || '',
+        collaboratorName: data.additionalData.collaboratorName,
+        clientCompanyPhone: applyPhoneMask(data.additionalData.clientCompanyPhone || ''),
+        financialResponsible: data.additionalData.financialResponsible
+      }
+    } as IUpdateClientDTO,
     mode: 'onBlur',
-    resolver: yupResolver(schema)
+    resolver: yupResolver(updateClientSchema)
   })
 
-  const onSubmit = (formData: FormData) => {
-    if ('type#status' in formData) {
-      delete formData['type#status']
-    }
-
-    api
-      .put(`/users/${data.id}`, formData)
-      .then(response => {
-        if (response.status === 200) {
-          handleEditClose()
+  const handleEditClient = useMutation(
+    async (formData: IUpdateClientDTO) => {
+      return userController.updateClient(formData)
+    },
+    {
+      onSuccess: response => {
+        if (response?.status === 200) {
+          queryClient.invalidateQueries(['client-data'])
+          queryClient.invalidateQueries(['clients'])
           toast.success('Cliente atualizado com sucesso!')
-          setRefresh(!refresh)
         }
-      })
-      .catch(() => {
-        handleEditClose()
-      })
-  }
+      },
+      onError: error => {
+        if (error instanceof AppError) {
+          if (error.statusCode === 409) {
+            if (error.message === 'E-mail já cadastrado, por favor, verifique o e-mail informado') {
+              setError('email', { type: 'manual', message: 'E-mail já cadastrado' })
+            }
+
+            if (error.message === 'Documento Inválido, por favor, verifique o número informado') {
+              setError('documentNumber', { type: 'manual', message: 'Documento Inválido' })
+            }
+
+            toast.error(error.message)
+          } else {
+            toast.error(error.message)
+          }
+        }
+      },
+      onSettled: () => handleEditClose()
+    }
+  )
+
+  const onSubmit = async (formData: IUpdateClientDTO) => await handleEditClient.mutateAsync(formData)
 
   return (
-    <Dialog
-      open={openEdit}
-      onClose={handleEditClose}
-      aria-labelledby='user-view-edit'
-      aria-describedby='user-view-edit-description'
-      sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 1000 } }}
-    >
+    <Dialog open={openEdit} onClose={handleEditClose} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 1000 } }}>
       <DialogTitle
-        id='user-view-edit'
         sx={{
           textAlign: 'center',
           fontSize: '1.5rem !important',
@@ -131,7 +126,7 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
         </DialogContentText>
         <form noValidate autoComplete='off'>
           <Grid container spacing={6}>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} md={6}>
               <Controller
                 name='name'
                 control={control}
@@ -150,7 +145,7 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} md={6}>
               <Controller
                 name='email'
                 control={control}
@@ -170,7 +165,7 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} md={6}>
               <Controller
                 name='status'
                 control={control}
@@ -195,7 +190,7 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} md={6}>
               <Controller
                 name='documentNumber'
                 control={control}
@@ -214,9 +209,9 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} md={6}>
               <Controller
-                name='fantasyName'
+                name='additionalData.fantasyName'
                 control={control}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
@@ -227,15 +222,17 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
                     label='Nome Fantasia'
                     onChange={onChange}
                     placeholder='Nome Fantasia'
-                    error={Boolean(errors.fantasyName)}
-                    {...(errors.fantasyName && { helperText: errors.fantasyName.message })}
+                    error={Boolean(errors.additionalData?.fantasyName)}
+                    {...(errors.additionalData?.fantasyName && {
+                      helperText: errors.additionalData.fantasyName.message
+                    })}
                   />
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} md={6}>
               <Controller
-                name='financialResponsible'
+                name='additionalData.financialResponsible'
                 control={control}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
@@ -246,15 +243,17 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
                     label='Nome do Responsável Financeiro'
                     onChange={onChange}
                     placeholder='Nome do Responsável Financeiro'
-                    error={Boolean(errors.financialResponsible)}
-                    {...(errors.financialResponsible && { helperText: errors.financialResponsible.message })}
+                    error={Boolean(errors.additionalData?.financialResponsible)}
+                    {...(errors.additionalData?.financialResponsible && {
+                      helperText: errors.additionalData.financialResponsible.message
+                    })}
                   />
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} md={6}>
               <Controller
-                name='collaboratorName'
+                name='additionalData.collaboratorName'
                 control={control}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
@@ -265,15 +264,17 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
                     label='Colaborador Responsável'
                     onChange={onChange}
                     placeholder='Colaborador Responsável'
-                    error={Boolean(errors.collaboratorName)}
-                    {...(errors.collaboratorName && { helperText: errors.collaboratorName.message })}
+                    error={Boolean(errors.additionalData?.collaboratorName)}
+                    {...(errors.additionalData?.collaboratorName && {
+                      helperText: errors.additionalData.collaboratorName.message
+                    })}
                   />
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} md={6}>
               <Controller
-                name='clientCompanyPhone'
+                name='additionalData.clientCompanyPhone'
                 control={control}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <CustomTextField
@@ -283,8 +284,10 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProf
                     label='Telefone da Empresa'
                     onChange={e => onChange(applyPhoneMask(e.target.value))}
                     placeholder='Telefone da Empresa'
-                    error={Boolean(errors.clientCompanyPhone)}
-                    {...(errors.clientCompanyPhone && { helperText: errors.clientCompanyPhone.message })}
+                    error={Boolean(errors.additionalData?.clientCompanyPhone)}
+                    {...(errors.additionalData?.clientCompanyPhone && {
+                      helperText: errors.additionalData.clientCompanyPhone.message
+                    })}
                   />
                 )}
               />

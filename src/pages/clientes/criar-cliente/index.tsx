@@ -85,7 +85,7 @@ const CreateClient = () => {
       <CardContent>
         <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={6}>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} sm={6} lg={4}>
               <Controller
                 name='name'
                 control={control}
@@ -104,7 +104,7 @@ const CreateClient = () => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} sm={6} lg={4}>
               <Controller
                 name='email'
                 control={control}
@@ -124,7 +124,7 @@ const CreateClient = () => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} sm={6} lg={4}>
               <Controller
                 name='documentNumber'
                 control={control}
@@ -143,7 +143,7 @@ const CreateClient = () => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} sm={6} lg={4}>
               <Controller
                 name='fantasyName'
                 control={control}
@@ -162,7 +162,7 @@ const CreateClient = () => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} sm={6} lg={4}>
               <Controller
                 name='financialResponsible'
                 control={control}
@@ -181,7 +181,7 @@ const CreateClient = () => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} sm={6} lg={4}>
               <Controller
                 name='collaboratorName'
                 control={control}
@@ -200,7 +200,7 @@ const CreateClient = () => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={6} lg={4} xl={3}>
+            <Grid item xs={12} sm={6} lg={4}>
               <Controller
                 name='clientCompanyPhone'
                 control={control}

@@ -8,6 +8,7 @@ import { IGetClientsDTO } from '../dtos/IGetClientsDTO'
 import { IGetUserDTO } from '../dtos/IGetUserDTO'
 import { IGetUsersDTO } from '../dtos/IGetUsersDTO'
 import { ISetUserAvatarDTO } from '../dtos/ISetUserAvatarDTO'
+import { IUpdateClientDTO } from '../dtos/IUpdateClientDTO'
 import { IUpdateCounterDTO } from '../dtos/IUpdateCounterDTO'
 import { ChangePasswordUseCase } from '../useCases/ChangePasswordUseCase'
 import { CreateClientUseCase } from '../useCases/CreateClientUseCase'
@@ -19,6 +20,7 @@ import { FirstAccessUserUseCase } from '../useCases/FirstAccessUserUseCase'
 import { GetClientsUseCase } from '../useCases/GetClientsUseCase'
 import { GetUsersUseCase } from '../useCases/GetUsersUseCase'
 import { SetUserAvatarUseCase } from '../useCases/SetUserAvatarUseCase'
+import { UpdateClientUseCase } from '../useCases/UpdateClientUseCase'
 import { UpdateCounterUseCase } from '../useCases/UpdateCounterUseCase'
 
 export class UserController {
@@ -29,6 +31,7 @@ export class UserController {
   private createClientUseCase: CreateClientUseCase
   private createCounterUseCase: CreateCounterUseCase
   private updateCounterUseCase: UpdateCounterUseCase
+  private updateClientUseCase: UpdateClientUseCase
   private deleteUserUseCase: DeleteUserUseCase
   private changePasswordUseCase: ChangePasswordUseCase
   private setUserAvatarUseCase: SetUserAvatarUseCase
@@ -42,22 +45,24 @@ export class UserController {
     createClientUseCase: CreateClientUseCase,
     createCounterUseCase: CreateCounterUseCase,
     updateCounterUseCase: UpdateCounterUseCase,
+    updateClientUseCase: UpdateClientUseCase,
     deleteUserUseCase: DeleteUserUseCase,
     changePasswordUseCase: ChangePasswordUseCase,
     setUserAvatarUseCase: SetUserAvatarUseCase,
     firstAccessUserUseCase: FirstAccessUserUseCase
   ) {
-    this.getUsersUseCase = getUsersUseCase,
-    this.getClientsUseCase = getClientsUseCase,
-    this.findByIDUseCase = findByIDUseCase,
-    this.createUserUseCase = createUserUseCase,
-    this.createClientUseCase = createClientUseCase,
-    this.createCounterUseCase = createCounterUseCase,
-    this.updateCounterUseCase = updateCounterUseCase,
-    this.deleteUserUseCase = deleteUserUseCase,
-    this.changePasswordUseCase = changePasswordUseCase,
-    this.setUserAvatarUseCase = setUserAvatarUseCase,
-    this.firstAccessUserUseCase = firstAccessUserUseCase
+    ;(this.getUsersUseCase = getUsersUseCase),
+      (this.getClientsUseCase = getClientsUseCase),
+      (this.findByIDUseCase = findByIDUseCase),
+      (this.createUserUseCase = createUserUseCase),
+      (this.createClientUseCase = createClientUseCase),
+      (this.createCounterUseCase = createCounterUseCase),
+      (this.updateCounterUseCase = updateCounterUseCase),
+      (this.updateClientUseCase = updateClientUseCase),
+      (this.deleteUserUseCase = deleteUserUseCase),
+      (this.changePasswordUseCase = changePasswordUseCase),
+      (this.setUserAvatarUseCase = setUserAvatarUseCase),
+      (this.firstAccessUserUseCase = firstAccessUserUseCase)
   }
 
   async getUsers(params: IGetUsersDTO) {
@@ -86,6 +91,10 @@ export class UserController {
 
   async updateCounter(data: IUpdateCounterDTO) {
     return this.updateCounterUseCase.execute(data)
+  }
+
+  async updateClient(data: IUpdateClientDTO) {
+    return this.updateClientUseCase.execute(data)
   }
 
   async delete(data: IDeleteUserDTO) {

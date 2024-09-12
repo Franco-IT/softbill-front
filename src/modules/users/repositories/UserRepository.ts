@@ -12,6 +12,7 @@ import { IGetUserDTO } from '../dtos/IGetUserDTO'
 import { IGetUsersDTO } from '../dtos/IGetUsersDTO'
 import { IGetClientsDTO } from '../dtos/IGetClientsDTO'
 import { ICreateClientDTO } from '../dtos/ICreateClientDTO'
+import { IUpdateClientDTO } from '../dtos/IUpdateClientDTO'
 
 export class UserRepository implements IUserRepository {
   async getUsers(params: IGetUsersDTO): Promise<AxiosResponse> {
@@ -32,6 +33,10 @@ export class UserRepository implements IUserRepository {
 
   async createClient(data: ICreateClientDTO): Promise<AxiosResponse> {
     return api.post('/users', data)
+  }
+
+  async updateClient(data: IUpdateClientDTO): Promise<AxiosResponse> {
+    return api.put(`/users/${data.id}`, data)
   }
 
   async update(data: IUpdateCounterDTO): Promise<AxiosResponse<any, any>> {

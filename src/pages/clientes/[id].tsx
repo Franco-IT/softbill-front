@@ -1,35 +1,41 @@
-import { useEffect } from 'react'
-
+// Bibliotecas externas
 import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
-
 import { Grid, LinearProgress } from '@mui/material'
+import { useQuery } from 'react-query'
 
+// Configurações
 import themeConfig from 'src/configs/themeConfig'
 
-import useGetDataApi from 'src/hooks/useGetDataApi'
-import { ClientDataProps } from 'src/types/clients'
+// Componentes e páginas internas
 import Account from 'src/views/pages/clientes/Account'
 import Tabs from 'src/views/pages/clientes/Account/Tabs'
+
+// Controladores
+import { userController } from 'src/modules/users'
+
+// Tipos e erros
+import { IAppError } from 'src/shared/errors/AppError'
 
 export default function Client() {
   const router = useRouter()
 
   const { id } = router.query
 
-  const {
-    data: client,
-    loading,
-    error,
-    refresh,
-    setRefresh
-  } = useGetDataApi<ClientDataProps>({ url: `/users/${id}`, callInit: router.isReady })
+  const getClientProps = {
+    id: id as string
+  }
 
-  useEffect(() => {
-    if (!loading) error && router.push('/404')
-  }, [error, loading, router])
+  const { data: client, isLoading } = useQuery(['client-data', id], () => userController.findByID(getClientProps), {
+    onError: (error: IAppError) => {
+      router.push(error.statusCode === 404 ? '/404' : '/500')
+    },
+    enabled: router.isReady,
+    staleTime: 1000 * 60 * 5,
+    keepPreviousData: true
+  })
 
-  if (loading) return <LinearProgress />
+  if (isLoading) return <LinearProgress />
 
   if (client) {
     return (
@@ -40,7 +46,7 @@ export default function Client() {
         />
         <Grid container spacing={6}>
           <Grid item xs={12} xl={4}>
-            <Account data={client.data} refresh={refresh} setRefresh={setRefresh} />
+            <Account data={client.data} />
           </Grid>
           <Grid item xs={12} xl={8}>
             <Tabs data={client.data} />

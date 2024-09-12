@@ -79,6 +79,9 @@ const applyDocumentMask = (value: string, type: string) => {
 
 const applyPhoneMask = (value: string) => {
   if (!value) return value
+
+  value = value.slice(0, 15)
+
   value = value.replace(/\D/g, '')
 
   switch (true) {
