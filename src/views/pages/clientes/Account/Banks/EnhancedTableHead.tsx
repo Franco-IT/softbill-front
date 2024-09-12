@@ -1,13 +1,16 @@
+// MUI
 import { Box, TableCell, TableHead, TableRow, TableSortLabel, useTheme } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
+
+// Tipos
 import { HeadCellProps } from './HeadCells'
-import { BankAccountProps } from 'src/types/banks'
+import { IBankAccountDTO } from 'src/modules/banks/dtos/IBankAccountDTO'
 
 type Order = 'asc' | 'desc'
 
 interface EnhancedTableProps {
   headCells: HeadCellProps[]
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof BankAccountProps) => void
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof IBankAccountDTO) => void
   order: Order
   orderBy: string
   rowCount: number
@@ -18,7 +21,7 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
 
   const theme = useTheme()
 
-  const createSortHandler = (property: keyof BankAccountProps) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof IBankAccountDTO) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property)
   }
 
@@ -39,7 +42,7 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id as keyof BankAccountProps)}
+              onClick={createSortHandler(headCell.id as keyof IBankAccountDTO)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (

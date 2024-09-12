@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, MouseEvent } from 'react'
 
 // import { useRouter } from 'next/router'
 
@@ -11,13 +11,18 @@ import CustomBasicMenu from 'src/components/CustomBasicMenu'
 import { api } from 'src/services/api'
 
 import toast from 'react-hot-toast'
+import { useDrawer } from 'src/hooks/useDrawer'
+import BankInfo from './BankInfo'
+import { IBankAccountDTO } from 'src/modules/banks/dtos/IBankAccountDTO'
+import DrawerAnchor from 'src/components/DrawerAnchor'
 
 interface RowOptionsProps {
-  data: any
-  refreshData: () => void
+  data: IBankAccountDTO
 }
 
-const RowOptions = ({ data, refreshData }: RowOptionsProps) => {
+const RowOptions = ({ data }: RowOptionsProps) => {
+  const { anchor, open, toggleDrawer, children } = useDrawer()
+
   // const router = useRouter()
 
   // const [openEdit, setOpenEdit] = useState(false)
@@ -33,26 +38,37 @@ const RowOptions = ({ data, refreshData }: RowOptionsProps) => {
   //     query: { id: data.id, slug: data?.bank?.slug || data.importedBank, client: data.clientId }
   //   })
 
+  const handleClickInfo = (e: MouseEvent<HTMLDivElement, any>) => {
+    toggleDrawer('right', true, <BankInfo data={data} />)(e)
+  }
+
   const handleDelete = () => {
     api
       .delete(`/bankAccounts/${data.id}`)
-      .then(() => refreshData())
+      .then(() => console.log('yesye'))
       .catch(() => toast.error('Erro ao deletar banco'))
       .finally(() => setOpenDelete(false))
   }
 
   const menuItems = [
-    // {
-    //   label: 'Extrato',
-    //   icon: <Icon icon='tabler:building-bank' fontSize={20} />,
-    //   action: handleStatement
-    // },
+    {
+      label: 'Ver Informações',
+      icon: <Icon icon='tabler:eye' fontSize={20} />,
+      actionWithParam: handleClickInfo
+    },
     {
       label: 'Deletar',
       icon: <Icon icon='tabler:trash' fontSize={20} />,
       action: handleClickDelete
     }
   ]
+
+  const drawerProps = {
+    anchor,
+    open,
+    toggleDrawer,
+    children
+  }
 
   return (
     <>
@@ -70,6 +86,8 @@ const RowOptions = ({ data, refreshData }: RowOptionsProps) => {
           handleConfirmDelete={handleDelete}
         />
       )}
+
+      <DrawerAnchor {...drawerProps} />
     </>
   )
 }

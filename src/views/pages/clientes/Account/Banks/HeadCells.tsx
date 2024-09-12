@@ -6,7 +6,7 @@ export interface HeadCellProps {
 
 const HeadCells: HeadCellProps[] = [
   {
-    id: 'name',
+    id: 'bank',
     disablePadding: true,
     label: 'Nome'
   },
