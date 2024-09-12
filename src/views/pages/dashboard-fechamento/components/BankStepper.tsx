@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Box, Button } from '@mui/material'
 
-import Avatar from 'src/@core/components/mui/avatar'
 import CustomStepper from './CustomStepper'
 
 import { statusMap } from '../utils'
 import { getInitials } from 'src/utils/getInitials'
 import { StatusMapProps, StatusProps } from '../types'
+import CustomAvatar from 'src/components/CustomAvatar'
 
 interface BankStepperProps {
   bank: any
@@ -64,7 +64,7 @@ const BankStepper = ({ bank }: BankStepperProps) => {
           gap: 2
         }}
       >
-        <Avatar src={bank.bank.logo}>{getInitials(bank.bank.name)}</Avatar>
+        <CustomAvatar src={bank.bank.logo} content={getInitials(bank.bank.name)} />
         <Button
           variant='text'
           color='inherit'

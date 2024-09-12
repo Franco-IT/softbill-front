@@ -2,7 +2,7 @@ import { createContext, useState, ReactNode, useEffect, useCallback, useMemo } f
 import { useRouter } from 'next/router'
 import { deleteCookie, getCookie, setCookie } from 'cookies-next'
 import toast from 'react-hot-toast'
-import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { useQuery, useMutation, useQueryClient, QueryObserverResult } from 'react-query'
 
 import { api } from 'src/services/api'
 import { AuthValuesType } from './types'
@@ -22,11 +22,12 @@ const defaultProvider: AuthValuesType = {
   loading: true,
   setUser: () => null,
   setLoading: () => Boolean,
-  login: async () => Promise.resolve({} as IUserLoggedDTO),
+  login: () => Promise.resolve({} as IUserLoggedDTO),
   logout: () => null,
-  resetPassword: async () => Promise.resolve(),
-  emailResetPassword: async () => Promise.resolve(),
-  firstAccess: async () => Promise.resolve()
+  resetPassword: () => Promise.resolve(),
+  emailResetPassword: () => Promise.resolve(),
+  firstAccess: () => Promise.resolve(),
+  refetchAuthUser: () => Promise.resolve({} as QueryObserverResult<IUserLoggedDTO, any>)
 }
 
 const AuthContext = createContext(defaultProvider)
@@ -216,9 +217,19 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
       logout: handleLogout,
       resetPassword: handleResetPassword,
       emailResetPassword: handleEmailResetPassword,
-      firstAccess: handleFirstAccess
+      firstAccess: handleFirstAccess,
+      refetchAuthUser
     }),
-    [handleEmailResetPassword, handleFirstAccess, handleLogin, handleLogout, handleResetPassword, loading, user]
+    [
+      handleEmailResetPassword,
+      handleFirstAccess,
+      handleLogin,
+      handleLogout,
+      handleResetPassword,
+      loading,
+      refetchAuthUser,
+      user
+    ]
   )
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>

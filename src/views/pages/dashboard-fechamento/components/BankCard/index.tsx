@@ -8,7 +8,7 @@ interface BankCardProps {
 
 const BankCard = ({ client }: BankCardProps) => {
   return (
-    <Card>
+    <Card sx={{ minHeight: '328px' }}>
       <Header client={client} />
       <Content banks={client.monthlyFinancialCloseBanks} />
     </Card>

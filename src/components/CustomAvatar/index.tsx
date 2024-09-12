@@ -1,5 +1,4 @@
-import { AvatarProps } from '@mui/material'
-import Avatar from 'src/@core/components/mui/avatar'
+import { Avatar, AvatarProps } from '@mui/material'
 
 interface CustomAvatarProps extends AvatarProps {
   src: string | undefined
@@ -7,9 +6,9 @@ interface CustomAvatarProps extends AvatarProps {
   content: string
 }
 
-const CustomAvatar = ({ content, src, color, ...rest }: CustomAvatarProps) => {
+const CustomAvatar = ({ content, src, ...rest }: CustomAvatarProps) => {
   return (
-    <Avatar src={src} color={color} {...rest}>
+    <Avatar src={src} {...rest}>
       {content}
     </Avatar>
   )

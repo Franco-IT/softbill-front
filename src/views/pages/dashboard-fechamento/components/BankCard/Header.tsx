@@ -1,24 +1,32 @@
+import Link from 'next/link'
 import Icon from 'src/@core/components/icon'
-import Avatar from 'src/@core/components/mui/avatar'
 
 import { Box, Button, CardHeader, IconButton } from '@mui/material'
 
-import { statusColorsMUI } from '../../utils'
 import GlowIcon from 'src/components/GlowIcon'
+import CustomAvatar from 'src/components/CustomAvatar'
+import { getInitials } from 'src/utils/getInitials'
+import { formatName } from 'src/utils/format'
 
 interface HeaderProps {
   client: any
 }
-
 const Header = ({ client }: HeaderProps) => {
   return (
     <CardHeader
       title={
-        <Button variant='text' color='inherit'>
-          {client.clientName}
+        <Button
+          LinkComponent={Link}
+          href={`/clientes/${client.clientId}`}
+          target='_blank'
+          variant='text'
+          color='inherit'
+          title={client.clientName}
+        >
+          {formatName(client.clientName)}
         </Button>
       }
-      avatar={<Avatar src={client.clientAvatar} color={statusColorsMUI[client.status]} />}
+      avatar={<CustomAvatar src={client.clientAvatar} content={getInitials(client.clientName)} />}
       action={
         <Box display='flex' alignItems='center' gap={3}>
           {client.status === 'DONE' && (

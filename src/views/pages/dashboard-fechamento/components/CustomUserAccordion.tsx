@@ -1,19 +1,19 @@
 import { SyntheticEvent, useState } from 'react'
 
-import { Button, styled, IconButton } from '@mui/material'
+import { Button, styled, IconButton, useMediaQuery } from '@mui/material'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary'
 import MuiAccordionDetails, { AccordionDetailsProps } from '@mui/material/AccordionDetails'
 
 import Icon from 'src/@core/components/icon'
-import Avatar from 'src/@core/components/mui/avatar'
 
 import GlowIcon from 'src/components/GlowIcon'
 import TimelineBank from './TimelineBank'
 
-import { statusColorsMUI } from '../utils'
-
-import { formatName } from 'src/utils/formatName'
+import CustomAvatar from 'src/components/CustomAvatar'
+import { getInitials } from 'src/utils/getInitials'
+import Link from 'next/link'
+import { formatName } from 'src/utils/format'
 
 const Accordion = styled(MuiAccordion)<AccordionProps>(({ theme }) => ({
   margin: 0,
@@ -78,6 +78,8 @@ interface CustomUserAccordionProps {
 }
 
 const CustomUserAccordion = ({ client }: CustomUserAccordionProps) => {
+  const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
+
   const [expanded, setExpanded] = useState<string | false>(false)
 
   const handleChange = (panel: string) => (event: SyntheticEvent, isExpanded: boolean) => {
@@ -97,18 +99,19 @@ const CustomUserAccordion = ({ client }: CustomUserAccordionProps) => {
           }
         }}
       >
-        <Avatar src={client.clientAvatar} color={statusColorsMUI[client.status]} />
+        <CustomAvatar src={client.clientAvatar} content={getInitials(client.clientName)} />
+        <GlowIcon status={client.status} />
         <Button
+          LinkComponent={Link}
+          href={`/clientes/${client.clientId}`}
+          onClick={e => e.stopPropagation()}
+          target='_blank'
           variant='text'
           color='inherit'
-          onClick={e => e.stopPropagation()}
-          sx={{
-            p: 0
-          }}
+          title={client.clientName}
         >
-          {formatName(client.clientName)}
+          {formatName(client.clientName, !isSmallerThanMd ? 100 : 20)}
         </Button>
-        <GlowIcon status={client.status} />
         {client.status === 'APPROVED' && (
           <IconButton>
             <Icon icon='tabler:download' fontSize='1.5rem' />
