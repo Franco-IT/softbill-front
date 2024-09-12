@@ -6,7 +6,8 @@ import Icon from 'src/@core/components/icon'
 interface MenuItemProps {
   label: string
   icon?: React.ReactNode
-  action: () => void
+  action?: () => void
+  actionWithParam?: (param: any) => void
 }
 
 interface CustomBasicMenuProps {
@@ -24,6 +25,15 @@ const CustomBasicMenu: React.FC<CustomBasicMenuProps> = React.memo(({ buttonLabe
   }
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const handleMenuItemClick = (item: MenuItemProps, event: React.MouseEvent<HTMLLIElement>) => {
+    if (item.action) {
+      item.action()
+    } else if (item.actionWithParam) {
+      item.actionWithParam(event)
+      handleClose()
+    }
   }
 
   return (
@@ -55,7 +65,7 @@ const CustomBasicMenu: React.FC<CustomBasicMenuProps> = React.memo(({ buttonLabe
         }}
       >
         {menuItems.map((item, index) => (
-          <MenuItem sx={{ '& svg': { mr: 2 } }} key={index} onClick={() => item.action()}>
+          <MenuItem sx={{ '& svg': { mr: 2 } }} key={index} onClick={e => handleMenuItemClick(item, e)}>
             {item.icon && item.icon}
             {item.label}
           </MenuItem>

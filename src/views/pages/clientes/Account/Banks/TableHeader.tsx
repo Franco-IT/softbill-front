@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 
-import { CardHeader, Grid, Box, Button } from '@mui/material'
+import { CardHeader, Grid, Button } from '@mui/material'
 
 import CustomTextField from 'src/@core/components/mui/text-field'
 
@@ -22,16 +22,16 @@ const TableHeader = (props: TableHeaderProps) => {
 
   return (
     <Grid container gap={{ xs: 3, md: 0 }} paddingX={6} paddingY={4} justifyContent={'space-between'}>
-      <Box display='flex'>
+      <Grid item xs={12}>
         <CardHeader
           sx={{
             padding: 0
           }}
           title='Bancos do Cliente'
         />
-      </Box>
+      </Grid>
 
-      <Grid item xs={12} md={10}>
+      <Grid item xs={12}>
         <Grid container gap={3} justifyContent={'end'}>
           <Grid item xs={12} md={3}>
             <CustomTextField
@@ -42,7 +42,7 @@ const TableHeader = (props: TableHeaderProps) => {
             />
           </Grid>
 
-          <Grid item xs={12} md={4} xl={4}>
+          <Grid item xs={12} md={4} xl={3}>
             <Button fullWidth variant='contained' sx={{ '& svg': { mr: 2 } }} onClick={handleCreateBank}>
               <Icon fontSize='1.125rem' icon='tabler:plus' />
               Adicionar Banco
