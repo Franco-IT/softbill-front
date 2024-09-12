@@ -1,22 +1,33 @@
+// React e hooks
+import { useState } from 'react'
+import { useRouter } from 'next/router'
+
+// MUI
 import { Grid, Card, CardContent, Typography, Divider, CardActions, Button } from '@mui/material'
 import { Box } from '@mui/system'
-import { useState } from 'react'
+
+// Componentes internos
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import Avatar from 'src/@core/components/mui/avatar'
 import Chip from 'src/@core/components/mui/chip'
-import { ThemeColor } from 'src/@core/layouts/types'
-import { getInitials } from 'src/@core/utils/get-initials'
-import { UserProps } from 'src/types/users'
 import Edit from './Edit'
+
+// Tipos e layouts
+import { ThemeColor } from 'src/@core/layouts/types'
+import { UserProps } from 'src/types/users'
+
+// Utilidades
+import { getInitials } from 'src/@core/utils/get-initials'
 import { formatName } from 'src/utils/formatName'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
-import { api } from 'src/services/api'
-import toast from 'react-hot-toast'
-import { delay } from 'src/utils/delay'
-import { useRouter } from 'next/router'
 import { formatDate } from 'src/@core/utils/format'
 import verifyDataValue from 'src/utils/verifyDataValue'
-import { applyPhoneMask } from 'src/utils/inputs'
+import { delay } from 'src/utils/delay'
+
+// Serviços
+import { api } from 'src/services/api'
+import toast from 'react-hot-toast'
+
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -133,12 +144,6 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
               <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>E-mail:</Typography>
                 <Typography sx={{ ml: 3, color: 'text.secondary' }}>{verifyDataValue(data.email)}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
-                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone:</Typography>
-                <Typography sx={{ ml: 3, color: 'text.secondary' }}>
-                  {verifyDataValue(applyPhoneMask(data.cellphone))}
-                </Typography>
               </Box>
             </Box>
           </CardContent>

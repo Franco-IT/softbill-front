@@ -71,16 +71,14 @@ const Edit = memo(({ openEdit, handleEditClose, data }: EditProps) => {
           if (status === 200) {
             queryClient.invalidateQueries(['profile'])
             refetchAuthUser()
-
-            handleEditClose()
             toast.success('Conta atualizada com sucesso!')
           }
         }
       },
       onError: () => {
-        handleEditClose()
         toast.error('Erro ao atualizar conta, tente novamente mais tarde.')
-      }
+      },
+      onSettled: () => handleEditClose()
     }
   )
 
@@ -116,7 +114,7 @@ const Edit = memo(({ openEdit, handleEditClose, data }: EditProps) => {
         </DialogContentText>
         <form noValidate autoComplete='off'>
           <Grid container spacing={6}>
-            <Grid item xs={12} sm={4} md>
+            <Grid item xs={12} sm={6} md={4}>
               <Controller
                 name='name'
                 control={control}
@@ -136,7 +134,7 @@ const Edit = memo(({ openEdit, handleEditClose, data }: EditProps) => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6} md={4}>
               <Controller
                 name='email'
                 control={control}
@@ -157,7 +155,7 @@ const Edit = memo(({ openEdit, handleEditClose, data }: EditProps) => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} md={4}>
               <Controller
                 name='status'
                 control={control}

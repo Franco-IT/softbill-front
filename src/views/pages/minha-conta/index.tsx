@@ -1,35 +1,45 @@
+// React e hooks
 import { memo, Suspense, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useMutation, useQueryClient } from 'react-query'
-import { Grid, Card, CardContent, Typography, Divider, CardActions, Button, Box } from '@mui/material'
 
+// MUI
+import { Grid, Card, CardContent, Typography, Divider, CardActions, Button, Box, Tooltip } from '@mui/material'
+
+// Toast
 import toast from 'react-hot-toast'
 
+// Componentes internos
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import Chip from 'src/@core/components/mui/chip'
 import CustomBadge from 'src/components/CustomBadge'
 import Icon from 'src/@core/components/icon'
 import ImageCropper from 'src/components/ImageCropper'
+import Edit from './Edit'
+import CanView from 'src/components/CanView'
 
+// Hooks
 import { useAuth } from 'src/hooks/useAuth'
 
+// Tipos e layouts
 import { ThemeColor } from 'src/@core/layouts/types'
+import { ISetUserAvatarDTO } from 'src/modules/users/dtos/ISetUserAvatarDTO'
+import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
+
+// Utilidades
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
 import { formatDate } from 'src/@core/utils/format'
-
 import { delay } from 'src/utils/delay'
-import { formatName } from 'src/utils/formatName'
+import { formatName } from 'src/utils/format'
 import verifyDataValue from 'src/utils/verifyDataValue'
 import { applyPhoneMask } from 'src/utils/inputs'
 import { renderInitials, renderUser } from 'src/utils/list'
 
-import { ISetUserAvatarDTO } from 'src/modules/users/dtos/ISetUserAvatarDTO'
-import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
-
+// Controladores e erros
 import { userController } from 'src/modules/users'
 import { AppError } from 'src/shared/errors/AppError'
-
-import Edit from './Edit'
+import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
+import EditClient from './EditClient'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -48,7 +58,7 @@ const statusColors: ColorsType = {
 }
 
 interface MyAccountProps {
-  data: IUserDTO
+  data: IUserDTO | IClientDTO
 }
 
 const MyAccount = memo(({ data }: MyAccountProps) => {
@@ -164,9 +174,17 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
               </CustomBadge>
             </Suspense>
             <ImageCropper open={openImageCropper} onClose={() => setOpenImageCropper(false)} onSubmit={onSubmit} />
-            <Typography variant='h4' sx={{ mb: 3 }}>
-              {formatName(data.name)}
-            </Typography>
+            <Tooltip
+              title={
+                (data as IClientDTO).type === 'CLIENT' ? (data as IClientDTO).additionalData.fantasyName : data.name
+              }
+            >
+              <Typography variant='h4' sx={{ mb: 3 }}>
+                {formatName(
+                  (data as IClientDTO).type === 'CLIENT' ? (data as IClientDTO).additionalData.fantasyName : data.name
+                )}
+              </Typography>
+            </Tooltip>
             <Chip
               rounded
               skin='light'
@@ -219,25 +237,34 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>E-mail:</Typography>
                 <Typography sx={{ ml: 3, color: 'text.secondary' }}>{verifyDataValue(data.email)}</Typography>
               </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
-                <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone:</Typography>
-                <Typography sx={{ ml: 3, color: 'text.secondary' }}>
-                  {verifyDataValue(applyPhoneMask(data.cellphone))}
-                </Typography>
-              </Box>
+              {data.type === 'CLIENT' && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
+                  <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Telefone:</Typography>
+                  <Typography sx={{ ml: 3, color: 'text.secondary' }}>
+                    {verifyDataValue(applyPhoneMask((data as IClientDTO)?.additionalData?.clientCompanyPhone))}
+                  </Typography>
+                </Box>
+              )}
             </Box>
           </CardContent>
 
           <CardActions sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Button color='error' variant='tonal' onClick={() => setDeleteDialogOpen(true)}>
-              Deletar
-            </Button>
+            <CanView actions='delete'>
+              <Button color='error' variant='tonal' onClick={() => setDeleteDialogOpen(true)}>
+                Deletar
+              </Button>
+            </CanView>
             <Button variant='contained' sx={{ mr: 2 }} onClick={handleEditClickOpen}>
               Editar
             </Button>
           </CardActions>
 
-          {openEdit && <Edit data={data} handleEditClose={handleEditClose} openEdit={openEdit} />}
+          {openEdit && data.type !== 'CLIENT' && (
+            <Edit data={data} handleEditClose={handleEditClose} openEdit={openEdit} />
+          )}
+          {openEdit && data.type === 'CLIENT' && (
+            <EditClient data={data as IClientDTO} handleEditClose={handleEditClose} openEdit={openEdit} />
+          )}
 
           {deleteDialogOpen && (
             <DialogAlert

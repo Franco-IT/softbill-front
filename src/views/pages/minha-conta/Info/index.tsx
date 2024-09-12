@@ -1,11 +1,15 @@
+// MUI
 import { Grid, Card, CardContent, Typography, Box } from '@mui/material'
 
-import { UserProps } from 'src/types/users'
+// Tipos
+import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
+
+// Utilidades
 import { applyDocumentMask } from 'src/utils/inputs'
 import verifyDataValue from 'src/utils/verifyDataValue'
 
 interface InfoProps {
-  data: UserProps
+  data: IUserDTO
 }
 
 const Info = ({ data }: InfoProps) => {
@@ -29,9 +33,7 @@ const Info = ({ data }: InfoProps) => {
                     <Typography sx={{ color: 'text.secondary' }}>{data.email}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', mb: 3 }}>
-                    <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>
-                      Documento:
-                    </Typography>
+                    <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Documento:</Typography>
                     <Typography sx={{ color: 'text.secondary' }}>
                       {verifyDataValue(applyDocumentMask(data.documentNumber, data.documentType))}
                     </Typography>
