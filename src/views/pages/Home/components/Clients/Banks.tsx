@@ -73,9 +73,9 @@ const Banks = ({ id }: BanksProps) => {
               Tentar novamente
             </Button>
           </Box>
-        ) : banks && banks.data.length > 0 ? (
+        ) : banks && banks.length > 0 ? (
           <Stack spacing={3} direction='row' useFlexGap flexWrap='wrap'>
-            {banks.data.map((item: any) => (
+            {banks.map((item: any) => (
               <Bank
                 key={item.id}
                 bankLogo={item.bank.logo}

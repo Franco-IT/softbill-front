@@ -15,9 +15,10 @@ import EnhancedTableHead from './EnhancedTableHead'
 import Pagination from './Pagination'
 
 // Utilidades
-import { formatDate } from 'src/@core/utils/format'
-import { Loading, Order, getComparator, stableSort } from 'src/utils/list'
 import { formatNameBank } from 'src/utils/format'
+import { formatDate } from 'src/@core/utils/format'
+import { getInitials } from 'src/utils/getInitials'
+import { Loading, Order, getComparator, stableSort } from 'src/utils/list'
 
 // Tipos e layouts
 import { ThemeColor } from 'src/@core/layouts/types'
@@ -29,7 +30,6 @@ import { bankController } from 'src/modules/banks'
 // Componentes de feedback
 import Error from 'src/components/FeedbackAPIs/Error'
 import CustomAvatar from 'src/components/CustomAvatar'
-import { getInitials } from 'src/utils/getInitials'
 
 interface BankStatusColor {
   [key: string]: ThemeColor
