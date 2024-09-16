@@ -1,15 +1,27 @@
 import { Box, Card, CardActions, CardContent, CardHeader, MenuItem, Typography } from '@mui/material'
 import GlowIcon from 'src/components/GlowIcon'
-import React from 'react'
+import { ChangeEvent } from 'react'
 import CustomChip from 'src/@core/components/mui/chip'
 import { statusColorsMUI } from '../../utils'
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { useAppSelector } from 'src/hooks/useAppSelector'
+import { api } from 'src/services/api'
+import useToast from 'src/hooks/useToast'
+import { useQueryClient } from 'react-query'
+
+// import { useDrawer } from 'src/hooks/useDrawer'
 
 const Validation = () => {
+  const { toastPromise } = useToast()
+  const queryClient = useQueryClient()
+
+  // const { anchor, toggleDrawer } = useDrawer()
+
   const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
 
   const status = monthlyFinancialClose.monthlyFinancialCloseBank.status
+  const subStatus = monthlyFinancialClose.monthlyFinancialCloseBank.subStatus
+  const monthlyFinancialCloseBankId = monthlyFinancialClose.monthlyFinancialCloseBank.monthlyFinancialCloseBankId
 
   const statusValuesText: any = {
     PENDING: 'Pendente',
@@ -23,6 +35,21 @@ const Validation = () => {
     if (status === 'DONE') return 'DONE'
 
     return 'PENDING'
+  }
+
+  const handleDisableInput = (status: string) => (status === 'DONE' || status === 'WAITING_VALIDATION' ? false : true)
+
+  const handleChangeStatus = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = (e.target as HTMLInputElement).value
+    const myPromise = api
+      .put('monthlyFinancialCloseBanks/' + monthlyFinancialCloseBankId, {
+        validated: value === 'DONE' ? true : false
+      })
+      .then(() => {
+        queryClient.invalidateQueries(['financial-closing'])
+      })
+
+    toastPromise(myPromise, 'Enviando lembrete...', 'Lembrete enviado com sucesso', 'Erro ao enviar lembrete')
   }
 
   return (
@@ -53,8 +80,9 @@ const Validation = () => {
           fullWidth
           label='Status'
           placeholder='Selecione Status'
-          disabled
+          disabled={handleDisableInput(subStatus)}
           value={status || 'default'}
+          onChange={e => handleChangeStatus(e)}
           color={statusColorsMUI[handleCheckStatus(status)]}
           focused={!!statusColorsMUI[handleCheckStatus(status)]}
         >
