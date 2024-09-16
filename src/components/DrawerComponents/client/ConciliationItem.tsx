@@ -1,18 +1,29 @@
+// Material UI Imports
 import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, Typography } from '@mui/material'
 
+// Custom Components
 import IconifyIcon from 'src/@core/components/icon'
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomTextField from 'src/@core/components/mui/text-field'
-
 import GlowIcon from 'src/components/GlowIcon'
-import { formatAmount } from 'src/utils/format'
+
+// React Hook Form Imports
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+
+// Hooks
 import { useDrawer } from 'src/hooks/useDrawer'
-import { applyAccountNumberMask } from 'src/utils/inputs'
-import { api } from 'src/services/api'
 import { useQueryClient } from 'react-query'
+
+// Utils
+import { formatAmount } from 'src/utils/format'
+import { applyAccountNumberMask } from 'src/utils/inputs'
+
+// Services
+import { api } from 'src/services/api'
+
+// Notifications
 import toast from 'react-hot-toast'
 
 export type ColorType = 'primary' | 'error' | 'success' | 'secondary' | 'info' | 'warning' | undefined
