@@ -22,7 +22,7 @@ const Conciliation = () => {
     PENDING: 'Pendente',
     PROCESSING: 'Processando',
     DONE: 'Aprovado',
-    TRANSACTION_UNTRACKED: 'Transações Pendentes'
+    TRANSACTION_UNTRACKED: 'Conciliações Pendentes'
   }
 
   const statusColorsMUI: { [key: string]: ColorType } = {
@@ -118,7 +118,7 @@ const Conciliation = () => {
               color='primary'
               startIcon={<IconifyIcon icon='tabler:alert-circle' fontSize='1.7rem' />}
               onClick={e => handleSendReminder(e)}
-              disabled={statusValuesBoolean[status]}
+              disabled
             >
               Enviar Lembrete Para o Cliente
             </Button>

@@ -17,6 +17,7 @@ import {
   Grid,
   IconButton,
   MenuItem,
+  Tooltip,
   Typography,
   useMediaQuery
 } from '@mui/material'
@@ -50,8 +51,16 @@ import { statusColorsMUI, typesIntegration } from '../utils'
 import { setMonthlyFinancialClose, setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
 
 // Types
-import { ClosureOptionsProps } from '../types'
+import { ClosureOptionsProps, StatusValue } from '../types'
 import { formatNameUser } from 'src/utils/format'
+
+const closureSituation: Record<StatusValue, string> = {
+  PENDING: 'Extrato Pendente',
+  PROCESSING: 'Processando Extrato',
+  TRANSACTION_UNTRACKED: 'Transação não Rastreada',
+  WAITING_VALIDATION: 'Aguardando Validação',
+  DONE: 'Exportar'
+}
 
 const statusValues: any = {
   PENDING: true,
@@ -226,15 +235,18 @@ const Closure = () => {
                 justifyContent={isSmallerThanSm ? 'start' : 'end'}
                 gap={2}
               >
-                <Box display={isSmallerThanSm ? 'none' : 'flex'} alignItems='center' justifyContent='center'>
-                  <IconButton
-                    title='Exportar'
-                    onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Export />)(e)}
-                    disabled={statusValues[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
-                  >
-                    <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
-                  </IconButton>
-                </Box>
+                <Tooltip
+                  title={closureSituation[monthlyFinancialClose.monthlyFinancialCloseBank.subStatus as StatusValue]}
+                >
+                  <Box display={isSmallerThanSm ? 'none' : 'flex'} alignItems='center' justifyContent='center'>
+                    <IconButton
+                      onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Export />)(e)}
+                      disabled={statusValues[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
+                    >
+                      <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
+                    </IconButton>
+                  </Box>
+                </Tooltip>
                 <Box
                   display='flex'
                   flexDirection={isSmallerThanSm ? 'row' : 'column'}
@@ -257,15 +269,16 @@ const Closure = () => {
           </Grid>
         }
         action={
-          <Box display={isSmallerThanSm ? 'flex' : 'none'} alignItems='center' justifyContent='center'>
-            <IconButton
-              disabled={statusValues[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
-              title='Exportar'
-              onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Export />)(e)}
-            >
-              <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
-            </IconButton>
-          </Box>
+          <Tooltip title={closureSituation[monthlyFinancialClose.monthlyFinancialCloseBank.subStatus as StatusValue]}>
+            <Box display={isSmallerThanSm ? 'flex' : 'none'} alignItems='center' justifyContent='center'>
+              <IconButton
+                disabled={statusValues[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
+                onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Export />)(e)}
+              >
+                <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
+              </IconButton>
+            </Box>
+          </Tooltip>
         }
       />
       <Divider />

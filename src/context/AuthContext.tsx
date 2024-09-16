@@ -1,16 +1,35 @@
+// React Imports
 import { createContext, useState, ReactNode, useEffect, useCallback, useMemo } from 'react'
+
+// Next.js Imports
 import { useRouter } from 'next/router'
-import { deleteCookie, getCookie, setCookie } from 'cookies-next'
+
+// Cookie Management
+import { deleteCookie, getCookie, setCookie, getCookies } from 'cookies-next'
+
+// Notifications
 import toast from 'react-hot-toast'
+
+// React Query Imports
 import { useQuery, useMutation, useQueryClient, QueryObserverResult } from 'react-query'
 
+// Services
 import { api } from 'src/services/api'
-import { AuthValuesType } from './types'
+import { authController } from 'src/modules/auth'
+
+// Configs
 import authConfig from 'src/configs/auth'
 
-import { authController } from 'src/modules/auth'
+// Providers
 import { cryptoProvider } from 'src/shared/providers'
+
+// Error Handling
 import { AppError } from 'src/shared/errors/AppError'
+
+// Types
+import { AuthValuesType } from './types'
+
+// DTOs
 import { IUserLoginDTO } from 'src/modules/auth/dtos/IUserLoginDTO'
 import { IUserLoggedDTO } from 'src/modules/auth/dtos/IUserLoggedDTO'
 import { IUserResetPasswordDTO } from 'src/modules/auth/dtos/IUserResetPasswordDTO'
@@ -87,10 +106,9 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
   const logoutMutation = useMutation(
     () => {
       authController.logout()
-      deleteCookie(authConfig.storageUserDataKeyName)
-      deleteCookie(`${authConfig.storageUserDataKeyName}-iv`)
-      deleteCookie(authConfig.storageTokenKeyName)
-      deleteCookie(`${authConfig.storageTokenKeyName}-iv`)
+      const cookies = getCookies()
+
+      if (cookies) Object.keys(cookies).forEach(key => deleteCookie(key))
 
       setUser(null)
       authChannel.postMessage('logout')

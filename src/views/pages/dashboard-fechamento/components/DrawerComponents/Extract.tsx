@@ -114,17 +114,13 @@ const Extract = () => {
   }
 
   const handleSendReminder = (e: React.KeyboardEvent | React.MouseEvent) => {
-    const myPromise = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (Math.random() < 0.5) {
-          resolve('foo')
-
-          toggleDrawer(anchor, false, null)(e)
-        } else {
-          reject('fox')
+    const myPromise = api
+      .get('monthlyFinancialCloseBanks/send-notification/' + monthlyFinancialCloseBankId, {
+        params: {
+          clientId: monthlyFinancialClose.clientId
         }
-      }, 1000)
-    })
+      })
+      .then(() => toggleDrawer(anchor, false, null)(e))
 
     toastPromise(myPromise, 'Enviando lembrete...', 'Lembrete enviado com sucesso', 'Erro ao enviar lembrete')
   }

@@ -78,18 +78,18 @@ const ConciliationItem = (props: ConciliationItemProps) => {
     CREDIT: 'success',
     DEBIT: 'error'
   }
-
+  
   const validatedValues: { [key: string]: string } = {
-    true: 'Aprovado',
-    false: 'Pendente'
+    true: 'Informado',
+    false: 'Não Informado'
   }
 
   const handleCheckStatusColor = (status: string) => {
     type Values = 'REJECTED' | 'PENDING' | 'DONE'
 
     const statusValues: { [key: string]: Values } = {
-      PENDING: 'REJECTED',
-      PROCESSING: 'REJECTED',
+      PENDING: 'PENDING',
+      PROCESSING: 'PENDING',
       TRANSACTION_UNTRACKED: 'PENDING',
       WAITING_VALIDATION: 'DONE',
       DONE: 'DONE'
