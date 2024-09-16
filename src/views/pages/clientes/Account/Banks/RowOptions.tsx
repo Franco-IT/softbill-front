@@ -45,7 +45,7 @@ const RowOptions = ({ data }: RowOptionsProps) => {
   const handleDelete = () => {
     api
       .delete(`/bankAccounts/${data.id}`)
-      .then(() => console.log('yesye'))
+      .then(() => toast.success('Banco deletado com sucesso!'))
       .catch(() => toast.error('Erro ao deletar banco'))
       .finally(() => setOpenDelete(false))
   }

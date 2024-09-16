@@ -22,10 +22,10 @@ import { Loading, Order } from 'src/utils/list'
 import DrawerAnchor from 'src/components/DrawerAnchor'
 import { useDrawer } from 'src/hooks/useDrawer'
 import { formatAmount, formatNameBank } from 'src/utils/format'
-import { applyAccountNumberMask } from 'src/utils/inputs'
 import ConciliationItem from 'src/components/DrawerComponents/client/ConciliationItem'
 import CustomAvatar from 'src/components/CustomAvatar'
 import { getInitials } from 'src/utils/getInitials'
+import { dateProvider } from 'src/shared/providers'
 
 export type ColorType = 'primary' | 'error' | 'success' | 'secondary' | 'info' | 'warning' | undefined
 
@@ -169,7 +169,7 @@ const Table = memo(
                   <TableRow>
                     <TableCell colSpan={6}>
                       <Typography noWrap variant='h6' sx={{ color: 'text.secondary' }}>
-                        Nenhuma conciliação encontrada
+                        Nenhuma transação encontrada
                       </Typography>
                     </TableCell>
                   </TableRow>
@@ -220,23 +220,18 @@ const Table = memo(
                           </Box>
                         </TableCell>
                         <TableCell align='left'>
-                          <Typography noWrap sx={{ color: 'text.secondary' }}>
-                            {handleCheckRowValue(applyAccountNumberMask(row.creditAccount))}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align='left'>
-                          <Typography noWrap sx={{ color: 'text.secondary' }}>
-                            {handleCheckRowValue(applyAccountNumberMask(row.debitAccount))}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align='left'>
                           <CustomChip
                             rounded
                             skin='light'
                             size='small'
-                            label={handleCheckRowValue(typeValues[row.transactionTypeConciliation])}
-                            color={typeColors[row.transactionTypeConciliation]}
-                            sx={{ textTransform: 'capitalize', minWidth: 85 }}
+                            label={handleCheckRowValue(typeValues[row.transactionTypeExtract])}
+                            color={typeColors[row.transactionTypeExtract]}
+                            sx={{
+                              minWidth: 85,
+                              '& .MuiChip-label': {
+                                fontWeight: 'bold'
+                              }
+                            }}
                           />
                         </TableCell>
                         <TableCell align='left'>
@@ -244,10 +239,18 @@ const Table = memo(
                             rounded
                             skin='light'
                             size='small'
-                            label={formatAmount(row.amount)}
-                            color='primary'
+                            label={formatAmount(
+                              row.amount,
+                              row.transactionTypeExtract === 'DEBIT' ? 'negative' : 'positive'
+                            )}
+                            color={typeColors[row.transactionTypeExtract]}
                             sx={{ textTransform: 'capitalize', minWidth: 85 }}
                           />
+                        </TableCell>
+                        <TableCell align='left'>
+                          <Typography noWrap sx={{ color: 'text.secondary' }}>
+                            {dateProvider.formatDate(new Date(row.date), "d 'de' MMM 'de' yyyy")}
+                          </Typography>
                         </TableCell>
                         <TableCell align='left'>
                           <RowItemLimited item={handleCheckRowValue(row.extractDescription)} />
