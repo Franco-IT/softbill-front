@@ -162,13 +162,6 @@ const List = () => {
                           </Typography>
                         </TableCell>
                         <TableCell align='left'>
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Typography noWrap variant='body2' sx={{ color: 'text.secondary' }}>
-                              {formatAmount(row.amount)}
-                            </Typography>
-                          </Box>
-                        </TableCell>
-                        <TableCell align='left'>
                           <CustomChip
                             rounded
                             skin='light'
@@ -177,6 +170,20 @@ const List = () => {
                             color={transactionTypeColors[row.transactionTypeExtract]}
                             sx={{ minWidth: 107, textTransform: 'capitalize' }}
                           />
+                        </TableCell>
+                        <TableCell align='left'>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <CustomChip
+                              rounded
+                              skin='light'
+                              size='small'
+                              label={formatAmount(
+                                row.amount,
+                                row.transactionTypeExtract === 'DEBIT' ? 'negative' : 'positive'
+                              )}
+                              color={transactionTypeColors[row.transactionTypeExtract]}
+                            />
+                          </Box>
                         </TableCell>
                         <TableCell align='left'>
                           <Typography noWrap sx={{ color: 'text.secondary' }}>

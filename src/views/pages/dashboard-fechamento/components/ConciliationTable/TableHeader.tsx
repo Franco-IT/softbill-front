@@ -73,8 +73,8 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
       </Grid>
 
       <Grid item xs={12}>
-        <Grid container gap={2} justifyContent={'space-between'}>
-          <Grid item xs={12} md={3}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={12} xl={3}>
             <CustomTextField
               fullWidth
               label='Buscar'
@@ -84,7 +84,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
             />
           </Grid>
 
-          <Grid item xs={12} md={2}>
+          <Grid item xs={12} md={6} xl={2}>
             <CustomTextField
               select
               fullWidth
@@ -103,7 +103,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
             </CustomTextField>
           </Grid>
 
-          <Grid item xs={12} md={2}>
+          <Grid item xs={12} md={6} xl={2}>
             <CustomTextField
               select
               fullWidth
@@ -121,7 +121,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
             </CustomTextField>
           </Grid>
 
-          <Grid item xs={12} md={2}>
+          <Grid item xs={12} md={6} xl={2}>
             <CustomTextField
               select
               fullWidth
@@ -139,12 +139,13 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
             </CustomTextField>
           </Grid>
 
-          <Grid item xs={12} md={2} alignSelf={'end'}>
+          <Grid item xs={12} md={6} xl={3} alignSelf={'end'}>
             <Button
               fullWidth
               variant='contained'
-              color={'primary'}
+              color={'warning'}
               disabled={validatedBank}
+              title={validatedBank ? 'Todas as Conciliações Validadas' : 'Validar Todas as Conciliações Informadas'}
               sx={{
                 '&:disabled': {
                   backgroundColor: theme => theme.palette.success.main,
@@ -155,7 +156,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
               startIcon={<IconifyIcon icon='tabler:check' fontSize='1.7rem' />}
               onClick={() => handleValidate(monthlyFinancialCloseBankId)}
             >
-              Validar
+              {validatedBank ? 'Conciliações Validadas' : 'Validar Conciliações'}
             </Button>
           </Grid>
         </Grid>

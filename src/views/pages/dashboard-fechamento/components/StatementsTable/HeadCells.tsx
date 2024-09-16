@@ -11,14 +11,14 @@ const HeadCells: HeadCellProps[] = [
     label: 'Data'
   },
   {
-    id: 'amount',
-    disablePadding: false,
-    label: 'Valor'
-  },
-  {
     id: 'transactionTypeExtract',
     disablePadding: false,
     label: 'Tipo'
+  },
+  {
+    id: 'amount',
+    disablePadding: false,
+    label: 'Valor'
   },
   {
     id: 'extractDescription',

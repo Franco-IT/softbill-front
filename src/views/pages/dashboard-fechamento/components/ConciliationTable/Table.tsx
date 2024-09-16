@@ -1,4 +1,7 @@
+// React Imports
 import { Suspense, useMemo, memo, useState, useEffect } from 'react'
+
+// Material UI Imports
 import {
   Box,
   Paper,
@@ -10,30 +13,30 @@ import {
   Typography,
   useMediaQuery
 } from '@mui/material'
-import CustomChip from 'src/@core/components/mui/chip'
 
+// Custom Components
+import CustomChip from 'src/@core/components/mui/chip'
+import DrawerAnchor from 'src/components/DrawerAnchor'
+import ConciliationItem from '../DrawerComponents/ConciliationItem'
+
+// Local Components
 import HeadCells from './HeadCells'
 import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
-import { Loading, Order, renderInitials } from 'src/utils/list'
-import DrawerAnchor from 'src/components/DrawerAnchor'
+// Hooks
 import { useDrawer } from 'src/hooks/useDrawer'
-import ConciliationItem from '../DrawerComponents/ConciliationItem'
+
+// Utils
+import { Loading, Order, renderInitials } from 'src/utils/list'
 import { formatAmount } from 'src/utils/format'
 import { formatNameBank } from '../../utils'
 import { applyAccountNumberMask } from 'src/utils/inputs'
-import { ColorType } from '../../types'
 
 const typeValues: { [key: string]: string } = {
   CREDIT: 'Crédito',
   DEBIT: 'Débito'
-}
-
-const typeColors: { [key: string]: ColorType } = {
-  CREDIT: 'success',
-  DEBIT: 'error'
 }
 
 const RowItemLimited = ({ item }: { item: string }) => {
@@ -228,7 +231,7 @@ const Table = memo(
                             skin='light'
                             size='small'
                             label={handleCheckRowValue(typeValues[row.transactionTypeConciliation])}
-                            color={typeColors[row.transactionTypeConciliation]}
+                            color={'secondary'}
                             sx={{ textTransform: 'capitalize', minWidth: 85 }}
                           />
                         </TableCell>
@@ -238,7 +241,7 @@ const Table = memo(
                             skin='light'
                             size='small'
                             label={formatAmount(row.amount)}
-                            color='primary'
+                            color={'secondary'}
                             sx={{ textTransform: 'capitalize', minWidth: 85 }}
                           />
                         </TableCell>
