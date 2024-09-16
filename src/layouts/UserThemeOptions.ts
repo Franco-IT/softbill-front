@@ -1,5 +1,5 @@
 // ** MUI Imports
-import { ThemeOptions } from '@mui/material'
+import { ptBR } from '@mui/material/locale'
 
 // ** To use core palette, uncomment the below import
 // import { PaletteMode } from '@mui/material'
@@ -10,7 +10,7 @@ import { ThemeOptions } from '@mui/material'
 // ** To use mode (light/dark/semi-dark), skin(default/bordered), direction(ltr/rtl), etc. for conditional styles, uncomment below line
 // import { useSettings } from 'src/@core/hooks/useSettings'
 
-const UserThemeOptions = (): ThemeOptions => {
+const UserThemeOptions = (): any => {
   // ** To use mode (light/dark/semi-dark), skin(default/bordered), direction(ltr/rtl), etc. for conditional styles, uncomment below line
   // const { settings } = useSettings()
 
@@ -20,8 +20,9 @@ const UserThemeOptions = (): ThemeOptions => {
   // ** To use core palette, uncomment the below line
   // const palette = corePalette(mode as PaletteMode, skin)
 
-  return {
-    /*
+  return ptBR
+
+  /*
     palette:{
       primary: {
         light: '#8479F2',
@@ -179,7 +180,6 @@ const UserThemeOptions = (): ThemeOptions => {
       appBar: 1200,
       drawer: 1100
     } */
-  }
 }
 
 export default UserThemeOptions

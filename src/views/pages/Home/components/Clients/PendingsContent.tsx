@@ -28,8 +28,8 @@ export const statusColorsMUI: { [key: string]: ColorType } = {
 }
 
 export const bankStatusLabel: { [key: string]: string } = {
-  DONE: 'Aprovado',
-  PENDING: 'Pendente'
+  DONE: 'Recebido',
+  PENDING: 'Não Recebido'
 }
 
 const PendingsContent = ({ bankAccounts }: PendingsContentProps) => {

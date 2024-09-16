@@ -23,7 +23,7 @@ const Pagination = memo(
 
     return (
       <TablePagination
-        labelRowsPerPage={isSmallerThanSm ? '' : 'Fechamentos por página'}
+        labelRowsPerPage={isSmallerThanSm ? '' : 'Linhas por página'}
         rowsPerPageOptions={rowsPerPageOptions}
         component='div'
         count={rowsTotal}

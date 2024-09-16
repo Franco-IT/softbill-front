@@ -165,7 +165,7 @@ const Closure = () => {
   }
 
   const handleConvertDateToString = (date: Date | null) => {
-    return date ? dateProvider.formatDate(date, 'yyyy/MM/dd') : null
+    return date ? dateProvider.formatDate(date, 'yyyy-MM-dd') : null
   }
 
   const handleInvalidationQueries = () => {

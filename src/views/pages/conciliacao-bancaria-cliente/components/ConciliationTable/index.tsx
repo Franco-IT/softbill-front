@@ -13,7 +13,7 @@ const ConciliationTable = () => {
   const { user } = useAuth()
 
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof any>('createdAt')
+  const [orderBy, setOrderBy] = useState<keyof any>('date')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [filter, setFilter] = useState('')
@@ -21,22 +21,6 @@ const ConciliationTable = () => {
   const [type, setType] = useState('')
   const [conciliations, setConciliations] = useState([])
   const [validated, setValidated] = useState('')
-
-  const {
-    data: closure,
-    isLoading: isLoadingClosure,
-    isError: isErrorClosure
-  } = useQuery(
-    ['closing'],
-    async () => {
-      const response = await api.get('monthlyFinancialCloses/find-by-client/' + user?.id)
-
-      return response.data
-    },
-    {
-      staleTime: 1000 * 60 * 5
-    }
-  )
 
   const params = useMemo(
     () => ({
@@ -56,9 +40,9 @@ const ConciliationTable = () => {
     isLoading: isLoadingRows,
     isError: isErrorRows
   } = useQuery(
-    ['client-conciliations-list', params],
+    ['client-transactions-list', params],
     async () => {
-      const response = await api.get('transactions/by-monthly-financial-close/' + closure.data.id, {
+      const response = await api.get('transactions/by-client/' + user?.id, {
         params
       })
 
@@ -67,7 +51,7 @@ const ConciliationTable = () => {
     {
       staleTime: 1000 * 60 * 5,
       keepPreviousData: true,
-      enabled: !isLoadingClosure && !isErrorClosure
+      enabled: !!user
     }
   )
 
@@ -142,7 +126,7 @@ const ConciliationTable = () => {
     ]
   )
 
-  if (isErrorClosure || isErrorRows) return <Error />
+  if (isErrorRows) return <Error />
 
   return (
     <Box sx={{ width: '100%' }}>

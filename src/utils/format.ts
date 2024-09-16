@@ -1,8 +1,10 @@
-export const formatAmount = (amount: number) => {
+export const formatAmount = (amount: number, type?: 'positive' | 'negative') => {
+  const formattedAmount = type === 'negative' ? -Math.abs(amount) : Math.abs(amount)
+
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL'
-  }).format(amount)
+  }).format(formattedAmount)
 }
 
 export const formatNameBank = (name: string, limit?: number) => {

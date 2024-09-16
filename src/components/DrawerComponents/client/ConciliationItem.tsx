@@ -37,7 +37,7 @@ interface ConciliationItemProps {
   creditAccount: string
   debitAccount: string
   extractDescription: string
-  transactionTypeConciliation: string
+  transactionTypeExtract: string
 }
 
 const ConciliationItem = (props: ConciliationItemProps) => {
@@ -50,7 +50,7 @@ const ConciliationItem = (props: ConciliationItemProps) => {
     creditAccount,
     debitAccount,
     extractDescription,
-    transactionTypeConciliation
+    transactionTypeExtract
   } = props
 
   const { anchor, toggleDrawer } = useDrawer()
@@ -63,7 +63,7 @@ const ConciliationItem = (props: ConciliationItemProps) => {
   } = useForm({
     defaultValues: {
       id,
-      account: transactionTypeConciliation === 'DEBIT' ? creditAccount : debitAccount,
+      account: applyAccountNumberMask(transactionTypeExtract === 'DEBIT' ? debitAccount : creditAccount),
       conciliationDescription
     } as FormData,
     resolver: yupResolver(schema),
@@ -81,16 +81,16 @@ const ConciliationItem = (props: ConciliationItemProps) => {
   }
 
   const validatedValues: { [key: string]: string } = {
-    true: 'Aprovado',
-    false: 'Pendente'
+    true: 'Informado',
+    false: 'Não Informado'
   }
 
   const handleCheckStatusColor = (status: string) => {
     type Values = 'REJECTED' | 'PENDING' | 'DONE'
 
     const statusValues: { [key: string]: Values } = {
-      PENDING: 'REJECTED',
-      PROCESSING: 'REJECTED',
+      PENDING: 'PENDING',
+      PROCESSING: 'PENDING',
       TRANSACTION_UNTRACKED: 'PENDING',
       WAITING_VALIDATION: 'DONE',
       DONE: 'DONE'
@@ -112,14 +112,14 @@ const ConciliationItem = (props: ConciliationItemProps) => {
 
     const requestBody = new Object()
 
-    Object.assign(requestBody, transactionTypeConciliation === 'DEBIT' ? bodyCredit : bodyDebit)
+    Object.assign(requestBody, transactionTypeExtract === 'DEBIT' ? bodyCredit : bodyDebit)
 
     api
       .put('transactions/' + data.id, requestBody)
       .then(response => {
         if (response.status === 200) {
           queryClient.invalidateQueries(['dashboard-client'])
-          queryClient.invalidateQueries(['client-conciliations-list'])
+          queryClient.invalidateQueries(['client-transactions-list'])
           toast.success('Conciliação salva com sucesso')
           toggleDrawer(anchor, false, null)(e as React.KeyboardEvent | React.MouseEvent)
         }
@@ -138,7 +138,7 @@ const ConciliationItem = (props: ConciliationItemProps) => {
       <CardHeader
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant='h5'>Conciliação</Typography>
+            <Typography variant='h5'>Transação</Typography>
             <GlowIcon status={handleCheckStatusColor(status)} />
           </Box>
         }
@@ -156,8 +156,8 @@ const ConciliationItem = (props: ConciliationItemProps) => {
             rounded
             skin='light'
             size='small'
-            label={typeValues[transactionTypeConciliation]}
-            color={typeColors[transactionTypeConciliation]}
+            label={typeValues[transactionTypeExtract]}
+            color={typeColors[transactionTypeExtract]}
           />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -166,8 +166,8 @@ const ConciliationItem = (props: ConciliationItemProps) => {
             rounded
             skin='light'
             size='small'
-            label={formatAmount(amount)}
-            color={typeColors[transactionTypeConciliation]}
+            label={formatAmount(amount, transactionTypeExtract === 'DEBIT' ? 'negative' : 'positive')}
+            color={typeColors[transactionTypeExtract]}
           />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -181,7 +181,7 @@ const ConciliationItem = (props: ConciliationItemProps) => {
           />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Typography sx={{ fontWeight: 500, color: 'text.secondary' }}>Descrição:</Typography>
+          <Typography sx={{ fontWeight: 500, color: 'text.secondary' }}>Descrição no Extrato</Typography>
           <CustomTextField disabled multiline fullWidth value={extractDescription} />
         </Box>
       </CardContent>
@@ -199,7 +199,7 @@ const ConciliationItem = (props: ConciliationItemProps) => {
                   value={value}
                   onBlur={onBlur}
                   onChange={e => onChange(applyAccountNumberMask(e.target.value))}
-                  label={transactionTypeConciliation === 'DEBIT' ? 'Conta Crédito' : 'Conta Débito'}
+                  label={transactionTypeExtract === 'DEBIT' ? 'Conta Destino' : 'Conta Origem'}
                   placeholder='Ex: 12345678'
                   error={Boolean(errors.account)}
                   {...(errors.account && { helperText: errors.account.message })}
@@ -218,8 +218,8 @@ const ConciliationItem = (props: ConciliationItemProps) => {
                   multiline
                   fullWidth
                   required
-                  label='Origem'
-                  placeholder='Digite a origem da transação'
+                  label='Nova Descrição'
+                  placeholder='Digite a nova descrição'
                   error={Boolean(errors.conciliationDescription)}
                   {...(errors.conciliationDescription && { helperText: errors.conciliationDescription.message })}
                 />
