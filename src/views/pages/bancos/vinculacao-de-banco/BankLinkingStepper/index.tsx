@@ -24,6 +24,7 @@ import { api } from 'src/services/api'
 import { ClientProps } from 'src/types/clients'
 
 import { verifyObjectErrorsIsEmpty } from 'src/utils/verifyErrors'
+import { useQueryClient } from 'react-query'
 
 const BackButton = memo(({ activeStep, handleBack }: { activeStep: number; handleBack: () => void }) => {
   return (
@@ -49,6 +50,7 @@ interface BankLinkingStepperProps {
 
 const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const [loading, setLoading] = useState(false)
   const [activeStep, setActiveStep] = useState<number>(0)
@@ -222,6 +224,7 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
         .then(response => {
           if (response.status === 201) {
             toast.success('Banco vinculado com sucesso!')
+            queryClient.invalidateQueries(['bank-accounts'])
             router.push(`/clientes/${client.id}`)
           }
         })
@@ -230,7 +233,7 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
         })
         .finally(() => setLoading(false))
     },
-    [client.id, operationType, router]
+    [client.id, operationType, queryClient, router]
   )
 
   const onSubmit = useCallback(
