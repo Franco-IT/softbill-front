@@ -19,7 +19,6 @@ const BankCard = memo(({ client }: BankCardProps) => {
   }
 
   const contentProps = {
-    clientId: client.clientId,
     banks: client.monthlyFinancialCloseBanks
   }
 

@@ -121,7 +121,7 @@ const Dashboard = () => {
       return showList === 'GRID' ? <NoBanksCard data={clientData} /> : <NoBanksAccordion data={clientData} />
     }
 
-    if (!clientData.hasMonthlyFinancialClose) {
+    if (!clientData.hasMonthlyFinancialClose || !clientData.hasMonthlyFinancialCloseBank) {
       return showList === 'GRID' ? (
         <NoClosureCard data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
       ) : (
