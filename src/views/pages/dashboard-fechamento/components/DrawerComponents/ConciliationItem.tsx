@@ -1,19 +1,29 @@
+// Material UI Imports
 import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, Typography } from '@mui/material'
 
+// Custom Components
 import IconifyIcon from 'src/@core/components/icon'
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomTextField from 'src/@core/components/mui/text-field'
-
 import GlowIcon from 'src/components/GlowIcon'
-import { ColorType } from '../../types'
-import { formatAmount } from 'src/utils/format'
+
+// React Hook Form Imports
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+
+// Hooks
 import { useDrawer } from 'src/hooks/useDrawer'
-import { applyAccountNumberMask } from 'src/utils/inputs'
-import { api } from 'src/services/api'
 import { useQueryClient } from 'react-query'
+
+// Utils
+import { formatAmount } from 'src/utils/format'
+import { applyAccountNumberMask } from 'src/utils/inputs'
+
+// Services
+import { api } from 'src/services/api'
+
+// Notifications
 import toast from 'react-hot-toast'
 
 const schema = yup.object().shape({
@@ -74,11 +84,6 @@ const ConciliationItem = (props: ConciliationItemProps) => {
     DEBIT: 'Débito'
   }
 
-  const typeColors: { [key: string]: ColorType } = {
-    CREDIT: 'success',
-    DEBIT: 'error'
-  }
-  
   const validatedValues: { [key: string]: string } = {
     true: 'Informado',
     false: 'Não Informado'
@@ -91,6 +96,7 @@ const ConciliationItem = (props: ConciliationItemProps) => {
       PENDING: 'PENDING',
       PROCESSING: 'PENDING',
       TRANSACTION_UNTRACKED: 'PENDING',
+      WAITING_REVIEW: 'PENDING',
       WAITING_VALIDATION: 'DONE',
       DONE: 'DONE'
     }
@@ -157,18 +163,12 @@ const ConciliationItem = (props: ConciliationItemProps) => {
             skin='light'
             size='small'
             label={typeValues[transactionTypeConciliation]}
-            color={typeColors[transactionTypeConciliation]}
+            color='secondary'
           />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography sx={{ fontWeight: 500, color: 'text.secondary' }}>Valor:</Typography>
-          <CustomChip
-            rounded
-            skin='light'
-            size='small'
-            label={formatAmount(amount)}
-            color={typeColors[transactionTypeConciliation]}
-          />
+          <CustomChip rounded skin='light' size='small' label={formatAmount(amount)} color='secondary' />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography sx={{ fontWeight: 500, color: 'text.secondary' }}>Status:</Typography>

@@ -1,3 +1,4 @@
+// Material UI Imports
 import {
   Box,
   Button,
@@ -10,24 +11,42 @@ import {
   IconButton,
   Typography
 } from '@mui/material'
+
+// Custom Components
 import IconifyIcon from 'src/@core/components/icon'
 import DropzoneWrapper from 'src/@core/styles/libs/react-dropzone'
 import FileUploaderRestrictions from 'src/components/FileUploaderRestrictions'
 import CustomChip from 'src/@core/components/mui/chip'
-import { dateProvider } from 'src/shared/providers'
+import GlowIcon from 'src/components/GlowIcon'
+
+// Hooks
 import { useDrawer } from 'src/hooks/useDrawer'
 import useToast from 'src/hooks/useToast'
-import { statusColorsMUI, typesIntegration } from '../../utils'
-import GlowIcon from 'src/components/GlowIcon'
+import { useAppSelector } from 'src/hooks/useAppSelector'
+import { useAppDispatch } from 'src/hooks/useAppDispatch'
+
+// React Hook Form Imports
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+
+// Services
 import { api } from 'src/services/api'
+
+// Notifications
 import toast from 'react-hot-toast'
+
+// React Query Imports
 import { useQueryClient } from 'react-query'
-import { useAppSelector } from 'src/hooks/useAppSelector'
-import { useAppDispatch } from 'src/hooks/useAppDispatch'
+
+// Store
 import { setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
+
+// Utils
+import { statusColorsMUI, typesIntegration } from '../../utils'
+
+// Providers
+import { dateProvider } from 'src/shared/providers'
 
 const FILE_TYPES: { [key: string]: string[] } = {
   'application/ofx': ['.ofx']
@@ -76,6 +95,7 @@ const Extract = () => {
   const method = monthlyFinancialClose.monthlyFinancialCloseBank.bankAccount.generatedBy
   const receivedAt = new Date(monthlyFinancialClose.monthlyFinancialCloseBank.referenceDate)
   const importedFileId = monthlyFinancialClose.monthlyFinancialCloseBank.importedFileId
+  const referenceDate = monthlyFinancialClose.monthlyFinancialCloseBank.referenceDate
 
   const {
     handleSubmit,
@@ -156,6 +176,9 @@ const Extract = () => {
 
     api
       .post('/monthlyFinancialCloseBanks/bank-monthly-financial-close/' + monthlyFinancialClose.clientId, formData, {
+        params: {
+          referenceDate
+        },
         headers: {
           'Content-Type': 'multipart/form-data'
         }

@@ -61,6 +61,11 @@ export const statusMap: StatusMapProps = {
     conciliation: { status: true, isError: false, isPending: false },
     validation: { status: false, isError: false, isPending: true }
   },
+  PROCESSED: {
+    extract: { status: true, isError: false, isPending: false },
+    conciliation: { status: true, isError: false, isPending: false },
+    validation: { status: false, isError: false, isPending: true }
+  },
   DONE: {
     extract: { status: true, isError: false, isPending: false },
     conciliation: { status: true, isError: false, isPending: false },

@@ -1,6 +1,6 @@
 import { ptBR } from 'date-fns/locale'
 import { IDateProvider } from './IDateProvider'
-import { format, formatDistanceToNow, parseISO } from 'date-fns'
+import { format, formatDistanceToNow, parseISO, subMonths } from 'date-fns'
 
 export class DateProvider implements IDateProvider {
   getTimeSinceUpdate(date: Date): string {
@@ -20,7 +20,11 @@ export class DateProvider implements IDateProvider {
   }
 
   getCurrentMonth(): string {
-    return format(new Date(), 'MMMM')
+    return format(new Date(), 'MMMM', { locale: ptBR })
+  }
+
+  getLastMonth(date: Date): Date {
+    return subMonths(date, 1)
   }
 
   getMonthFromDate(date: Date): string {

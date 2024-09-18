@@ -1,11 +1,18 @@
+// Material UI Imports
 import { CardContent, Grid } from '@mui/material'
+
+// Custom Components
 import BankStepper from '../BankStepper'
+import NoBanks from '../NoBanks'
 
 interface ContentProps {
+  clientId: string
   banks: any
 }
 
-const Content = ({ banks }: ContentProps) => {
+const Content = ({ banks, clientId }: ContentProps) => {
+  const handleClickAddBanks = (clientId: string) => window.open(`/bancos/vinculacao-de-banco/${clientId}`, '_blank')
+
   return (
     <CardContent
       sx={{
@@ -22,11 +29,17 @@ const Content = ({ banks }: ContentProps) => {
       }}
     >
       <Grid container spacing={3}>
-        {banks.map((bank: any, index: number) => (
-          <Grid item xs={12} key={index}>
-            <BankStepper bank={bank} />
+        {banks.length > 0 ? (
+          banks.map((bank: any, index: number) => (
+            <Grid item xs={12} key={index}>
+              <BankStepper bank={bank} />
+            </Grid>
+          ))
+        ) : (
+          <Grid item xs={12}>
+            <NoBanks onClickButton={() => handleClickAddBanks(clientId)} />
           </Grid>
-        ))}
+        )}
       </Grid>
     </CardContent>
   )

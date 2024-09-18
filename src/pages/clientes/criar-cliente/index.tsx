@@ -53,6 +53,7 @@ const CreateClient = () => {
       onSuccess: response => {
         if (response?.status === 201) {
           queryClient.invalidateQueries(['clients'])
+          queryClient.invalidateQueries(['financial-closing-list'])
           toast.success('Cliente adicionado com sucesso!')
           router.push('/clientes')
         }

@@ -59,6 +59,7 @@ const closureSituation: Record<StatusValue, string> = {
   PROCESSING: 'Processando Extrato',
   TRANSACTION_UNTRACKED: 'Transação não Rastreada',
   WAITING_VALIDATION: 'Aguardando Validação',
+  PROCESSED: 'Aguardando Validação',
   DONE: 'Exportar'
 }
 

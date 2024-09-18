@@ -4,5 +4,6 @@ export interface IDateProvider {
   adjustDate(dateString: string): Date
   getCurrentDate(): Date
   getCurrentMonth(): string
+  getLastMonth(date: Date): Date
   getMonthFromDate(date: Date): string
 }

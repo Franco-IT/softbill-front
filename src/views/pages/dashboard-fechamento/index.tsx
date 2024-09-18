@@ -5,14 +5,17 @@ import CardOptionHorizontal from 'src/@core/components/card-statistics/card-opti
 
 import {
   Box,
+  Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
   Grid,
+  IconButton,
   MenuItem,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
+  useMediaQuery
 } from '@mui/material'
 
 import { dateProvider } from 'src/shared/providers'
@@ -27,18 +30,28 @@ import NoResultsCard from './components/NoResultsCard'
 import BankCard from './components/BankCard'
 import IconifyIcon from 'src/@core/components/icon'
 import CustomUserAccordion from './components/CustomUserAccordion'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { api } from 'src/services/api'
 import Error from 'src/components/FeedbackAPIs/Error'
 import CustomDatePicker from 'src/components/CustomDatePicker'
 import Pagination from './components/Pagination'
+import DrawerAnchor from 'src/components/DrawerAnchor'
+import { useDrawer } from 'src/hooks/useDrawer'
+import NoClosureCard from './components/NoClosureCard'
+import NoBanksCard from './components/NoBanksCard'
+import NoBanksAccordion from './components/NoBanksAccordion'
+import NoClosureAccordion from './components/NoClosureAccordion'
 
 const Dashboard = () => {
+  const queryClient = useQueryClient()
+  const { anchor, open, toggleDrawer, children } = useDrawer()
+  const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
+
   const [showList, setShowList] = useState<'LIST' | 'GRID'>('GRID')
 
   const [search, setSearch] = useState('')
   const [month, setMonth] = useState('')
-  const [date, setDate] = useState<any>()
+  const [date, setDate] = useState<any>(new Date())
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [status, setStatus] = useState<any>('')
@@ -63,9 +76,10 @@ const Dashboard = () => {
       search,
       status,
       perPage: rowsPerPage,
+      referenceDate: date && dateProvider.formatDate(date, 'yyyy-MM-dd'),
       page: page + 1
     }),
-    [page, rowsPerPage, search, status]
+    [date, page, rowsPerPage, search, status]
   )
 
   const {
@@ -102,9 +116,36 @@ const Dashboard = () => {
     return date ? date.toISOString() : null
   }
 
+  const handleCheckClientSituation = (clientData: any, showList: string) => {
+    if (!clientData.hasBankAccounts) {
+      return showList === 'GRID' ? <NoBanksCard data={clientData} /> : <NoBanksAccordion data={clientData} />
+    }
+
+    if (!clientData.hasMonthlyFinancialClose) {
+      return showList === 'GRID' ? (
+        <NoClosureCard data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
+      ) : (
+        <NoClosureAccordion data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
+      )
+    }
+
+    if (clientData.hasMonthlyFinancialClose) {
+      return showList === 'GRID' ? (
+        <BankCard client={clientData.monthlyFinancialClose} />
+      ) : (
+        <CustomUserAccordion data={clientData.monthlyFinancialClose} />
+      )
+    }
+  }
+
+  const handleInvalidationQueries = () => {
+    queryClient.invalidateQueries(['financial-closing-list'])
+  }
+
   useEffect(() => {
-    setDate(new Date())
-    setMonth(dateProvider.getMonthFromDate(new Date()))
+    const lastMonth = dateProvider.getLastMonth(new Date())
+    setDate(lastMonth)
+    setMonth(dateProvider.getMonthFromDate(lastMonth))
   }, [])
 
   useEffect(() => {
@@ -133,6 +174,13 @@ const Dashboard = () => {
       md: 4,
       xl: 3
     }
+  }
+
+  const drawerProps = {
+    anchor,
+    open,
+    toggleDrawer,
+    children
   }
 
   const paginationProps = {
@@ -205,6 +253,23 @@ const Dashboard = () => {
                 </MenuItem>
               ))}
             </CustomTextField>
+          </Grid>
+          <Grid item xs={12} md={3} alignContent={'end'}>
+            {isSmallerThanMd ? (
+              <Button
+                fullWidth
+                variant='contained'
+                color='primary'
+                startIcon={<IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />}
+                onClick={handleInvalidationQueries}
+              >
+                Atualizar Dados
+              </Button>
+            ) : (
+              <IconButton onClick={handleInvalidationQueries} title='Atualizar Dados'>
+                <IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />
+              </IconButton>
+            )}
           </Grid>
         </Grid>
       </CardActions>
@@ -313,7 +378,7 @@ const Dashboard = () => {
           ) : financialClosingData.data.length > 0 ? (
             financialClosingData.data.map((client: any, index: number) => (
               <Grid item {...gridProps[showList]} key={index}>
-                {showList === 'GRID' ? <BankCard client={client} /> : <CustomUserAccordion client={client} />}
+                {handleCheckClientSituation(client, showList)}
               </Grid>
             ))
           ) : (
@@ -323,6 +388,7 @@ const Dashboard = () => {
           )}
         </Grid>
       </CardContent>
+      <DrawerAnchor {...drawerProps} />
     </Card>
   )
 }

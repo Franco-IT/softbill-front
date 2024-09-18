@@ -18,9 +18,10 @@ import {
 } from '@mui/material'
 import { TimelineDot, TimelineItem, TimelineContent, TimelineSeparator, TimelineConnector } from '@mui/lab'
 
-import { bankStatusLabel, formatNameBank, statusColorsMUI, statusMap } from '../utils'
+import { bankStatusLabel, statusColorsMUI, statusMap } from '../utils'
 import { ColorType, StatusMapProps, SubStatusProps } from '../types'
 import { getInitials } from 'src/utils/getInitials'
+import { formatName } from 'src/utils/format'
 
 interface CustomBankAccordionProps {
   bank: any
@@ -29,6 +30,7 @@ interface CustomBankAccordionProps {
 const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
   const router = useRouter()
   const isSmallerThan550 = useMediaQuery('(max-width:550px)')
+  const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
   const bankStatus = statusMap[bank.subStatus as keyof StatusMapProps] || {}
 
@@ -51,8 +53,13 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
       <AccordionSummary expandIcon={<Icon fontSize='1.25rem' icon='tabler:chevron-down' />}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 2 }}>
           <Avatar src={bank.bank.logo}>{getInitials(bank.bank.name)}</Avatar>
-          <Button variant='text' color='inherit' onClick={e => handleClickBank(e, bank.id, bank.clientId)}>
-            {formatNameBank(bank.bank.name)}
+          <Button
+            title={bank.bank.name}
+            variant='text'
+            color='inherit'
+            onClick={e => handleClickBank(e, bank.id, bank.clientId)}
+          >
+            {formatName(bank.bank.name, !isSmallerThanMd ? 100 : 20)}
           </Button>
           {isSmallerThan550 ? (
             <GlowIcon status={bank.status} />

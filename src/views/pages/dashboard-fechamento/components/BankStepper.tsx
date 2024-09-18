@@ -8,6 +8,7 @@ import { statusMap } from '../utils'
 import { getInitials } from 'src/utils/getInitials'
 import { StatusMapProps, StatusProps } from '../types'
 import CustomAvatar from 'src/components/CustomAvatar'
+import { formatName } from 'src/utils/format'
 
 interface BankStepperProps {
   bank: any
@@ -68,6 +69,7 @@ const BankStepper = ({ bank }: BankStepperProps) => {
         <Button
           variant='text'
           color='inherit'
+          title={bank.bank.name}
           onClick={() =>
             router.push({
               pathname: '/dashboard-fechamento/fechamento/[id]',
@@ -75,7 +77,7 @@ const BankStepper = ({ bank }: BankStepperProps) => {
             })
           }
         >
-          {bank.bank.name}
+          {formatName(bank.bank.name)}
         </Button>
       </Box>
       <CustomStepper {...customStepperProps} />
