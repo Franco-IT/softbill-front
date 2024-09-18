@@ -8,24 +8,23 @@ import { Card, Divider } from '@mui/material'
 import Header from './Header'
 import Content from './Content'
 
-interface BankCardProps {
-  client: any
+interface NoClosureCardProps {
+  data: any
   referenceDate: string
 }
 
-const BankCard = memo(({ client, referenceDate }: BankCardProps) => {
+const NoClosureCard = memo(({ data, referenceDate }: NoClosureCardProps) => {
   const headerProps = {
-    client: client.monthlyFinancialClose,
-    monthlyFinancialCloseId: client.monthlyFinancialClose.monthlyFinancialCloseId
+    client: data.client
   }
 
   const contentProps = {
-    data: client,
+    clientId: data.client.id,
     referenceDate
   }
 
   return (
-    <Card sx={{ minHeight: '328px' }}>
+    <Card sx={{ maxHeight: '328px', height: '100%' }}>
       <Header {...headerProps} />
       <Divider />
       <Content {...contentProps} />
@@ -33,4 +32,4 @@ const BankCard = memo(({ client, referenceDate }: BankCardProps) => {
   )
 })
 
-export default BankCard
+export default NoClosureCard

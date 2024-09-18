@@ -9,11 +9,11 @@ export type OFXFields = keyof OFXValues
 const bbTypeMap: Record<BBFields, TypeMapEntry> = {
   bankClientId: {
     Input: StringInput,
-    inputProps: { label: 'ID do Cliente no Banco', required: false, placeholder: 'Ex: 123456' }
+    inputProps: { label: 'ClientID', required: false, placeholder: 'Ex: 123456' }
   },
   bankClientSecret: {
     Input: SensitiveInput,
-    inputProps: { label: 'ID secreto do Cliente no Banco', required: false, placeholder: 'Ex: 123456' }
+    inputProps: { label: 'ClientSecret', required: false, placeholder: 'Ex: 123456' }
   },
   accountNumber: {
     Input: StringInput,
@@ -30,11 +30,11 @@ const bbTypeMap: Record<BBFields, TypeMapEntry> = {
 const interTypeMap: Record<InterFields, TypeMapEntry> = {
   bankClientId: {
     Input: StringInput,
-    inputProps: { label: 'ID do Cliente no Banco', required: true, placeholder: 'Ex: 123456' }
+    inputProps: { label: 'ClientID', required: true, placeholder: 'Ex: 123456' }
   },
   bankClientSecret: {
     Input: SensitiveInput,
-    inputProps: { label: 'ID secreto do Cliente no Banco', required: true, placeholder: 'Ex: 123456' }
+    inputProps: { label: 'ClientSecret', required: true, placeholder: 'Ex: 123456' }
   },
   accountNumber: {
     Input: StringInput,

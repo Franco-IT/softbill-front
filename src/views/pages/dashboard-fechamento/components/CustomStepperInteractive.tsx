@@ -1,12 +1,23 @@
+// React Imports
 import { memo, ReactNode, useEffect, useState } from 'react'
+
+// Material UI Imports
 import { Step, StepLabel, Stepper, useMediaQuery } from '@mui/material'
+
+// Custom Components
 import StepperCustomDot from './StepperCustomDot'
 import DrawerAnchor from 'src/components/DrawerAnchor'
-import { useDrawer } from 'src/hooks/useDrawer'
 import Extract from './DrawerComponents/Extract'
 import Conciliation from './DrawerComponents/Conciliation'
 import Validation from './DrawerComponents/Validation'
+
+// Hooks
+import { useDrawer } from 'src/hooks/useDrawer'
+
+// Types
 import { StatusProps, SubStatusProps } from '../types'
+
+// Data
 import steps from '../steps'
 
 interface CustomStepperInteractiveProps {

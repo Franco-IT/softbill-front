@@ -1,4 +1,10 @@
-export type StatusValue = 'DONE' | 'PENDING' | 'PROCESSING' | 'TRANSACTION_UNTRACKED' | 'WAITING_VALIDATION'
+export type StatusValue =
+  | 'DONE'
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'TRANSACTION_UNTRACKED'
+  | 'WAITING_VALIDATION'
+  | 'PROCESSED'
 
 export type StatusKeys = keyof StatusMapProps
 
@@ -19,6 +25,7 @@ export type StatusMapProps = {
   PROCESSING: StatusProps
   TRANSACTION_UNTRACKED: StatusProps
   WAITING_VALIDATION: StatusProps
+  PROCESSED: StatusProps
   DONE: StatusProps
 }
 export interface StepProps {

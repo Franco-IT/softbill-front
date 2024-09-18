@@ -1,12 +1,21 @@
+// Material UI Imports
 import { Card, CardHeader, Typography, Box, CardContent, CardActions, Grid, Button, Divider } from '@mui/material'
+
+// Custom Components
 import IconifyIcon from 'src/@core/components/icon'
 import GlowIcon from 'src/components/GlowIcon'
 import CustomChip from 'src/@core/components/mui/chip'
+
+// Hooks
 import { useDrawer } from 'src/hooks/useDrawer'
 import useToast from 'src/hooks/useToast'
 import { useAppDispatch } from 'src/hooks/useAppDispatch'
-import { setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
 import { useAppSelector } from 'src/hooks/useAppSelector'
+
+// Store
+import { setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
+
+// Types
 import { ColorType } from '../../types'
 
 const Conciliation = () => {
@@ -29,6 +38,7 @@ const Conciliation = () => {
     DONE: 'success',
     PENDING: 'error',
     PROCESSING: 'error',
+    PROCESSED: 'success',
     TRANSACTION_UNTRACKED: 'warning'
   }
 
@@ -66,6 +76,7 @@ const Conciliation = () => {
     const statusValues: any = {
       PENDING: 'REJECTED',
       PROCESSING: 'REJECTED',
+      PROCESSED: 'DONE',
       TRANSACTION_UNTRACKED: 'PENDING',
       WAITING_VALIDATION: 'DONE',
       DONE: 'DONE'

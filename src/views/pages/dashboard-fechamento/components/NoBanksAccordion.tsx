@@ -5,23 +5,18 @@ import { SyntheticEvent, useState } from 'react'
 import Link from 'next/link'
 
 // Material UI Imports
-import { Button, styled, IconButton, useMediaQuery } from '@mui/material'
+import { Button, styled, useMediaQuery, Box, Typography } from '@mui/material'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary'
 import MuiAccordionDetails, { AccordionDetailsProps } from '@mui/material/AccordionDetails'
 
 // Custom Components
 import Icon from 'src/@core/components/icon'
-import GlowIcon from 'src/components/GlowIcon'
 import CustomAvatar from 'src/components/CustomAvatar'
-import TimelineBank from './TimelineBank'
-import NoBanks from './NoBanks'
 
 // Utils
 import { getInitials } from 'src/utils/getInitials'
 import { formatName } from 'src/utils/format'
-import { useDrawer } from 'src/hooks/useDrawer'
-import ExportOnDashboard from './DrawerComponents/ExportOnDashboard'
 
 const Accordion = styled(MuiAccordion)<AccordionProps>(({ theme }) => ({
   margin: 0,
@@ -81,12 +76,11 @@ const AccordionDetails = styled(MuiAccordionDetails)<AccordionDetailsProps>(({ t
   padding: ` ${theme.spacing(4)} !important`
 }))
 
-interface CustomUserAccordionProps {
+interface NoBanksAccordionProps {
   data: any
 }
 
-const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
-  const { toggleDrawer } = useDrawer()
+const NoBanksAccordion = ({ data }: NoBanksAccordionProps) => {
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
   const [expanded, setExpanded] = useState<string | false>(false)
@@ -99,10 +93,6 @@ const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
 
   const handleClickAddBanks = (clientId: string) => window.open(`/bancos/vinculacao-de-banco/${clientId}`, '_blank')
 
-  const exportOnDashboardProps = {
-    monthlyFinancialCloseId: data.monthlyFinancialCloseId
-  }
-
   return (
     <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
       <AccordionSummary
@@ -114,8 +104,7 @@ const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
           }
         }}
       >
-        <CustomAvatar src={data.clientAvatar} content={getInitials(data.clientName)} />
-        <GlowIcon status={data.status} />
+        <CustomAvatar src={data.clientAvatar} content={getInitials(data.client.name)} />
         <Button
           LinkComponent={Link}
           href={`/clientes/${data.clientId}`}
@@ -123,33 +112,31 @@ const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
           target='_blank'
           variant='text'
           color='inherit'
-          title={data.clientName}
+          title={data.client.name}
         >
-          {formatName(data.clientName, !isSmallerThanMd ? 100 : 20)}
+          {formatName(data.client.name, !isSmallerThanMd ? 100 : 20)}
         </Button>
-        {data.status === 'DONE' && (
-          <IconButton
-            onClick={e =>
-              toggleDrawer(
-                isSmallerThanMd ? 'bottom' : 'right',
-                true,
-                <ExportOnDashboard {...exportOnDashboardProps} />
-              )(e)
-            }
-          >
-            <Icon icon='tabler:download' fontSize='1.5rem' />
-          </IconButton>
-        )}
       </AccordionSummary>
       <AccordionDetails>
-        {data.monthlyFinancialCloseBanks.length > 0 ? (
-          data.monthlyFinancialCloseBanks.map((item: any) => <TimelineBank key={item.id} bank={item} />)
-        ) : (
-          <NoBanks onClickButton={() => handleClickAddBanks(data.clientId)} />
-        )}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            gap: 2
+          }}
+        >
+          <Typography variant='h5' color='textSecondary'>
+            Este cliente ainda não possui bancos cadastrados
+          </Typography>
+          <Button variant='contained' onClick={() => handleClickAddBanks(data.client.id)}>
+            Cadastrar Banco
+          </Button>
+        </Box>
       </AccordionDetails>
     </Accordion>
   )
 }
 
-export default CustomUserAccordion
+export default NoBanksAccordion

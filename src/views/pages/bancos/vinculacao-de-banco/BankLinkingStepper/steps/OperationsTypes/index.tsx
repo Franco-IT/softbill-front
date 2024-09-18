@@ -104,10 +104,8 @@ const OperationsTypes = ({ banksProps, methods, operationType, handleSetOperatio
             Selecione o tipo de operação
           </Typography>
           <ToggleButtonGroup color='primary' value={operationType} exclusive onChange={handleChangeOperation}>
-            <ToggleButton value='INTEGRATION'>
-              Integração
-            </ToggleButton>
-            <ToggleButton value='IMPORT'>Importação</ToggleButton>
+            <ToggleButton value='INTEGRATION'>API</ToggleButton>
+            <ToggleButton value='IMPORT'>OFX</ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Grid>

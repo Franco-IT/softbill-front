@@ -1,13 +1,24 @@
+// Material UI Imports
 import { Box, Card, CardActions, CardContent, CardHeader, MenuItem, Typography } from '@mui/material'
+
+// Custom Components
 import GlowIcon from 'src/components/GlowIcon'
-import { ChangeEvent } from 'react'
 import CustomChip from 'src/@core/components/mui/chip'
-import { statusColorsMUI } from '../../utils'
 import CustomTextField from 'src/@core/components/mui/text-field'
+
+// Hooks
 import { useAppSelector } from 'src/hooks/useAppSelector'
-import { api } from 'src/services/api'
 import useToast from 'src/hooks/useToast'
 import { useQueryClient } from 'react-query'
+
+// Utils
+import { statusColorsMUI } from '../../utils'
+
+// Services
+import { api } from 'src/services/api'
+
+// Types
+import { ChangeEvent } from 'react'
 
 // import { useDrawer } from 'src/hooks/useDrawer'
 
@@ -29,15 +40,17 @@ const Validation = () => {
     DONE: 'Aprovado'
   }
 
-  const handleCheckStatus = (status: string) => {
-    if (status === 'PENDING') return 'REJECTED'
+  const handleCheckStatus = (status: string, subStatus: string) => {
+    const rejectValues = ['PENDING', 'TRANSACTION_UNTRACKED']
+
+    if (status === 'PENDING' && rejectValues.includes(subStatus)) return 'REJECTED'
 
     if (status === 'DONE') return 'DONE'
 
     return 'PENDING'
   }
 
-  const handleDisableInput = (status: string) => (status === 'DONE' || status === 'WAITING_VALIDATION' ? false : true)
+  const handleDisableInput = (subStatus: string) => (subStatus === 'DONE' || subStatus === 'PROCESSED' ? false : true)
 
   const handleChangeStatus = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = (e.target as HTMLInputElement).value
@@ -47,6 +60,7 @@ const Validation = () => {
       })
       .then(() => {
         queryClient.invalidateQueries(['financial-closing'])
+        queryClient.invalidateQueries(['financial-closing-dashboard"'])
       })
 
     toastPromise(myPromise, 'Enviando lembrete...', 'Lembrete enviado com sucesso', 'Erro ao enviar lembrete')
@@ -58,7 +72,7 @@ const Validation = () => {
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography variant='h5'>Validação</Typography>
-            <GlowIcon status={handleCheckStatus(status)} />
+            <GlowIcon status={handleCheckStatus(status, subStatus)} />
           </Box>
         }
       />
@@ -69,8 +83,8 @@ const Validation = () => {
             rounded
             skin='light'
             size='small'
-            label={statusValuesText[handleCheckStatus(status)]}
-            color={statusColorsMUI[handleCheckStatus(status)]}
+            label={statusValuesText[handleCheckStatus(status, subStatus)]}
+            color={statusColorsMUI[handleCheckStatus(status, subStatus)]}
           />
         </Box>
       </CardContent>
@@ -83,8 +97,8 @@ const Validation = () => {
           disabled={handleDisableInput(subStatus)}
           value={status || 'default'}
           onChange={e => handleChangeStatus(e)}
-          color={statusColorsMUI[handleCheckStatus(status)]}
-          focused={!!statusColorsMUI[handleCheckStatus(status)]}
+          color={statusColorsMUI[handleCheckStatus(status, subStatus)]}
+          focused={!!statusColorsMUI[handleCheckStatus(status, subStatus)]}
         >
           <MenuItem disabled value='default'>
             <em>selecione</em>
