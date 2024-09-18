@@ -10,16 +10,18 @@ import Content from './Content'
 
 interface BankCardProps {
   client: any
+  referenceDate: string
 }
 
-const BankCard = memo(({ client }: BankCardProps) => {
+const BankCard = memo(({ client, referenceDate }: BankCardProps) => {
   const headerProps = {
-    client,
-    monthlyFinancialCloseId: client.monthlyFinancialCloseId
+    client: client.monthlyFinancialClose,
+    monthlyFinancialCloseId: client.monthlyFinancialClose.monthlyFinancialCloseId
   }
 
   const contentProps = {
-    banks: client.monthlyFinancialCloseBanks
+    data: client,
+    referenceDate
   }
 
   return (

@@ -3,12 +3,14 @@ import { CardContent, Grid } from '@mui/material'
 
 // Custom Components
 import BankStepper from '../BankStepper'
+import BankWithoutClosure from '../BankWithoutClosure'
 
 interface ContentProps {
-  banks: any
+  data: any
+  referenceDate: string
 }
 
-const Content = ({ banks }: ContentProps) => {
+const Content = ({ data, referenceDate }: ContentProps) => {
   return (
     <CardContent
       sx={{
@@ -25,11 +27,21 @@ const Content = ({ banks }: ContentProps) => {
       }}
     >
       <Grid container spacing={3}>
-        {banks.map((bank: any, index: number) => (
+        {data.monthlyFinancialClose.monthlyFinancialCloseBanks.map((bank: any, index: number) => (
           <Grid item xs={12} key={index}>
             <BankStepper bank={bank} />
           </Grid>
         ))}
+        {data.banksNotIncluded &&
+          data.banksNotIncluded.map((bank: any, index: number) => (
+            <Grid item xs={12} key={index}>
+              <BankWithoutClosure
+                bank={bank}
+                monthlyFinancialCloseId={data.monthlyFinancialClose.monthlyFinancialCloseId}
+                referenceDate={referenceDate}
+              />
+            </Grid>
+          ))}
       </Grid>
     </CardContent>
   )

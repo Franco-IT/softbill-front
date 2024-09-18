@@ -121,7 +121,7 @@ const Dashboard = () => {
       return showList === 'GRID' ? <NoBanksCard data={clientData} /> : <NoBanksAccordion data={clientData} />
     }
 
-    if (!clientData.hasMonthlyFinancialClose || !clientData.hasMonthlyFinancialCloseBank) {
+    if (!clientData.hasMonthlyFinancialClose) {
       return showList === 'GRID' ? (
         <NoClosureCard data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
       ) : (
@@ -131,8 +131,11 @@ const Dashboard = () => {
 
     if (clientData.hasMonthlyFinancialClose) {
       return showList === 'GRID' ? (
-        <BankCard client={clientData.monthlyFinancialClose} />
+        <BankCard client={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
       ) : (
+
+        // TODO: Adicionar bancos sem fechamento neste componente
+
         <CustomUserAccordion data={clientData.monthlyFinancialClose} />
       )
     }
