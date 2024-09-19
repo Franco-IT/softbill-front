@@ -33,10 +33,24 @@ import { Loading, Order, renderInitials } from 'src/utils/list'
 import { formatAmount } from 'src/utils/format'
 import { formatNameBank } from '../../utils'
 import { applyAccountNumberMask } from 'src/utils/inputs'
+import { useSettings } from 'src/@core/hooks/useSettings'
 
 const typeValues: { [key: string]: string } = {
   CREDIT: 'Crédito',
   DEBIT: 'Débito'
+}
+
+const rowColor: {
+  [key: string]: { [key: string]: string }
+} = {
+  light: {
+    DONE: '#DCF6E8',
+    PENDING: '#FCE4E4'
+  },
+  dark: {
+    DONE: '#2D4B4F',
+    PENDING: '#4D394B'
+  }
 }
 
 const RowItemLimited = ({ item }: { item: string }) => {
@@ -85,6 +99,7 @@ const Table = memo(
     orderBy,
     paginationProps
   }: TableProps) => {
+    const { settings } = useSettings()
     const { anchor, open, toggleDrawer, children } = useDrawer()
     const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
@@ -189,6 +204,15 @@ const Table = memo(
                         key={row.id}
                         onClick={event => handleRowClick(event, row.id)}
                         selected={isItemSelected}
+                        sx={{
+                          backgroundColor: rowColor[settings.mode][row.status],
+                          cursor: 'pointer',
+                          '&:hover': {
+                            backgroundColor: `${rowColor[settings.mode][row.status]} !important`,
+                            filter: 'brightness(0.9)',
+                            transition: 'filter 0.3s'
+                          }
+                        }}
                       >
                         <TableCell component='th' id={labelId} scope='row' padding='none'>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -232,7 +256,7 @@ const Table = memo(
                             size='small'
                             label={handleCheckRowValue(typeValues[row.transactionTypeConciliation])}
                             color={'secondary'}
-                            sx={{ textTransform: 'capitalize', minWidth: 85 }}
+                            sx={{ textTransform: 'uppercase', minWidth: 85 }}
                           />
                         </TableCell>
                         <TableCell align='left'>
