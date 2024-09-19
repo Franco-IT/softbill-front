@@ -7,6 +7,7 @@ import { IGetBanksByClientIdDTO } from '../dtos/IGetBanksByClientIdDTO'
 
 import { AxiosResponse } from 'axios'
 import { api } from 'src/services/api'
+import { IChangeBankDisponibility } from '../dtos/IChangeBankDisponibility'
 
 export class BankRepository implements IBankRepository {
   async setBankLogo(data: ISetBankLogoDTO): Promise<AxiosResponse> {
@@ -33,6 +34,12 @@ export class BankRepository implements IBankRepository {
     const { id, status } = data
 
     return api.put(`/banks/${id}`, { status })
+  }
+
+  async changeBankDisponibility(data: IChangeBankDisponibility): Promise<AxiosResponse> {
+    const { id, integrated } = data
+
+    return api.put(`/banks/${id}`, { integrated })
   }
 
   async linkingBank(data: ILinkingBankDTO): Promise<AxiosResponse> {

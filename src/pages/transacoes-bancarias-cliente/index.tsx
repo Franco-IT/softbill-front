@@ -1,4 +1,4 @@
-import ReconciliationList from 'src/views/pages/conciliacao-bancaria-cliente'
+import ReconciliationList from 'src/views/pages/transacoes-bancarias-cliente'
 
 const ClientBankReconciliation = () => {
   return <ReconciliationList />
