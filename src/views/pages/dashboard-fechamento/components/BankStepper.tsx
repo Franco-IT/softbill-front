@@ -1,20 +1,29 @@
+// React e Next.js
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
+
+// React Query
+import { useQueryClient } from 'react-query'
+
+// MUI
 import { Box, Button } from '@mui/material'
 
+// Componentes internos
 import CustomStepper from './CustomStepper'
-
-import { statusMap } from '../utils'
-import { getInitials } from 'src/utils/getInitials'
-import { StatusMapProps, StatusProps } from '../types'
 import CustomAvatar from 'src/components/CustomAvatar'
-import { formatName } from 'src/utils/format'
 import ClosureBankOptions from './ClosureBankOptions'
 import Icon from 'src/@core/components/icon'
-import { api } from 'src/services/api'
-import useToast from 'src/hooks/useToast'
-import { useQueryClient } from 'react-query'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
+
+// Utilidades e hooks
+import { statusMap } from '../utils'
+import { getInitials } from 'src/utils/getInitials'
+import { formatName } from 'src/utils/format'
+import useToast from 'src/hooks/useToast'
+
+// Tipos e serviços
+import { StatusMapProps, StatusProps } from '../types'
+import { api } from 'src/services/api'
 
 interface BankStepperProps {
   bank: any

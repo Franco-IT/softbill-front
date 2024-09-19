@@ -1,8 +1,10 @@
+// React
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
-import CustomTextField from 'src/@core/components/mui/text-field'
-import CardOptionHorizontal from 'src/@core/components/card-statistics/card-option-horizontal'
+// React Query
+import { useQuery, useQueryClient } from 'react-query'
 
+// MUI
 import {
   Box,
   Button,
@@ -18,29 +20,34 @@ import {
   useMediaQuery
 } from '@mui/material'
 
-import { dateProvider } from 'src/shared/providers'
-
-import { statusOptions } from './options'
-
-import { statusColorsMUI } from './utils'
-
-import { StatusValue } from './types'
-import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
-import NoResultsCard from './components/NoResultsCard'
-import BankCard from './components/BankCard'
+// Componentes internos
+import CustomTextField from 'src/@core/components/mui/text-field'
+import CardOptionHorizontal from 'src/@core/components/card-statistics/card-option-horizontal'
 import IconifyIcon from 'src/@core/components/icon'
 import CustomUserAccordion from './components/CustomUserAccordion'
-import { useQuery, useQueryClient } from 'react-query'
-import { api } from 'src/services/api'
+import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
 import Error from 'src/components/FeedbackAPIs/Error'
 import CustomDatePicker from 'src/components/CustomDatePicker'
 import Pagination from './components/Pagination'
 import DrawerAnchor from 'src/components/DrawerAnchor'
-import { useDrawer } from 'src/hooks/useDrawer'
+import NoResultsCard from './components/NoResultsCard'
+import BankCard from './components/BankCard'
 import NoClosureCard from './components/NoClosureCard'
 import NoBanksCard from './components/NoBanksCard'
 import NoBanksAccordion from './components/NoBanksAccordion'
 import NoClosureAccordion from './components/NoClosureAccordion'
+
+// Providers e hooks
+import { dateProvider } from 'src/shared/providers'
+import { useDrawer } from 'src/hooks/useDrawer'
+
+// Utilidades
+import { statusOptions } from './options'
+import { statusColorsMUI } from './utils'
+
+// Tipos e serviços
+import { StatusValue } from './types'
+import { api } from 'src/services/api'
 
 const Dashboard = () => {
   const queryClient = useQueryClient()
@@ -133,10 +140,7 @@ const Dashboard = () => {
       return showList === 'GRID' ? (
         <BankCard client={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
       ) : (
-
-        // TODO: Adicionar bancos sem fechamento neste componente
-
-        <CustomUserAccordion data={clientData.monthlyFinancialClose} />
+        <CustomUserAccordion data={clientData} />
       )
     }
   }

@@ -11,17 +11,19 @@ import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/Accord
 import MuiAccordionDetails, { AccordionDetailsProps } from '@mui/material/AccordionDetails'
 
 // Custom Components
+import TimelineBank from './TimelineBank'
 import Icon from 'src/@core/components/icon'
 import GlowIcon from 'src/components/GlowIcon'
 import CustomAvatar from 'src/components/CustomAvatar'
-import TimelineBank from './TimelineBank'
-import NoBanks from './NoBanks'
+import ExportOnDashboard from './DrawerComponents/ExportOnDashboard'
+import CustomBankAccordionWithoutClosure from './CustomBankAccordionWithoutClosure'
+
+// Hooks
+import { useDrawer } from 'src/hooks/useDrawer'
 
 // Utils
 import { getInitials } from 'src/utils/getInitials'
 import { formatName } from 'src/utils/format'
-import { useDrawer } from 'src/hooks/useDrawer'
-import ExportOnDashboard from './DrawerComponents/ExportOnDashboard'
 
 const Accordion = styled(MuiAccordion)<AccordionProps>(({ theme }) => ({
   margin: 0,
@@ -89,6 +91,8 @@ const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
   const { toggleDrawer } = useDrawer()
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
+  const closureData = data.monthlyFinancialClose
+
   const [expanded, setExpanded] = useState<string | false>(false)
 
   const handleChange = (panel: string) => (event: SyntheticEvent, isExpanded: boolean) => {
@@ -97,10 +101,13 @@ const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
 
   const expandIcon = (value: string) => <Icon icon={expanded === value ? 'tabler:minus' : 'tabler:plus'} />
 
-  const handleClickAddBanks = (clientId: string) => window.open(`/bancos/vinculacao-de-banco/${clientId}`, '_blank')
-
   const exportOnDashboardProps = {
-    monthlyFinancialCloseId: data.monthlyFinancialCloseId
+    monthlyFinancialCloseId: closureData.monthlyFinancialCloseId
+  }
+
+  const customBankAccordionWithoutClosureProps = {
+    monthlyFinancialCloseId: closureData.monthlyFinancialCloseId,
+    referenceDate: closureData.referenceDate
   }
 
   return (
@@ -114,20 +121,20 @@ const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
           }
         }}
       >
-        <CustomAvatar src={data.clientAvatar} content={getInitials(data.clientName)} />
-        <GlowIcon status={data.status} />
+        <CustomAvatar src={closureData.clientAvatar} content={getInitials(closureData.clientName)} />
+        <GlowIcon status={closureData.status} />
         <Button
           LinkComponent={Link}
-          href={`/clientes/${data.clientId}`}
+          href={`/clientes/${closureData.clientId}`}
           onClick={e => e.stopPropagation()}
           target='_blank'
           variant='text'
           color='inherit'
-          title={data.clientName}
+          title={closureData.clientName}
         >
-          {formatName(data.clientName, !isSmallerThanMd ? 100 : 20)}
+          {formatName(closureData.clientName, !isSmallerThanMd ? 100 : 20)}
         </Button>
-        {data.status === 'DONE' && (
+        {closureData.status === 'DONE' && (
           <IconButton
             onClick={e =>
               toggleDrawer(
@@ -142,11 +149,13 @@ const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
         )}
       </AccordionSummary>
       <AccordionDetails>
-        {data.monthlyFinancialCloseBanks.length > 0 ? (
-          data.monthlyFinancialCloseBanks.map((item: any) => <TimelineBank key={item.id} bank={item} />)
-        ) : (
-          <NoBanks onClickButton={() => handleClickAddBanks(data.clientId)} />
-        )}
+        {closureData.monthlyFinancialCloseBanks.map((item: any) => (
+          <TimelineBank key={item.id} bank={item} />
+        ))}
+        {data.banksNotIncluded &&
+          data.banksNotIncluded.map((item: any) => (
+            <CustomBankAccordionWithoutClosure key={item.id} bank={item} {...customBankAccordionWithoutClosureProps} />
+          ))}
       </AccordionDetails>
     </Accordion>
   )
