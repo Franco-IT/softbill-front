@@ -231,7 +231,7 @@ const List = () => {
                           />
                         </TableCell>
                         <TableCell align='left'>
-                          <RowOptions id={String(row.id)} status={row.status} />
+                          <RowOptions bankData={row} />
                         </TableCell>
                       </TableRow>
                     )
