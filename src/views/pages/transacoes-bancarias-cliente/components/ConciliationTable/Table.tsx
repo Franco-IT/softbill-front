@@ -1,3 +1,4 @@
+// React and Material UI
 import { Suspense, useMemo, memo, useState, useEffect } from 'react'
 import {
   Box,
@@ -11,21 +12,27 @@ import {
   useMediaQuery,
   Tooltip
 } from '@mui/material'
-import CustomChip from 'src/@core/components/mui/chip'
 
+// Custom Components
+import CustomChip from 'src/@core/components/mui/chip'
+import DrawerAnchor from 'src/components/DrawerAnchor'
+import EditTransaction from 'src/components/DrawerComponents/client/EditTransaction'
+import CustomAvatar from 'src/components/CustomAvatar'
+
+// Hooks
+import { useDrawer } from 'src/hooks/useDrawer'
+
+// Utilities
+import { Loading, Order } from 'src/utils/list'
+import { formatAmount, formatNameBank } from 'src/utils/format'
+import { getInitials } from 'src/utils/getInitials'
+import { dateProvider } from 'src/shared/providers'
+
+// Table-related Components
 import HeadCells from './HeadCells'
 import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
-
-import { Loading, Order } from 'src/utils/list'
-import DrawerAnchor from 'src/components/DrawerAnchor'
-import { useDrawer } from 'src/hooks/useDrawer'
-import { formatAmount, formatNameBank } from 'src/utils/format'
-import ConciliationItem from 'src/components/DrawerComponents/client/ConciliationItem'
-import CustomAvatar from 'src/components/CustomAvatar'
-import { getInitials } from 'src/utils/getInitials'
-import { dateProvider } from 'src/shared/providers'
 
 export type ColorType = 'primary' | 'error' | 'success' | 'secondary' | 'info' | 'warning' | undefined
 
@@ -109,7 +116,7 @@ const Table = memo(
         return item.id === newSelected[0]
       })[0]
 
-      toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <ConciliationItem {...item} />)(e)
+      toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <EditTransaction {...item} />)(e)
     }
 
     const isSelected = (id: string) => selected.indexOf(id) !== -1

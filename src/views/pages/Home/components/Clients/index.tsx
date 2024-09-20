@@ -1,18 +1,23 @@
+// React and Material UI
 import { Card, CardContent, CardHeader, Grid, Tooltip, Typography, useMediaQuery } from '@mui/material'
 import { Box } from '@mui/system'
 
+// Hooks
 import { useAuth } from 'src/hooks/useAuth'
-
-import Banks from './Banks'
-import Pendings from './Pendings'
 import { useQuery } from 'react-query'
+
+// Services and Utilities
 import { api } from 'src/services/api'
-import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
-import Error from 'src/components/FeedbackAPIs/Error'
-import Conciliations from './Conciliations'
-import CustomAvatar from 'src/components/CustomAvatar'
 import { getInitials } from 'src/utils/getInitials'
 import { formatName } from 'src/utils/format'
+
+// Custom Components
+import Banks from './Banks'
+import Pendings from './Pendings'
+import Transactions from './Transactions'
+import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
+import Error from 'src/components/FeedbackAPIs/Error'
+import CustomAvatar from 'src/components/CustomAvatar'
 
 const Client = () => {
   const { user } = useAuth()
@@ -41,10 +46,6 @@ const Client = () => {
 
   const banksProps = {
     id: user?.id || ''
-  }
-
-  const ConciliationsProps = {
-    data: data.monthlyFinancialCloseBank || []
   }
 
   return (
@@ -76,7 +77,7 @@ const Client = () => {
               }}
             >
               <Banks {...banksProps} />
-              <Conciliations {...ConciliationsProps} />
+              <Transactions />
             </Box>
           </Grid>
           <Grid item xs={12} md={6}>

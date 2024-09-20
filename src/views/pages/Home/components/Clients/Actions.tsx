@@ -53,6 +53,7 @@ const Actions = () => {
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm({
     defaultValues: {
@@ -74,8 +75,10 @@ const Actions = () => {
         }
       })
       .then(() => {
-        queryClient.invalidateQueries('dashboard-client')
+        queryClient.invalidateQueries(['dashboard-client'])
+        queryClient.invalidateQueries(['client-pending-transactions-list'])
         toast.success('Arquivos enviados com sucesso.')
+        reset()
       })
       .catch(() => toast.error('Erro ao enviar arquivos.'))
   }

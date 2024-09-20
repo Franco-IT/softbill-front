@@ -1,14 +1,24 @@
+// React
+import { Fragment } from 'react'
+
+// Material UI
 import { Card, CardContent, Typography } from '@mui/material'
 
+// Custom Components
 import PendingsContent from './PendingsContent'
 import Actions from './Actions'
+
+// Hooks
 import useGetFetchQuery from 'src/hooks/useGetFetchQuery'
-import { Fragment } from 'react'
 
 const CardPending = () => {
   const data = useGetFetchQuery<any>('dashboard-client')
 
-  const bankAccounts = data.bankAccounts || []
+  const bankAccounts =
+    data.bankAccounts.filter(
+      (bankAccount: any) =>
+        bankAccount.monthlyFinancialCloseBankSubStatus === 'PENDING' && bankAccount.generatedBy !== 'API'
+    ) || []
 
   const pendingsContentProps = {
     bankAccounts

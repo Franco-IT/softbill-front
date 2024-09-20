@@ -89,7 +89,7 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
     {
       onSuccess: (userData: IUserLoggedDTO) => {
         setUser(userData)
-        queryClient.invalidateQueries(['auth-user'])
+        queryClient.removeQueries()
 
         const returnUrl = router.query.returnUrl
         const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
