@@ -14,7 +14,6 @@ import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
-import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
 import { Loading, Order, getComparator, renderUser, stableSort } from 'src/utils/list'
