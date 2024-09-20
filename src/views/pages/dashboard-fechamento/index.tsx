@@ -69,14 +69,28 @@ const Dashboard = () => {
     totalError: 0
   })
 
+  const paramsDashboard = useMemo(
+    () => ({
+      referenceDate: date && dateProvider.formatDate(date, 'yyyy-MM-dd')
+    }),
+    [date]
+  )
+
   const {
     data: dashboardDataResponse,
     isLoading: isLoadingDashboardData,
     isError: isErrorDashboardData
-  } = useQuery(['financial-closing-dashboard'], async () => await api.get('/monthlyFinancialCloses/statistics'), {
-    staleTime: 1000 * 60 * 5,
-    keepPreviousData: true
-  })
+  } = useQuery(
+    ['financial-closing-dashboard'],
+    async () =>
+      await api.get('/monthlyFinancialCloses/statistics', {
+        params: paramsDashboard
+      }),
+    {
+      staleTime: 1000 * 60 * 5,
+      keepPreviousData: true
+    }
+  )
 
   const params = useMemo(
     () => ({
@@ -119,10 +133,6 @@ const Dashboard = () => {
     return date ? new Date(date) : null
   }
 
-  const handleConvertDateToString = (date: Date | null) => {
-    return date ? date.toISOString() : null
-  }
-
   const handleCheckClientSituation = (clientData: any, showList: string) => {
     if (!clientData.hasBankAccounts) {
       return showList === 'GRID' ? <NoBanksCard data={clientData} /> : <NoBanksAccordion data={clientData} />
@@ -150,7 +160,7 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    const lastMonth = dateProvider.getLastMonth(new Date())
+    const lastMonth = dateProvider.getPreviousMonths(new Date(), 1)
     setDate(lastMonth)
     setMonth(dateProvider.getMonthFromDate(lastMonth))
   }, [])
@@ -232,12 +242,12 @@ const Dashboard = () => {
             <CustomDatePicker
               label='Mês de Referência'
               value={handleConvertStringToDate(date)}
-              onChange={e => setDate(handleConvertDateToString(e))}
+              onChange={e => setDate(e)}
               placeholderText='Escolha o mês'
               maxDate={new Date()}
+              minDate={dateProvider.getPreviousMonths(new Date(), 3)}
               dateFormat='MMMM'
               showMonthYearPicker
-              disabled
             />
           </Grid>
           <Grid item xs={12} md={3}>

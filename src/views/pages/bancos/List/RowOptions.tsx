@@ -31,10 +31,10 @@ const RowOptions = memo(({ bankData }: RowOptionsProps) => {
         size='small'
         variant='contained'
         color='primary'
-        startIcon={<Icon icon='tabler:edit' />}
+        startIcon={<Icon icon='tabler:eye' />}
         onClick={e => handleClickEdit(e, bankData)}
       >
-        Editar
+        Visualizar
       </Button>
 
       <DrawerAnchor {...drawerProps} />

@@ -23,8 +23,8 @@ export class DateProvider implements IDateProvider {
     return format(new Date(), 'MMMM', { locale: ptBR })
   }
 
-  getLastMonth(date: Date): Date {
-    return subMonths(date, 1)
+  getPreviousMonths(date: Date, previousQuantity: number): Date {
+    return subMonths(date, previousQuantity)
   }
 
   getMonthFromDate(date: Date): string {
