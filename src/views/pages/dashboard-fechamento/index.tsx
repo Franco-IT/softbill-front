@@ -245,7 +245,6 @@ const Dashboard = () => {
               onChange={e => setDate(e)}
               placeholderText='Escolha o mês'
               maxDate={new Date()}
-              minDate={dateProvider.getPreviousMonths(new Date(), 3)}
               dateFormat='MMMM'
               showMonthYearPicker
             />
