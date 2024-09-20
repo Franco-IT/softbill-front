@@ -1,6 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react'
 import { styled, Button, Typography, Box, BoxProps } from '@mui/material'
-import FooterIllustrations from 'src/views/pages/misc/FooterIllustrations'
 
 const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
@@ -54,7 +53,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
               </Button>
             </BoxWrapper>
           </Box>
-          <FooterIllustrations />
         </Box>
       )
     }

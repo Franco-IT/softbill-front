@@ -39,7 +39,7 @@ interface FormData {
   conciliationDescription: string
 }
 
-interface ConciliationItemProps {
+interface EditTransactionProps {
   id: string
   status: string
   amount: number
@@ -49,9 +49,10 @@ interface ConciliationItemProps {
   debitAccount: string
   extractDescription: string
   transactionTypeExtract: string
+  transactionTypeConciliation: string
 }
 
-const ConciliationItem = (props: ConciliationItemProps) => {
+const EditTransaction = (props: EditTransactionProps) => {
   const {
     id,
     status,
@@ -61,7 +62,8 @@ const ConciliationItem = (props: ConciliationItemProps) => {
     creditAccount,
     debitAccount,
     extractDescription,
-    transactionTypeExtract
+    transactionTypeExtract,
+    transactionTypeConciliation
   } = props
 
   const { anchor, toggleDrawer } = useDrawer()
@@ -123,13 +125,13 @@ const ConciliationItem = (props: ConciliationItemProps) => {
 
     const requestBody = new Object()
 
-    Object.assign(requestBody, transactionTypeExtract === 'DEBIT' ? bodyCredit : bodyDebit)
+    Object.assign(requestBody, transactionTypeConciliation === 'DEBIT' ? bodyCredit : bodyDebit)
 
     api
       .put('transactions/' + data.id, requestBody)
       .then(response => {
         if (response.status === 200) {
-          queryClient.invalidateQueries(['dashboard-client'])
+          queryClient.invalidateQueries(['client-pending-transactions-list'])
           queryClient.invalidateQueries(['client-transactions-list'])
           toast.success('Conciliação salva com sucesso')
           toggleDrawer(anchor, false, null)(e as React.KeyboardEvent | React.MouseEvent)
@@ -266,4 +268,4 @@ const ConciliationItem = (props: ConciliationItemProps) => {
   )
 }
 
-export default ConciliationItem
+export default EditTransaction
