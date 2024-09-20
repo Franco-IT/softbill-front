@@ -20,6 +20,7 @@ import { formatName } from 'src/utils/format'
 import { useQueryClient } from 'react-query'
 import useToast from 'src/hooks/useToast'
 import { api } from 'src/services/api'
+import { dateProvider } from 'src/shared/providers'
 
 const Accordion = styled(MuiAccordion)<AccordionProps>(({ theme }) => ({
   margin: 0,
@@ -111,6 +112,12 @@ const NoClosureAccordion = ({ data, referenceDate }: NoClosureAccordionProps) =>
     toastPromise(myPromise, 'Criando fechamento...', 'Fechamento criado com sucesso!', 'Erro ao criar fechamento!')
   }
 
+  const handleCheckMonth = (referenceDate: string) => {
+    const [year, month, day] = referenceDate.split('-')
+
+    return dateProvider.getMonthFromDate(new Date(Number(year), Number(month) - 1, Number(day)))
+  }
+
   return (
     <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
       <AccordionSummary
@@ -146,7 +153,7 @@ const NoClosureAccordion = ({ data, referenceDate }: NoClosureAccordionProps) =>
           }}
         >
           <Typography variant='h5' color='textSecondary'>
-            Este cliente ainda não possui um fechamento para o mês de {referenceDate}
+            Este cliente ainda não possui um fechamento para o mês de {handleCheckMonth(referenceDate)}
           </Typography>
           <Button variant='contained' onClick={() => handleCreateClosure(data.client.id, referenceDate)}>
             Criar Fechamento
