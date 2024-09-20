@@ -3,6 +3,7 @@ import { Box, Button, CardContent, Typography } from '@mui/material'
 import { useQueryClient } from 'react-query'
 import useToast from 'src/hooks/useToast'
 import { api } from 'src/services/api'
+import { dateProvider } from 'src/shared/providers'
 
 interface ContentProps {
   clientId: string
@@ -25,6 +26,12 @@ const Content = (props: ContentProps) => {
       })
 
     toastPromise(myPromise, 'Criando fechamento...', 'Fechamento criado com sucesso!', 'Erro ao criar fechamento!')
+  }
+
+  const handleCheckMonth = (referenceDate: string) => {
+    const [year, month, day] = referenceDate.split('-')
+
+    return dateProvider.getMonthFromDate(new Date(Number(year), Number(month) - 1, Number(day)))
   }
 
   return (
@@ -54,7 +61,7 @@ const Content = (props: ContentProps) => {
         }}
       >
         <Typography variant='h5' color='textSecondary'>
-          Este cliente ainda não possui um fechamento para o mês de {props.referenceDate}
+          Este cliente ainda não possui um fechamento para o mês de {handleCheckMonth(props.referenceDate)}
         </Typography>
         <Button variant='contained' onClick={() => handleCreateClosure(props.clientId, props.referenceDate)}>
           Criar Fechamento
