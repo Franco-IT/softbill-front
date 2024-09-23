@@ -1,6 +1,13 @@
+// React
 import * as React from 'react'
+
+// Material UI
 import { useMediaQuery, MenuItem, Menu, Button, IconButton } from '@mui/material'
+
+// Ícones
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+
+// Componentes internos
 import Icon from 'src/@core/components/icon'
 
 interface MenuItemProps {
@@ -30,6 +37,7 @@ const CustomBasicMenu: React.FC<CustomBasicMenuProps> = React.memo(({ buttonLabe
   const handleMenuItemClick = (item: MenuItemProps, event: React.MouseEvent<HTMLLIElement>) => {
     if (item.action) {
       item.action()
+      handleClose()
     } else if (item.actionWithParam) {
       item.actionWithParam(event)
       handleClose()
