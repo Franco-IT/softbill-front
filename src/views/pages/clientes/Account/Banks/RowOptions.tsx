@@ -1,20 +1,25 @@
 import { useState, MouseEvent } from 'react'
 
-// import { useRouter } from 'next/router'
-
+// Componentes internos
 import Icon from 'src/@core/components/icon'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
-
-// import Edit from './Edit'
 import CustomBasicMenu from 'src/components/CustomBasicMenu'
-
-import { api } from 'src/services/api'
-
-import toast from 'react-hot-toast'
-import { useDrawer } from 'src/hooks/useDrawer'
 import BankInfo from './BankInfo'
-import { IBankAccountDTO } from 'src/modules/banks/dtos/IBankAccountDTO'
 import DrawerAnchor from 'src/components/DrawerAnchor'
+
+// Hooks
+import { useDrawer } from 'src/hooks/useDrawer'
+import { useMediaQuery } from '@mui/material'
+
+// Serviços e notificações
+import { api } from 'src/services/api'
+import toast from 'react-hot-toast'
+
+// Tipos
+import { IBankAccountDTO } from 'src/modules/banks/dtos/IBankAccountDTO'
+
+// Editar
+import Edit from './Edit'
 
 interface RowOptionsProps {
   data: IBankAccountDTO
@@ -22,13 +27,14 @@ interface RowOptionsProps {
 
 const RowOptions = ({ data }: RowOptionsProps) => {
   const { anchor, open, toggleDrawer, children } = useDrawer()
+  const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
   // const router = useRouter()
 
-  // const [openEdit, setOpenEdit] = useState(false)
+  const [openEdit, setOpenEdit] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
 
-  // const handleClickEdit = () => setOpenEdit(true)
+  const handleClickEdit = () => setOpenEdit(true)
 
   const handleClickDelete = () => setOpenDelete(true)
 
@@ -39,7 +45,7 @@ const RowOptions = ({ data }: RowOptionsProps) => {
   //   })
 
   const handleClickInfo = (e: MouseEvent<HTMLDivElement, any>) => {
-    toggleDrawer('right', true, <BankInfo data={data} />)(e)
+    toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <BankInfo data={data} />)(e)
   }
 
   const handleDelete = () => {
@@ -55,6 +61,11 @@ const RowOptions = ({ data }: RowOptionsProps) => {
       label: 'Ver Informações',
       icon: <Icon icon='tabler:eye' fontSize={20} />,
       actionWithParam: handleClickInfo
+    },
+    {
+      label: 'Editar',
+      icon: <Icon icon='tabler:edit' fontSize={20} />,
+      action: handleClickEdit
     },
     {
       label: 'Deletar',
@@ -74,7 +85,7 @@ const RowOptions = ({ data }: RowOptionsProps) => {
     <>
       <CustomBasicMenu buttonLabel='Ações' menuItems={menuItems} />
 
-      {/* {openEdit && <Edit data={data} openEdit={openEdit} handleEditClose={() => setOpenEdit(false)} />} */}
+      {openEdit && <Edit data={data} openEdit={openEdit} handleEditClose={() => setOpenEdit(false)} />}
 
       {openDelete && (
         <DialogAlert
