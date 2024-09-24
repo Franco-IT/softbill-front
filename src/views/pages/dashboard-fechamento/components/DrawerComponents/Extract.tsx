@@ -89,13 +89,13 @@ const Extract = () => {
 
   const dispatch = useAppDispatch()
   const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
-
   const monthlyFinancialCloseBankId = monthlyFinancialClose.monthlyFinancialCloseBank.monthlyFinancialCloseBankId
   const status = monthlyFinancialClose.monthlyFinancialCloseBank.subStatus
   const method = monthlyFinancialClose.monthlyFinancialCloseBank.bankAccount.generatedBy
   const receivedAt = new Date(monthlyFinancialClose.monthlyFinancialCloseBank.referenceDate)
   const importedFileId = monthlyFinancialClose.monthlyFinancialCloseBank.importedFileId
   const referenceDate = monthlyFinancialClose.monthlyFinancialCloseBank.referenceDate
+  const showStatements = useAppSelector(state => state.ClosingReducer.showStatements)
 
   const {
     handleSubmit,
@@ -160,7 +160,7 @@ const Extract = () => {
   }
 
   const handleGenerateExtract = (e: React.KeyboardEvent | React.MouseEvent) => {
-    dispatch(setShowStatements(true))
+    showStatements ? queryClient.invalidateQueries(['financial-statements']) : dispatch(setShowStatements(true))
     dispatch(setShowConciliations(false))
     toggleDrawer(anchor, false, null)(e)
   }

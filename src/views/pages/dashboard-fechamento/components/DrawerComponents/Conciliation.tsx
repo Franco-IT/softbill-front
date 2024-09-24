@@ -1,16 +1,17 @@
 // Material UI Imports
-import { Card, CardHeader, Typography, Box, CardContent, CardActions, Grid, Button, Divider } from '@mui/material'
+import { Box, Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, Typography } from '@mui/material'
 
 // Custom Components
-import IconifyIcon from 'src/@core/components/icon'
-import GlowIcon from 'src/components/GlowIcon'
 import CustomChip from 'src/@core/components/mui/chip'
+import GlowIcon from 'src/components/GlowIcon'
+import IconifyIcon from 'src/@core/components/icon'
 
 // Hooks
-import { useDrawer } from 'src/hooks/useDrawer'
-import useToast from 'src/hooks/useToast'
 import { useAppDispatch } from 'src/hooks/useAppDispatch'
 import { useAppSelector } from 'src/hooks/useAppSelector'
+import { useDrawer } from 'src/hooks/useDrawer'
+import { useQueryClient } from 'react-query'
+import useToast from 'src/hooks/useToast'
 
 // Store
 import { setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
@@ -20,12 +21,13 @@ import { ColorType } from '../../types'
 
 const Conciliation = () => {
   const { toastPromise } = useToast()
+  const queryClient = useQueryClient()
   const { anchor, toggleDrawer } = useDrawer()
 
   const dispatch = useAppDispatch()
   const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
-
   const status = monthlyFinancialClose.monthlyFinancialCloseBank.subStatus
+  const showConcilations = useAppSelector(state => state.ClosingReducer.showConciliations)
 
   const statusValuesText: any = {
     PENDING: 'Pendente',
@@ -67,7 +69,7 @@ const Conciliation = () => {
   }
 
   const handleGenerateConciliations = (e: React.KeyboardEvent | React.MouseEvent) => {
-    dispatch(setShowConciliations(true))
+    showConcilations ? queryClient.invalidateQueries(['conciliations']) : dispatch(setShowConciliations(true))
     dispatch(setShowStatements(false))
     toggleDrawer(anchor, false, null)(e)
   }

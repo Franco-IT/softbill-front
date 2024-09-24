@@ -1,5 +1,5 @@
 // React and Next.js
-import React, { useEffect, useMemo } from 'react'
+import React, { Fragment, useCallback, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/router'
 
 // React Query
@@ -34,9 +34,11 @@ import StatementsTable from '../components/StatementsTable'
 import Export from '../components/DrawerComponents/Export'
 import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
 import Error from 'src/components/FeedbackAPIs/Error'
+import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import ConciliationTable from '../components/ConciliationTable'
 
 // Hooks
+import useToast from 'src/hooks/useToast'
 import { useDrawer } from 'src/hooks/useDrawer'
 import { useAppDispatch } from 'src/hooks/useAppDispatch'
 import { useAppSelector } from 'src/hooks/useAppSelector'
@@ -76,6 +78,7 @@ const statusValuesText: any = {
 const Closure = () => {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { toastError, toastSuccess } = useToast()
 
   const dispatch = useAppDispatch()
   const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
@@ -88,9 +91,9 @@ const Closure = () => {
   const { toggleDrawer } = useDrawer()
 
   const [referenceDate, setReferenceDate] = React.useState<any>('')
-  const [date, setDate] = React.useState<any>(new Date())
   const [closuresOptions, setClosuresOptions] = React.useState<ClosureOptionsProps[]>([])
   const [closureSelected, setClosureSelected] = React.useState('')
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false)
 
   const handleCheckClosureId = useMemo(
     () => (closureId: string, paramId: string) => {
@@ -131,7 +134,7 @@ const Closure = () => {
 
   const paramsClosures = useMemo(() => ({ clientId: router.query.clientId, perPage: 1000 }), [router.query.clientId])
 
-  const { isLoading: isLoadingClosures, isError: isErrorClosures } = useQuery(
+  const { isError: isErrorClosures, isFetching: isLoadingClosures } = useQuery(
     ['closures', router.query.clientId, paramsClosures],
     async () => {
       const response = await api.get(`/monthlyFinancialCloseBanks`, {
@@ -156,7 +159,6 @@ const Closure = () => {
         })
       },
       enabled: router.isReady,
-      keepPreviousData: true,
       refetchOnWindowFocus: false
     }
   )
@@ -178,13 +180,36 @@ const Closure = () => {
     return date ? dateProvider.formatDate(date, 'yyyy-MM-dd') : null
   }
 
-  const handleInvalidationQueries = () => {
+  const handleInvalidationQueries = useCallback(() => {
+    queryClient.invalidateQueries(['closures'])
     queryClient.invalidateQueries(['financial-closing'])
+  }, [queryClient])
+
+  const handleClickDelete = () => setOpenDeleteDialog(true)
+
+  const handleConfirmDelete = (id: string) => {
+    api
+      .delete('monthlyFinancialCloseBanks/' + id)
+      .then(() => {
+        toastSuccess('Fechamento excluído com sucesso!')
+
+        router.push('/dashboard-fechamento').then(() => {
+          dispatch(setMonthlyFinancialClose(null))
+          setClosureSelected('')
+          setClosuresOptions([])
+          queryClient.invalidateQueries(['closures'])
+          queryClient.invalidateQueries(['financial-closing'])
+          queryClient.invalidateQueries(['financial-closing-list'])
+          queryClient.invalidateQueries(['financial-closing-dashboard'])
+        })
+      })
+      .catch(() => toastError('Erro ao excluir Fechamento!'))
+      .finally(() => setOpenDeleteDialog(false))
   }
 
   useEffect(() => {
     if (financialData) {
-      setDate(dateProvider.adjustDate(financialData.referenceDate))
+      setReferenceDate(handleConvertDateToString(dateProvider.adjustDate(financialData.referenceDate)))
       dispatch(setMonthlyFinancialClose(financialData))
       dispatch(setShowStatements(false))
       dispatch(setShowConciliations(false))
@@ -192,14 +217,23 @@ const Closure = () => {
   }, [dispatch, financialData])
 
   useEffect(() => {
-    setReferenceDate(handleConvertDateToString(date))
-  }, [date])
-
-  useEffect(() => {
     if (closuresOptions.length > 0 && monthlyFinancialClose) {
       setClosureSelected(monthlyFinancialClose.monthlyFinancialCloseBank.monthlyFinancialCloseBankId)
     }
   }, [closuresOptions, monthlyFinancialClose])
+
+  useEffect(() => {
+    const resetStates = () => {
+      setClosureSelected('')
+      dispatch(setMonthlyFinancialClose(null))
+    }
+
+    router.events.on('routeChangeStart', resetStates)
+
+    return () => {
+      router.events.off('routeChangeStart', resetStates)
+    }
+  }, [dispatch, router.events])
 
   if (isLoadingFinancial || (!monthlyFinancialClose && !isErrorFinancial))
     return (
@@ -209,164 +243,196 @@ const Closure = () => {
   if (isErrorFinancial) return <Error />
 
   return (
-    <Card>
-      <CardHeader
-        title={
-          <Grid container spacing={4}>
-            <Grid item xs={12} sm={6}>
-              <Box display='flex' alignItems='center' gap={4}>
-                <CustomAvatar
-                  src={monthlyFinancialClose?.clientAvatar}
-                  color={statusColorsMUI[monthlyFinancialClose.status]}
-                />
-                <Typography variant='h5'>{formatNameUser(monthlyFinancialClose?.clientName)}</Typography>
-                <CustomChip
-                  rounded
-                  skin='light'
-                  size='small'
-                  label={'#' + dateProvider.getMonthFromDate(date).toUpperCase()}
-                  color='primary'
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Box
-                display={'flex'}
-                alignItems={isSmallerThanSm ? 'end' : 'start'}
-                justifyContent={isSmallerThanSm ? 'start' : 'end'}
-                gap={2}
-              >
-                <Tooltip
-                  title={closureSituation[monthlyFinancialClose.monthlyFinancialCloseBank.subStatus as StatusValue]}
-                >
-                  <Box display={isSmallerThanSm ? 'none' : 'flex'} alignItems='center' justifyContent='center'>
-                    <IconButton
-                      onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Export />)(e)}
-                      disabled={statusValues[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
-                    >
-                      <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
-                    </IconButton>
-                  </Box>
-                </Tooltip>
-                <Box
-                  display='flex'
-                  flexDirection={isSmallerThanSm ? 'row' : 'column'}
-                  alignItems={isSmallerThanSm ? 'end' : 'center'}
-                  gap={2}
-                >
-                  <CustomAvatar src={monthlyFinancialClose.monthlyFinancialCloseBank.bank.logo}>
-                    {getInitials(monthlyFinancialClose.monthlyFinancialCloseBank.bank.name)}
-                  </CustomAvatar>
+    <Fragment>
+      <Card>
+        <CardHeader
+          title={
+            <Grid container spacing={4}>
+              <Grid item xs={12} sm={6}>
+                <Box display='flex' alignItems='center' gap={4}>
+                  <CustomAvatar
+                    src={monthlyFinancialClose?.clientAvatar}
+                    color={statusColorsMUI[monthlyFinancialClose.status]}
+                  />
+                  <Typography variant='h5'>{formatNameUser(monthlyFinancialClose?.clientName)}</Typography>
                   <CustomChip
                     rounded
                     skin='light'
                     size='small'
-                    label={typesIntegration[monthlyFinancialClose.monthlyFinancialCloseBank.bankAccount.generatedBy]}
+                    label={
+                      '#' +
+                      dateProvider.getMonthFromDate(dateProvider.adjustDate(financialData.referenceDate)).toUpperCase()
+                    }
                     color='primary'
                   />
                 </Box>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box
+                  display={'flex'}
+                  alignItems={isSmallerThanSm ? 'end' : 'start'}
+                  justifyContent={isSmallerThanSm ? 'start' : 'end'}
+                  gap={2}
+                >
+                  <Tooltip
+                    title={closureSituation[monthlyFinancialClose.monthlyFinancialCloseBank.subStatus as StatusValue]}
+                  >
+                    <Box display={isSmallerThanSm ? 'none' : 'flex'} alignItems='center' justifyContent='center'>
+                      <IconButton
+                        onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Export />)(e)}
+                        disabled={statusValues[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
+                      >
+                        <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
+                      </IconButton>
+                    </Box>
+                  </Tooltip>
+                  <Box
+                    display='flex'
+                    flexDirection={isSmallerThanSm ? 'row' : 'column'}
+                    alignItems={isSmallerThanSm ? 'end' : 'center'}
+                    gap={2}
+                  >
+                    <CustomAvatar src={monthlyFinancialClose.monthlyFinancialCloseBank.bank.logo}>
+                      {getInitials(monthlyFinancialClose.monthlyFinancialCloseBank.bank.name)}
+                    </CustomAvatar>
+                    <CustomChip
+                      rounded
+                      skin='light'
+                      size='small'
+                      label={typesIntegration[monthlyFinancialClose.monthlyFinancialCloseBank.bankAccount.generatedBy]}
+                      color='primary'
+                    />
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
+          }
+          action={
+            <Tooltip title={closureSituation[monthlyFinancialClose.monthlyFinancialCloseBank.subStatus as StatusValue]}>
+              <Box display={isSmallerThanSm ? 'flex' : 'none'} alignItems='center' justifyContent='center'>
+                <IconButton
+                  disabled={statusValues[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
+                  onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Export />)(e)}
+                >
+                  <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
+                </IconButton>
               </Box>
+            </Tooltip>
+          }
+        />
+        <Divider />
+        <Box display='flex' alignItems='center' gap={2} p={'24px 24px 0px'}>
+          <Typography variant='h5'>Fechamento</Typography>
+
+          {isSmallerThanSm ? (
+            <GlowIcon status={monthlyFinancialClose.monthlyFinancialCloseBank.status} />
+          ) : (
+            <CustomChip
+              rounded
+              skin='light'
+              size='small'
+              label={statusValuesText[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
+              color={statusColorsMUI[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
+            />
+          )}
+        </Box>
+        <CardActions>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={3} alignContent={'end'}>
+              <CustomTextField
+                select
+                fullWidth
+                label='Banco'
+                placeholder='Selecione o Banco'
+                value={handleCheckClosuresStatus(isLoadingClosures, isErrorClosures, closuresOptions, closureSelected)}
+                onChange={e => setClosureSelected(e.target.value)}
+              >
+                <MenuItem disabled value='default'>
+                  <em>selecione</em>
+                </MenuItem>
+                {isLoadingClosures && (
+                  <MenuItem disabled value='loading'>
+                    Carregando...
+                  </MenuItem>
+                )}
+                {isErrorClosures && (
+                  <MenuItem disabled value='error'>
+                    Ocorreu um erro, tente novamente.
+                  </MenuItem>
+                )}
+                {closuresOptions.map(closuresItem => (
+                  <MenuItem key={closuresItem.id} value={closuresItem.id}>
+                    {closuresItem.label}
+                  </MenuItem>
+                ))}
+              </CustomTextField>
+            </Grid>
+            <Grid item xs={12} md={3} alignContent={'end'}>
+              <CustomDatePicker
+                label='Mês de Referência'
+                value={dateProvider.adjustDate(financialData.referenceDate)}
+                placeholderText='Escolha o mês'
+                maxDate={new Date()}
+                dateFormat='MMMM'
+                showMonthYearPicker
+                disabled
+              />
+            </Grid>
+            <Grid item xs={12} md={1} alignContent={'end'}>
+              {isSmallerThanMd ? (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Button
+                    fullWidth
+                    variant='contained'
+                    color='primary'
+                    startIcon={<IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />}
+                    onClick={handleInvalidationQueries}
+                  >
+                    Atualizar Dados
+                  </Button>
+                  <Button
+                    fullWidth
+                    variant='tonal'
+                    color='error'
+                    startIcon={<IconifyIcon icon='tabler:trash' fontSize='1.7rem' />}
+                    onClick={handleClickDelete}
+                  >
+                    Deletar Fechamento
+                  </Button>
+                </Box>
+              ) : (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <IconButton onClick={handleInvalidationQueries} title='Atualizar Dados'>
+                    <IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />
+                  </IconButton>
+                  <IconButton onClick={handleClickDelete} title='Deletar Fechamento' color='error'>
+                    <IconifyIcon icon='tabler:trash' fontSize='1.7rem' />
+                  </IconButton>
+                </Box>
+              )}
             </Grid>
           </Grid>
-        }
-        action={
-          <Tooltip title={closureSituation[monthlyFinancialClose.monthlyFinancialCloseBank.subStatus as StatusValue]}>
-            <Box display={isSmallerThanSm ? 'flex' : 'none'} alignItems='center' justifyContent='center'>
-              <IconButton
-                disabled={statusValues[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
-                onClick={e => toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Export />)(e)}
-              >
-                <IconifyIcon icon='tabler:file-download' fontSize='1.7rem' color='primary' />
-              </IconButton>
-            </Box>
-          </Tooltip>
-        }
-      />
-      <Divider />
-      <Box display='flex' alignItems='center' gap={2} p={'24px 24px 0px'}>
-        <Typography variant='h5'>Fechamento</Typography>
+        </CardActions>
+        <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <BankStepperInteractive />
+        </CardContent>
+        <Divider />
+        {showStatements && <StatementsTable />}
+        {showConciliations && <ConciliationTable />}
+      </Card>
 
-        {isSmallerThanSm ? (
-          <GlowIcon status={monthlyFinancialClose.monthlyFinancialCloseBank.status} />
-        ) : (
-          <CustomChip
-            rounded
-            skin='light'
-            size='small'
-            label={statusValuesText[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
-            color={statusColorsMUI[monthlyFinancialClose.monthlyFinancialCloseBank.status]}
-          />
-        )}
-      </Box>
-      <CardActions>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={3} alignContent={'end'}>
-            <CustomTextField
-              select
-              fullWidth
-              label='Banco'
-              placeholder='Selecione o Banco'
-              value={handleCheckClosuresStatus(isLoadingClosures, isErrorClosures, closuresOptions, closureSelected)}
-              onChange={e => setClosureSelected(e.target.value)}
-            >
-              <MenuItem disabled value='default'>
-                <em>selecione</em>
-              </MenuItem>
-              {isLoadingClosures && (
-                <MenuItem disabled value='loading'>
-                  Carregando...
-                </MenuItem>
-              )}
-              {isErrorClosures && (
-                <MenuItem disabled value='error'>
-                  Ocorreu um erro, tente novamente.
-                </MenuItem>
-              )}
-              {closuresOptions.map(closuresItem => (
-                <MenuItem key={closuresItem.id} value={closuresItem.id}>
-                  {closuresItem.label}
-                </MenuItem>
-              ))}
-            </CustomTextField>
-          </Grid>
-          <Grid item xs={12} md={3} alignContent={'end'}>
-            <CustomDatePicker
-              label='Mês de Referência'
-              value={date}
-              onChange={e => setDate(e)}
-              placeholderText='Escolha o mês'
-              maxDate={new Date()}
-              dateFormat='MMMM'
-              showMonthYearPicker
-              disabled
-            />
-          </Grid>
-          <Grid item xs={12} md={3} alignContent={'end'}>
-            {isSmallerThanMd ? (
-              <Button
-                fullWidth
-                variant='contained'
-                color='primary'
-                startIcon={<IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />}
-                onClick={handleInvalidationQueries}
-              >
-                Atualizar Dados
-              </Button>
-            ) : (
-              <IconButton onClick={handleInvalidationQueries} title='Atualizar Dados'>
-                <IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />
-              </IconButton>
-            )}
-          </Grid>
-        </Grid>
-      </CardActions>
-      <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <BankStepperInteractive />
-      </CardContent>
-      <Divider />
-      {showStatements && <StatementsTable />}
-      {showConciliations && <ConciliationTable />}
-    </Card>
+      {openDeleteDialog && (
+        <DialogAlert
+          open={openDeleteDialog}
+          setOpen={setOpenDeleteDialog}
+          question={`Deseja realmente deletar este fechamento?`}
+          description='Essa ação não poderá ser desfeita.'
+          handleConfirmDelete={() =>
+            handleConfirmDelete(handleCheckClosureId(closureSelected, router.query.id as string))
+          }
+        />
+      )}
+    </Fragment>
   )
 }
 
