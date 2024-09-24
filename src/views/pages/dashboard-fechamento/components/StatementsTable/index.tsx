@@ -64,7 +64,7 @@ const List = () => {
     isLoading,
     isError
   } = useQuery(
-    ['statement', params],
+    ['financial-statements', params],
     async () => {
       const response = await api.get(
         '/transactions/by-monthly-financial-close/' + monthlyFinancialClose.monthlyFinancialCloseId,
@@ -76,8 +76,9 @@ const List = () => {
       return response.data
     },
     {
-      staleTime: 1000 * 60 * 5,
       keepPreviousData: true,
+      staleTime: 1000 * 60 * 5,
+      refetchOnWindowFocus: false,
       enabled: showStatements
     }
   )

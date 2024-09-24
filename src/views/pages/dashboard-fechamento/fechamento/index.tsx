@@ -1,5 +1,5 @@
 // React and Next.js
-import React, { Fragment, useEffect, useMemo } from 'react'
+import React, { Fragment, useCallback, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/router'
 
 // React Query
@@ -91,7 +91,6 @@ const Closure = () => {
   const { toggleDrawer } = useDrawer()
 
   const [referenceDate, setReferenceDate] = React.useState<any>('')
-  const [date, setDate] = React.useState<any>(new Date())
   const [closuresOptions, setClosuresOptions] = React.useState<ClosureOptionsProps[]>([])
   const [closureSelected, setClosureSelected] = React.useState('')
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false)
@@ -135,7 +134,7 @@ const Closure = () => {
 
   const paramsClosures = useMemo(() => ({ clientId: router.query.clientId, perPage: 1000 }), [router.query.clientId])
 
-  const { isLoading: isLoadingClosures, isError: isErrorClosures } = useQuery(
+  const { isError: isErrorClosures, isFetching: isLoadingClosures } = useQuery(
     ['closures', router.query.clientId, paramsClosures],
     async () => {
       const response = await api.get(`/monthlyFinancialCloseBanks`, {
@@ -160,7 +159,6 @@ const Closure = () => {
         })
       },
       enabled: router.isReady,
-      keepPreviousData: true,
       refetchOnWindowFocus: false
     }
   )
@@ -182,9 +180,10 @@ const Closure = () => {
     return date ? dateProvider.formatDate(date, 'yyyy-MM-dd') : null
   }
 
-  const handleInvalidationQueries = () => {
+  const handleInvalidationQueries = useCallback(() => {
+    queryClient.invalidateQueries(['closures'])
     queryClient.invalidateQueries(['financial-closing'])
-  }
+  }, [queryClient])
 
   const handleClickDelete = () => setOpenDeleteDialog(true)
 
@@ -192,9 +191,17 @@ const Closure = () => {
     api
       .delete('monthlyFinancialCloseBanks/' + id)
       .then(() => {
-        queryClient.invalidateQueries(['financial-closing-list'])
-        router.push('/dashboard-fechamento')
         toastSuccess('Fechamento excluído com sucesso!')
+
+        router.push('/dashboard-fechamento').then(() => {
+          dispatch(setMonthlyFinancialClose(null))
+          setClosureSelected('')
+          setClosuresOptions([])
+          queryClient.invalidateQueries(['closures'])
+          queryClient.invalidateQueries(['financial-closing'])
+          queryClient.invalidateQueries(['financial-closing-list'])
+          queryClient.invalidateQueries(['financial-closing-dashboard'])
+        })
       })
       .catch(() => toastError('Erro ao excluir Fechamento!'))
       .finally(() => setOpenDeleteDialog(false))
@@ -202,7 +209,7 @@ const Closure = () => {
 
   useEffect(() => {
     if (financialData) {
-      setDate(dateProvider.adjustDate(financialData.referenceDate))
+      setReferenceDate(handleConvertDateToString(dateProvider.adjustDate(financialData.referenceDate)))
       dispatch(setMonthlyFinancialClose(financialData))
       dispatch(setShowStatements(false))
       dispatch(setShowConciliations(false))
@@ -210,14 +217,23 @@ const Closure = () => {
   }, [dispatch, financialData])
 
   useEffect(() => {
-    setReferenceDate(handleConvertDateToString(date))
-  }, [date])
-
-  useEffect(() => {
     if (closuresOptions.length > 0 && monthlyFinancialClose) {
       setClosureSelected(monthlyFinancialClose.monthlyFinancialCloseBank.monthlyFinancialCloseBankId)
     }
   }, [closuresOptions, monthlyFinancialClose])
+
+  useEffect(() => {
+    const resetStates = () => {
+      setClosureSelected('')
+      dispatch(setMonthlyFinancialClose(null))
+    }
+
+    router.events.on('routeChangeStart', resetStates)
+
+    return () => {
+      router.events.off('routeChangeStart', resetStates)
+    }
+  }, [dispatch, router.events])
 
   if (isLoadingFinancial || (!monthlyFinancialClose && !isErrorFinancial))
     return (
@@ -243,7 +259,10 @@ const Closure = () => {
                     rounded
                     skin='light'
                     size='small'
-                    label={'#' + dateProvider.getMonthFromDate(date).toUpperCase()}
+                    label={
+                      '#' +
+                      dateProvider.getMonthFromDate(dateProvider.adjustDate(financialData.referenceDate)).toUpperCase()
+                    }
                     color='primary'
                   />
                 </Box>
@@ -351,8 +370,7 @@ const Closure = () => {
             <Grid item xs={12} md={3} alignContent={'end'}>
               <CustomDatePicker
                 label='Mês de Referência'
-                value={date}
-                onChange={e => setDate(e)}
+                value={dateProvider.adjustDate(financialData.referenceDate)}
                 placeholderText='Escolha o mês'
                 maxDate={new Date()}
                 dateFormat='MMMM'

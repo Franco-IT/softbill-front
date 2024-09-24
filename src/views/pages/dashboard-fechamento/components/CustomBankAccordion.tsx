@@ -70,7 +70,10 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
     api
       .delete('monthlyFinancialCloseBanks/' + id)
       .then(() => {
+        queryClient.invalidateQueries(['closures'])
+        queryClient.invalidateQueries(['financial-closing'])
         queryClient.invalidateQueries(['financial-closing-list'])
+        queryClient.invalidateQueries(['financial-closing-dashboard'])
         toastSuccess('Fechamento Bancário excluído com sucesso!')
       })
       .catch(() => toastError('Erro ao excluir Fechamento Bancário!'))

@@ -57,7 +57,10 @@ const BankStepper = ({ bank }: BankStepperProps) => {
     api
       .delete('monthlyFinancialCloseBanks/' + id)
       .then(() => {
+        queryClient.invalidateQueries(['closures'])
+        queryClient.invalidateQueries(['financial-closing'])
         queryClient.invalidateQueries(['financial-closing-list'])
+        queryClient.invalidateQueries(['financial-closing-dashboard'])
         toastSuccess('Fechamento Bancário excluído com sucesso!')
       })
       .catch(() => toastError('Erro ao excluir Fechamento Bancário!'))
@@ -67,7 +70,7 @@ const BankStepper = ({ bank }: BankStepperProps) => {
   useEffect(() => {
     if (statusMap[bank.subStatus as keyof StatusMapProps])
       setStatusObj(statusMap[bank.subStatus as keyof StatusMapProps])
-  }, [bank.subStatus])
+  }, [bank])
 
   const customStepperProps = useMemo(
     () => ({

@@ -1,13 +1,20 @@
-import { useRouter } from 'next/router'
+// Material UI Imports
 import { Box, Button, IconButton } from '@mui/material'
 
+// Utilitários
 import { getInitials } from 'src/utils/getInitials'
-import CustomAvatar from 'src/components/CustomAvatar'
 import { formatName } from 'src/utils/format'
-import { api } from 'src/services/api'
+
+// Componentes internos
+import CustomAvatar from 'src/components/CustomAvatar'
+import IconifyIcon from 'src/@core/components/icon'
+
+// Hooks
 import useToast from 'src/hooks/useToast'
 import { useQueryClient } from 'react-query'
-import IconifyIcon from 'src/@core/components/icon'
+
+// Serviços
+import { api } from 'src/services/api'
 
 interface BankWithoutClosureProps {
   bank: any
@@ -16,7 +23,6 @@ interface BankWithoutClosureProps {
 }
 
 const BankWithoutClosure = ({ bank, monthlyFinancialCloseId, referenceDate }: BankWithoutClosureProps) => {
-  const router = useRouter()
   const queryClient = useQueryClient()
   const { toastSuccess, toastError } = useToast()
 
@@ -35,6 +41,7 @@ const BankWithoutClosure = ({ bank, monthlyFinancialCloseId, referenceDate }: Ba
       })
       .then(() => {
         queryClient.invalidateQueries(['financial-closing-list'])
+        queryClient.invalidateQueries(['financial-closing-dashboard'])
         toastSuccess('Fechamento bancário adicionado com sucesso!')
       })
       .catch(() => toastError('Erro ao adicionar Fechamento Bancário!'))
@@ -66,17 +73,7 @@ const BankWithoutClosure = ({ bank, monthlyFinancialCloseId, referenceDate }: Ba
           }}
         >
           <CustomAvatar src={bank.bank.logo} content={getInitials(bank.bank.name)} />
-          <Button
-            variant='text'
-            color='inherit'
-            title={bank.bank.name}
-            onClick={() =>
-              router.push({
-                pathname: '/dashboard-fechamento/fechamento/[id]',
-                query: { id: bank.id, clientId: bank.clientId }
-              })
-            }
-          >
+          <Button variant='text' color='inherit' title={bank.bank.name}>
             {formatName(bank.bank.name)}
           </Button>
         </Box>

@@ -1,12 +1,23 @@
-import { useState, ChangeEvent, MouseEvent, useMemo, useCallback, useEffect } from 'react'
+// React Imports
+import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react'
+
+// Material UI Imports
 import { Box } from '@mui/material'
 
-import { Order, getComparator, stableSort } from 'src/utils/list'
-
+// Third-Party Imports
 import { useQuery } from 'react-query'
+
+// Custom Components
 import Error from 'src/components/FeedbackAPIs/Error'
 import Table from './Table'
+
+// Hooks
 import { useAppSelector } from 'src/hooks/useAppSelector'
+
+// Utils
+import { getComparator, Order, stableSort } from 'src/utils/list'
+
+// Services
 import { api } from 'src/services/api'
 
 const ConciliationTable = () => {
@@ -57,6 +68,7 @@ const ConciliationTable = () => {
     {
       staleTime: 1000 * 60 * 5,
       keepPreviousData: true,
+      refetchOnWindowFocus: false,
       enabled: showConciliations
     }
   )
