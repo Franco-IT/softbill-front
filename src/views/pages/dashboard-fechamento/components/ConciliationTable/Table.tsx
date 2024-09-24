@@ -45,11 +45,13 @@ const rowColor: {
 } = {
   light: {
     DONE: '#DCF6E8',
-    PENDING: '#FCE4E4'
+    PENDING: '#FCE4E4',
+    WAITING_REVIEW: '#FFF0E1'
   },
   dark: {
     DONE: '#2D4B4F',
-    PENDING: '#4D394B'
+    PENDING: '#4D394B',
+    WAITING_REVIEW: '#504548'
   }
 }
 
