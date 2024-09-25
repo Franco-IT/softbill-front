@@ -5,25 +5,28 @@ import { useRouter } from 'next/router'
 // React Query
 import { useQueryClient } from 'react-query'
 
-// MUI
+// MUI Components
 import { Box, Button } from '@mui/material'
 
-// Componentes internos
+// Custom Components
 import CustomStepper from './CustomStepper'
 import CustomAvatar from 'src/components/CustomAvatar'
 import ClosureBankOptions from './ClosureBankOptions'
 import Icon from 'src/@core/components/icon'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 
-// Utilidades e hooks
+// Hooks e Utilidades
+import useToast from 'src/hooks/useToast'
 import { statusMap } from '../utils'
 import { getInitials } from 'src/utils/getInitials'
 import { formatName } from 'src/utils/format'
-import useToast from 'src/hooks/useToast'
 
-// Tipos e serviços
+// Tipos e Serviços
 import { StatusMapProps, StatusProps } from '../types'
-import { api } from 'src/services/api'
+import { financialCloseController } from 'src/modules/financialClose'
+
+// Erros
+import { AppError } from 'src/shared/errors/AppError'
 
 interface BankStepperProps {
   bank: any
@@ -54,8 +57,8 @@ const BankStepper = ({ bank }: BankStepperProps) => {
   })
 
   const handleClickDeleteClosureBank = (id: string) => {
-    api
-      .delete('monthlyFinancialCloseBanks/' + id)
+    financialCloseController
+      .deleteMonthlyFinancialCloseBank({ id })
       .then(() => {
         queryClient.invalidateQueries(['closures'])
         queryClient.invalidateQueries(['financial-closing'])
@@ -63,7 +66,9 @@ const BankStepper = ({ bank }: BankStepperProps) => {
         queryClient.invalidateQueries(['financial-closing-dashboard'])
         toastSuccess('Fechamento Bancário excluído com sucesso!')
       })
-      .catch(() => toastError('Erro ao excluir Fechamento Bancário!'))
+      .catch(error => {
+        if (error instanceof AppError) toastError(error.message)
+      })
       .finally(() => setOpenDelete(false))
   }
 
