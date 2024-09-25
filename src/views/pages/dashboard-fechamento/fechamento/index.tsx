@@ -1,11 +1,11 @@
-// React and Next.js
+// React and Next.js Imports
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/router'
 
-// React Query
+// React Query Imports
 import { useQuery, useQueryClient } from 'react-query'
 
-// MUI components
+// MUI Components
 import {
   Box,
   Button,
@@ -22,7 +22,7 @@ import {
   useMediaQuery
 } from '@mui/material'
 
-// Custom components
+// Custom Components
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import CustomTextField from 'src/@core/components/mui/text-field'
 import CustomChip from 'src/@core/components/mui/chip'
@@ -43,18 +43,25 @@ import { useDrawer } from 'src/hooks/useDrawer'
 import { useAppDispatch } from 'src/hooks/useAppDispatch'
 import { useAppSelector } from 'src/hooks/useAppSelector'
 
-// Services and utilities
-import { api } from 'src/services/api'
+// Services and Utilities
 import { dateProvider } from 'src/shared/providers'
 import { getInitials } from 'src/utils/getInitials'
 import { statusColorsMUI, typesIntegration } from '../utils'
 
-// Redux actions
+// Redux Actions
 import { setMonthlyFinancialClose, setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
 
 // Types
 import { ClosureOptionsProps, StatusValue } from '../types'
+
+// Utility Functions
 import { formatNameUser } from 'src/utils/format'
+
+// Financial Close Module
+import { financialCloseController } from 'src/modules/financialClose'
+
+// Erros
+import { AppError } from 'src/shared/errors/AppError'
 
 const closureSituation: Record<StatusValue, string> = {
   PENDING: 'Extrato Pendente',
@@ -112,19 +119,11 @@ const Closure = () => {
     isError: isErrorFinancial
   } = useQuery(
     ['financial-closing', handleCheckClosureId(closureSelected, router.query.id as string), paramsFinancialClosing],
-    async () => {
-      const response = await api.get(
-        `/monthlyFinancialCloseBanks/monthly-financial-close-accounting/${handleCheckClosureId(
-          closureSelected,
-          router.query.id as string
-        )}`,
-        {
-          params: paramsFinancialClosing
-        }
-      )
-
-      return response.data
-    },
+    () =>
+      financialCloseController.getMonthlyFinancialCloseBank({
+        id: handleCheckClosureId(closureSelected, router.query.id as string),
+        referenceDate: paramsFinancialClosing.referenceDate
+      }),
     {
       enabled: router.isReady,
       keepPreviousData: true,
@@ -132,17 +131,14 @@ const Closure = () => {
     }
   )
 
-  const paramsClosures = useMemo(() => ({ clientId: router.query.clientId, perPage: 1000 }), [router.query.clientId])
+  const paramsClosures = useMemo(
+    () => ({ clientId: router.query.clientId as string, perPage: 1000 }),
+    [router.query.clientId]
+  )
 
   const { isError: isErrorClosures, isFetching: isLoadingClosures } = useQuery(
     ['closures', router.query.clientId, paramsClosures],
-    async () => {
-      const response = await api.get(`/monthlyFinancialCloseBanks`, {
-        params: paramsClosures
-      })
-
-      return response.data
-    },
+    () => financialCloseController.getMonthlyFinancialCloseBanks(paramsClosures),
     {
       onSuccess: response => {
         setClosuresOptions([])
@@ -188,8 +184,8 @@ const Closure = () => {
   const handleClickDelete = () => setOpenDeleteDialog(true)
 
   const handleConfirmDelete = (id: string) => {
-    api
-      .delete('monthlyFinancialCloseBanks/' + id)
+    financialCloseController
+      .deleteMonthlyFinancialCloseBank({ id })
       .then(() => {
         toastSuccess('Fechamento excluído com sucesso!')
 
@@ -203,7 +199,9 @@ const Closure = () => {
           queryClient.invalidateQueries(['financial-closing-dashboard'])
         })
       })
-      .catch(() => toastError('Erro ao excluir Fechamento!'))
+      .catch(error => {
+        if (error instanceof AppError) toastError(error.message)
+      })
       .finally(() => setOpenDeleteDialog(false))
   }
 

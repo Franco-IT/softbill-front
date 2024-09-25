@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 // React Query
 import { useQueryClient } from 'react-query'
 
-// MUI
+// MUI Components
 import {
   Accordion,
   Typography,
@@ -20,22 +20,25 @@ import {
 } from '@mui/material'
 import { TimelineDot, TimelineItem, TimelineContent, TimelineSeparator, TimelineConnector } from '@mui/lab'
 
-// Componentes internos
+// Custom Components
 import Icon from 'src/@core/components/icon'
 import GlowIcon from 'src/components/GlowIcon'
 import CustomChip from 'src/@core/components/mui/chip'
 import IconifyIcon from 'src/@core/components/icon'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 
-// Utilidades e hooks
+// Hooks e Utilidades
+import useToast from 'src/hooks/useToast'
 import { bankStatusLabel, statusColorsMUI, statusMap } from '../utils'
 import { getInitials } from 'src/utils/getInitials'
 import { formatName } from 'src/utils/format'
-import useToast from 'src/hooks/useToast'
 
-// Tipos e serviços
+// Tipos e Serviços
 import { ColorType, StatusMapProps, SubStatusProps } from '../types'
-import { api } from 'src/services/api'
+import { financialCloseController } from 'src/modules/financialClose'
+
+// Erros
+import { AppError } from 'src/shared/errors/AppError'
 
 interface CustomBankAccordionProps {
   bank: any
@@ -67,8 +70,8 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
   }
 
   const handleClickDeleteClosureBank = (id: string) => {
-    api
-      .delete('monthlyFinancialCloseBanks/' + id)
+    financialCloseController
+      .deleteMonthlyFinancialCloseBank({ id })
       .then(() => {
         queryClient.invalidateQueries(['closures'])
         queryClient.invalidateQueries(['financial-closing'])
@@ -76,7 +79,9 @@ const CustomBankAccordion = ({ bank }: CustomBankAccordionProps) => {
         queryClient.invalidateQueries(['financial-closing-dashboard'])
         toastSuccess('Fechamento Bancário excluído com sucesso!')
       })
-      .catch(() => toastError('Erro ao excluir Fechamento Bancário!'))
+      .catch(error => {
+        if (error instanceof AppError) toastError(error.message)
+      })
       .finally(() => setOpenDelete(false))
   }
 

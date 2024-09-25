@@ -47,6 +47,10 @@ import { statusColorsMUI, typesIntegration } from '../../utils'
 
 // Providers
 import { dateProvider } from 'src/shared/providers'
+import { financialCloseController } from 'src/modules/financialClose'
+
+// Errors
+import { AppError } from 'src/shared/errors/AppError'
 
 const FILE_TYPES: { [key: string]: string[] } = {
   'application/ofx': ['.ofx']
@@ -153,10 +157,10 @@ const Extract = () => {
   }
 
   const handleDeleteImportedFile = (monthlyFinancialCloseBankId: string) => {
-    api
-      .delete('monthlyFinancialCloseBanks/imported-file/' + monthlyFinancialCloseBankId)
+    financialCloseController
+      .deleteStatementFile({ id: monthlyFinancialCloseBankId })
       .then(() => queryClient.invalidateQueries(['financial-closing']))
-      .catch(() => toast.error('Erro ao deletar o arquivo, tente novamente mais tarde'))
+      .catch(error => error instanceof AppError && toast.error(error.message))
   }
 
   const handleGenerateExtract = (e: React.KeyboardEvent | React.MouseEvent) => {
@@ -174,25 +178,22 @@ const Extract = () => {
       if (data[key]) data[key].map((file: any) => formData.append(key, file))
     })
 
-    api
-      .post('/monthlyFinancialCloseBanks/bank-monthly-financial-close/' + monthlyFinancialClose.clientId, formData, {
-        params: {
-          referenceDate
-        },
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+    const reqBody = {
+      clientId: monthlyFinancialClose.clientId,
+      formData,
+      referenceDate
+    }
+
+    financialCloseController
+      .sendStatementFile(reqBody)
       .then(response => {
-        if (response.status === 200) {
+        if (response?.status === 200) {
           queryClient.invalidateQueries(['financial-closing'])
           toast.success('Arquivo enviado com sucesso!')
           toggleDrawer(anchor, false, null)(e)
         }
       })
-      .catch(() => {
-        toast.error('Erro ao enviar, tente novamente mais tarde')
-      })
+      .catch(error => error instanceof AppError && toast.error(error.message))
   }
 
   const handleCheckStatus = (status: string) => {
