@@ -33,6 +33,7 @@ const useClipboard = () => {
       await navigator.clipboard.writeText(text)
       toast.success(message)
     } catch (error) {
+      console.error(error)
       toast.error('Erro ao copiar para a área de transferência. Tente novamente.')
     }
   }, [])
