@@ -20,6 +20,7 @@ const getMonthlyFinancialCloseBanksUseCase = new GetMonthlyFinancialCloseBanksUs
 const deleteMonthlyFinancialCloseBankUseCase = new DeleteMonthlyFinancialCloseBankUseCase(financialCloseRepository)
 const sendStatementFileUseCase = new SendStatementFileUseCase(financialCloseRepository)
 const deleteStatementFileUseCase = new DeleteStatementFileUseCase(financialCloseRepository)
+
 const financialCloseController = new FinancialCloseController(
   getMonthlyFinancialCloseStatisticsUseCase,
   getMonthlyFinancialCloseDashboardDataUseCase,
