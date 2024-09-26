@@ -14,7 +14,7 @@ export class SetUserAvatarUseCase {
     try {
       return this.userRepository.setAvatar(data)
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao enviar imagem, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Erro ao enviar imagem, tente novamente mais tarde.')
     }
   }
 }

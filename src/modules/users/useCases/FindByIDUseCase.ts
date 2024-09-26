@@ -15,7 +15,7 @@ export class FindByIDUseCase {
 
       return response.data
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao buscar usuário, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Erro ao buscar usuário, tente novamente mais tarde.')
     }
   }
 }

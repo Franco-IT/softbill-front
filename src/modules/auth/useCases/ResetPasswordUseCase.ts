@@ -14,7 +14,7 @@ export class ResetPasswordUseCase {
     try {
       return await this.userAuthRepository.resetPassword(data)
     } catch (error: any) {
-      errorProvider.handle(
+      throw errorProvider.handle(
         error,
         {},
         error.response.status == 401

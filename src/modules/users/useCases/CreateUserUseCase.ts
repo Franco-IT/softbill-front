@@ -14,7 +14,7 @@ export class CreateUserUseCase {
     try {
       return this.userRepository.create(data)
     } catch (error: any) {
-      errorProvider.handle(error, errors, 'Erro ao criar usuário, tente novamente mais tarde.')
+      throw errorProvider.handle(error, errors, 'Erro ao criar usuário, tente novamente mais tarde.')
     }
   }
 }

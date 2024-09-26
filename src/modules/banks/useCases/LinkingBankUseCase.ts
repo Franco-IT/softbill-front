@@ -14,7 +14,7 @@ export class LinkingBankUseCase {
     try {
       return this.bankRepository.linkingBank(data)
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao realizar a vinculação do banco.')
+      throw errorProvider.handle(error, {}, 'Erro ao realizar a vinculação do banco.')
     }
   }
 }

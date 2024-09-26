@@ -13,7 +13,7 @@ export class ChangePasswordUseCase {
     try {
       return this.userRepository.changePassword(data)
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao alterar senha, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Erro ao alterar senha, tente novamente mais tarde.')
     }
   }
 }

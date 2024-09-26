@@ -14,7 +14,7 @@ export class CreateClientUseCase {
     try {
       return this.userRepository.createClient(data)
     } catch (error: any) {
-      errorProvider.handle(error, errors, 'Erro ao criar cliente, tente novamente mais tarde.')
+      throw errorProvider.handle(error, errors, 'Erro ao criar cliente, tente novamente mais tarde.')
     }
   }
 }

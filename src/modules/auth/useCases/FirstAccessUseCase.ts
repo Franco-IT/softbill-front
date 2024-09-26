@@ -14,7 +14,7 @@ export class FirstAccessUseCase {
     try {
       return await this.userAuthRepository.firtsAccess(data)
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao realizar o primeiro acesso.')
+      throw errorProvider.handle(error, {}, 'Erro ao realizar o primeiro acesso.')
     }
   }
 }

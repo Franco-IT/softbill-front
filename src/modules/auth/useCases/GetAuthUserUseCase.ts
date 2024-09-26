@@ -13,7 +13,7 @@ export class GetAuthUserUseCase {
     try {
       return await this.userAuthRepository.getAuthUser({ id })
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Sua sessão expirou, faça login novamente.')
+      throw errorProvider.handle(error, {}, 'Sua sessão expirou, faça login novamente.')
     }
   }
 }

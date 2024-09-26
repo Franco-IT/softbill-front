@@ -15,7 +15,7 @@ export class GetUsersUseCase {
 
       return response.data
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao buscar usuários, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Erro ao buscar usuários, tente novamente mais tarde.')
     }
   }
 }

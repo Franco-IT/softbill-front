@@ -12,7 +12,7 @@ export class LogoutUseCase {
     try {
       this.userAuthRepository.logout()
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Falha ao realizar logout, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Falha ao realizar logout, tente novamente mais tarde.')
     }
   }
 }

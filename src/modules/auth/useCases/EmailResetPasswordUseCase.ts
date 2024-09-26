@@ -14,7 +14,7 @@ export class EmailResetPasswordUseCase {
     try {
       return await this.userAuthRepository.emailResetPassword(data)
     } catch (error: any) {
-      errorProvider.handle(
+      throw errorProvider.handle(
         error,
         {},
         error.response.status == 409

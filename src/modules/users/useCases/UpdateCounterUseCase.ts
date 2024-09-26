@@ -13,7 +13,7 @@ export class UpdateCounterUseCase {
     try {
       return this.userRepository.update(data)
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao atualizar contador, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Erro ao atualizar contador, tente novamente mais tarde.')
     }
   }
 }
