@@ -1,6 +1,7 @@
 import { errorProvider } from 'src/shared/providers'
 import { IDeleteStatementFileDTO } from '../dtos/IDeleteStatementFileDTO'
 import { IFinancialCloseRepository } from '../repositories/IFinancialCloseRepository'
+import { errors } from '../errors'
 
 export class DeleteStatementFileUseCase {
   private financialCloseRepository: IFinancialCloseRepository
@@ -13,7 +14,7 @@ export class DeleteStatementFileUseCase {
     try {
       return this.financialCloseRepository.deleteStatementFile(data)
     } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Error ao deletar arquivo, tente novamente mais tarde.')
+      throw errorProvider.handle(error, errors, 'Error ao deletar arquivo, tente novamente mais tarde.')
     }
   }
 }

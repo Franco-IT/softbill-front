@@ -104,6 +104,7 @@ const ConciliationItem = (props: ConciliationItemProps) => {
     return statusValues[status]
   }
 
+  //TODO: Refactor for module financialClose
   const onSubmit = (data: FormData, e?: React.KeyboardEvent | React.MouseEvent) => {
     const bodyCredit = {
       creditAccount: data.account,

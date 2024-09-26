@@ -1,6 +1,7 @@
 import { errorProvider } from 'src/shared/providers'
 import { IGetMonthlyFinancialCloseBanksDTO } from '../dtos/IGetMonthlyFinancialCloseBanksDTO'
 import { IFinancialCloseRepository } from '../repositories/IFinancialCloseRepository'
+import { errors } from '../errors'
 
 export class GetMonthlyFinancialCloseBanksUseCase {
   private financialCloseRepository: IFinancialCloseRepository
@@ -15,7 +16,7 @@ export class GetMonthlyFinancialCloseBanksUseCase {
 
       return response.data
     } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Error ao buscar dados do fechamento, tente novamente mais tarde.')
+      throw errorProvider.handle(error, errors, 'Error ao buscar dados do fechamento, tente novamente mais tarde.')
     }
   }
 }

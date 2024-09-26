@@ -1,6 +1,7 @@
 import { errorProvider } from 'src/shared/providers'
 import { IGetMonthlyFinancialCloseStatisticsDTO } from '../dtos/IGetMonthlyFinancialCloseStatisticsDTO'
 import { IFinancialCloseRepository } from '../repositories/IFinancialCloseRepository'
+import { errors } from '../errors'
 
 export class GetMonthlyFinancialCloseStatisticsUseCase {
   private financialCloseRepository: IFinancialCloseRepository
@@ -15,7 +16,7 @@ export class GetMonthlyFinancialCloseStatisticsUseCase {
 
       return response.data
     } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Error ao buscar estatísticas do dashboard, tente novamente mais tarde.')
+      throw errorProvider.handle(error, errors, 'Error ao buscar estatísticas do dashboard, tente novamente mais tarde.')
     }
   }
 }

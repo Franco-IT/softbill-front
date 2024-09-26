@@ -1,6 +1,7 @@
 import { errorProvider } from 'src/shared/providers'
 import { IGenerateExportFileDTO } from '../dtos/IGenerateExportFileDTO'
 import { IFinancialCloseRepository } from '../repositories/IFinancialCloseRepository'
+import { errors } from '../errors'
 
 export class GenerateExportFileUseCase {
   constructor(private financialCloseRepository: IFinancialCloseRepository) {}
@@ -11,7 +12,7 @@ export class GenerateExportFileUseCase {
 
       return response
     } catch (error) {
-      throw errorProvider.handle(error, {}, 'Error ao gerar arquivo de exportação, tente novamente mais tarde.')
+      throw errorProvider.handle(error, errors, 'Error ao gerar arquivo de exportação, tente novamente mais tarde.')
     }
   }
 }

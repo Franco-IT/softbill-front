@@ -52,6 +52,7 @@ const Validation = () => {
 
   const handleDisableInput = (subStatus: string) => (subStatus === 'DONE' || subStatus === 'PROCESSED' ? false : true)
 
+  //TODO: Refactor for module financialClose
   const handleChangeStatus = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = (e.target as HTMLInputElement).value
     const myPromise = api
@@ -63,7 +64,7 @@ const Validation = () => {
         queryClient.invalidateQueries(['financial-closing-dashboard"'])
       })
 
-    toastPromise(myPromise, 'Enviando lembrete...', 'Lembrete enviado com sucesso', 'Erro ao enviar lembrete')
+    toastPromise(myPromise, 'Validando...', 'Validado com sucesso.', 'Erro ao Validar, tente novamente mais tarde.')
   }
 
   return (

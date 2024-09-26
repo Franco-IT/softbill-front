@@ -1,6 +1,7 @@
 import { errorProvider } from 'src/shared/providers'
 import { IFinancialCloseRepository } from '../repositories/IFinancialCloseRepository'
 import { IGetMonthlyFinancialClosesDashboardDataDTO } from '../dtos/IGetMonthlyFinancialClosesDashboardDataDTO'
+import { errors } from '../errors'
 
 export class GetMonthlyFinancialCloseDashboardDataUseCase {
   private financialCloseRepository: IFinancialCloseRepository
@@ -15,7 +16,7 @@ export class GetMonthlyFinancialCloseDashboardDataUseCase {
 
       return response.data
     } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Error ao buscar dados do dashboard, tente novamente mais tarde.')
+      throw errorProvider.handle(error, errors, 'Error ao buscar dados do dashboard, tente novamente mais tarde.')
     }
   }
 }

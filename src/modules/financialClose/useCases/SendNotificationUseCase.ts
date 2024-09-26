@@ -1,6 +1,7 @@
 import { errorProvider } from 'src/shared/providers'
 import { ISendNotificationDTO } from '../dtos/ISendNotificationDTO'
 import { IFinancialCloseRepository } from '../repositories/IFinancialCloseRepository'
+import { errors } from '../errors'
 
 export class SendNotificationUseCase {
   constructor(private financialCloseRepository: IFinancialCloseRepository) {}
@@ -11,7 +12,7 @@ export class SendNotificationUseCase {
 
       return response
     } catch (error) {
-      throw errorProvider.handle(error, {}, 'Error ao enviar notificação, tente novamente mais tarde.')
+      throw errorProvider.handle(error, errors, 'Error ao enviar notificação, tente novamente mais tarde.')
     }
   }
 }
