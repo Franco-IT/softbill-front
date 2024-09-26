@@ -7,6 +7,8 @@ import { IDeleteMonthlyFinancialCloseBankDTO } from '../dtos/IDeleteMonthlyFinan
 import { ISendStatementFileDTO } from '../dtos/ISendStatementFileDTO'
 import { IDeleteStatementFileDTO } from '../dtos/IDeleteStatementFileDTO'
 import { IExportFileDTO } from '../dtos/IExportFileDTO'
+import { ISendNotificationDTO } from '../dtos/ISendNotificationDTO'
+import { IGenerateExportFileDTO } from '../dtos/IGenerateExportFileDTO'
 
 export interface IFinancialCloseRepository {
   getMonthlyFinancialCloseStatistics(params: IGetMonthlyFinancialCloseStatisticsDTO): Promise<AxiosResponse>
@@ -17,4 +19,6 @@ export interface IFinancialCloseRepository {
   sendStatementFile(data: ISendStatementFileDTO): Promise<AxiosResponse>
   deleteStatementFile(data: IDeleteStatementFileDTO): Promise<AxiosResponse>
   exportFile(data: IExportFileDTO): Promise<AxiosResponse>
+  generateExportFile(data: IGenerateExportFileDTO): Promise<AxiosResponse>
+  sendNotification(data: ISendNotificationDTO): Promise<AxiosResponse>
 }

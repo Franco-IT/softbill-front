@@ -1,49 +1,37 @@
 import { IDeleteMonthlyFinancialCloseBankDTO } from '../dtos/IDeleteMonthlyFinancialCloseBankDTO'
 import { IDeleteStatementFileDTO } from '../dtos/IDeleteStatementFileDTO'
 import { IExportFileDTO } from '../dtos/IExportFileDTO'
+import { IGenerateExportFileDTO } from '../dtos/IGenerateExportFileDTO'
 import { IGetMonthlyFinancialCloseBankDTO } from '../dtos/IGetMonthlyFinancialCloseBankDTO'
 import { IGetMonthlyFinancialCloseBanksDTO } from '../dtos/IGetMonthlyFinancialCloseBanksDTO'
 import { IGetMonthlyFinancialClosesDashboardDataDTO } from '../dtos/IGetMonthlyFinancialClosesDashboardDataDTO'
 import { IGetMonthlyFinancialCloseStatisticsDTO } from '../dtos/IGetMonthlyFinancialCloseStatisticsDTO'
+import { ISendNotificationDTO } from '../dtos/ISendNotificationDTO'
 import { ISendStatementFileDTO } from '../dtos/ISendStatementFileDTO'
 import { DeleteMonthlyFinancialCloseBankUseCase } from '../useCases/DeleteMonthlyFinancialCloseBankUseCase'
 import { DeleteStatementFileUseCase } from '../useCases/DeleteStatementFileUseCase'
 import { ExportFileUseCase } from '../useCases/ExportFileUseCase'
+import { GenerateExportFileUseCase } from '../useCases/GenerateExportFileUseCase'
 import { GetMonthlyFinancialCloseBanksUseCase } from '../useCases/GetMonthlyFinancialCloseBanksUseCase'
 import { GetMonthlyFinancialCloseBankUseCase } from '../useCases/GetMonthlyFinancialCloseBankUseCase'
 import { GetMonthlyFinancialCloseDashboardDataUseCase } from '../useCases/GetMonthlyFinancialCloseDashboardDataUseCase'
 import { GetMonthlyFinancialCloseStatisticsUseCase } from '../useCases/GetMonthlyFinancialCloseStatisticsUseCase'
+import { SendNotificationUseCase } from '../useCases/SendNotificationUseCase'
 import { SendStatementFileUseCase } from '../useCases/SendStatementFileUseCase'
 
 export class FinancialCloseController {
-  private getMonthlyFinancialCloseStatisticsUseCase: GetMonthlyFinancialCloseStatisticsUseCase
-  private getMonthlyFinancialCloseDashboardDataUseCase: GetMonthlyFinancialCloseDashboardDataUseCase
-  private getMonthlyFinancialCloseBankUseCase: GetMonthlyFinancialCloseBankUseCase
-  private getMonthlyFinancialCloseBanksUseCase: GetMonthlyFinancialCloseBanksUseCase
-  private deleteMonthlyFinancialCloseBankUseCase: DeleteMonthlyFinancialCloseBankUseCase
-  private sendStatementFileUseCase: SendStatementFileUseCase
-  private deleteStatementFileUseCase: DeleteStatementFileUseCase
-  private exportFileUseCase: ExportFileUseCase
-
   constructor(
-    getMonthlyFinancialCloseStatisticsUseCase: GetMonthlyFinancialCloseStatisticsUseCase,
-    getMonthlyFinancialCloseDashboardDataUseCase: GetMonthlyFinancialCloseDashboardDataUseCase,
-    getMonthlyFinancialCloseBankUseCase: GetMonthlyFinancialCloseBankUseCase,
-    getMonthlyFinancialCloseBanksUseCase: GetMonthlyFinancialCloseBanksUseCase,
-    deleteMonthlyFinancialCloseBankUseCase: DeleteMonthlyFinancialCloseBankUseCase,
-    sendStatementFileUseCase: SendStatementFileUseCase,
-    deleteStatementFileUseCase: DeleteStatementFileUseCase,
-    exportFileUseCase: ExportFileUseCase
-  ) {
-    this.getMonthlyFinancialCloseStatisticsUseCase = getMonthlyFinancialCloseStatisticsUseCase
-    this.getMonthlyFinancialCloseDashboardDataUseCase = getMonthlyFinancialCloseDashboardDataUseCase
-    this.getMonthlyFinancialCloseBankUseCase = getMonthlyFinancialCloseBankUseCase
-    this.getMonthlyFinancialCloseBanksUseCase = getMonthlyFinancialCloseBanksUseCase
-    this.deleteMonthlyFinancialCloseBankUseCase = deleteMonthlyFinancialCloseBankUseCase
-    this.sendStatementFileUseCase = sendStatementFileUseCase
-    this.deleteStatementFileUseCase = deleteStatementFileUseCase
-    this.exportFileUseCase = exportFileUseCase
-  }
+    private getMonthlyFinancialCloseStatisticsUseCase: GetMonthlyFinancialCloseStatisticsUseCase,
+    private getMonthlyFinancialCloseDashboardDataUseCase: GetMonthlyFinancialCloseDashboardDataUseCase,
+    private getMonthlyFinancialCloseBankUseCase: GetMonthlyFinancialCloseBankUseCase,
+    private getMonthlyFinancialCloseBanksUseCase: GetMonthlyFinancialCloseBanksUseCase,
+    private deleteMonthlyFinancialCloseBankUseCase: DeleteMonthlyFinancialCloseBankUseCase,
+    private sendStatementFileUseCase: SendStatementFileUseCase,
+    private deleteStatementFileUseCase: DeleteStatementFileUseCase,
+    private exportFileUseCase: ExportFileUseCase,
+    private generateExportFileUseCase: GenerateExportFileUseCase,
+    private sendNotificationUseCase: SendNotificationUseCase
+  ) {}
 
   async getMonthlyFinancialCloseStatistics(params: IGetMonthlyFinancialCloseStatisticsDTO) {
     return this.getMonthlyFinancialCloseStatisticsUseCase.execute(params)
@@ -75,5 +63,13 @@ export class FinancialCloseController {
 
   async exportFile(data: IExportFileDTO) {
     return this.exportFileUseCase.execute(data)
+  }
+
+  async generateExportFile(data: IGenerateExportFileDTO) {
+    return this.generateExportFileUseCase.execute(data)
+  }
+
+  async sendNotification(data: ISendNotificationDTO) {
+    return this.sendNotificationUseCase.execute(data)
   }
 }

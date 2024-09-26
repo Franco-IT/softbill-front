@@ -9,6 +9,8 @@ import { IDeleteMonthlyFinancialCloseBankDTO } from '../dtos/IDeleteMonthlyFinan
 import { ISendStatementFileDTO } from '../dtos/ISendStatementFileDTO'
 import { IDeleteStatementFileDTO } from '../dtos/IDeleteStatementFileDTO'
 import { IExportFileDTO } from '../dtos/IExportFileDTO'
+import { ISendNotificationDTO } from '../dtos/ISendNotificationDTO'
+import { IGenerateExportFileDTO } from '../dtos/IGenerateExportFileDTO'
 
 export class FinancialCloseRepository implements IFinancialCloseRepository {
   getMonthlyFinancialCloseDashboardData(
@@ -56,5 +58,17 @@ export class FinancialCloseRepository implements IFinancialCloseRepository {
 
   async exportFile(data: IExportFileDTO): Promise<AxiosResponse> {
     return api.get('files/download-file/' + data.fileId)
+  }
+
+  async generateExportFile(data: IGenerateExportFileDTO): Promise<AxiosResponse> {
+    return api.get('monthlyFinancialCloseBanks/export/' + data.extractFileId)
+  }
+
+  async sendNotification(data: ISendNotificationDTO): Promise<AxiosResponse<any, any>> {
+    const { monthlyFinancialCloseBankId, params } = data
+
+    return api.get('monthlyFinancialCloseBanks/send-notification/' + monthlyFinancialCloseBankId, {
+      params
+    })
   }
 }

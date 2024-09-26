@@ -30,9 +30,6 @@ import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-// Services
-import { api } from 'src/services/api'
-
 // Notifications
 import toast from 'react-hot-toast'
 
@@ -138,12 +135,12 @@ const Extract = () => {
   }
 
   const handleSendReminder = (e: React.KeyboardEvent | React.MouseEvent) => {
-    const myPromise = api
-      .get('monthlyFinancialCloseBanks/send-notification/' + monthlyFinancialCloseBankId, {
-        params: {
-          clientId: monthlyFinancialClose.clientId
-        }
-      })
+    const params = {
+      clientId: monthlyFinancialClose.clientId
+    }
+
+    const myPromise = financialCloseController
+      .sendNotification({ monthlyFinancialCloseBankId, params })
       .then(() => toggleDrawer(anchor, false, null)(e))
 
     toastPromise(myPromise, 'Enviando lembrete...', 'Lembrete enviado com sucesso', 'Erro ao enviar lembrete')

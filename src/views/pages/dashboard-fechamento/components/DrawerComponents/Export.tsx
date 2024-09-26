@@ -4,7 +4,6 @@ import IconifyIcon from 'src/@core/components/icon'
 import CustomChip from 'src/@core/components/mui/chip'
 import { useAppSelector } from 'src/hooks/useAppSelector'
 import { financialCloseController } from 'src/modules/financialClose'
-import { api } from 'src/services/api'
 import { AppError } from 'src/shared/errors/AppError'
 
 const Export = () => {
@@ -20,11 +19,11 @@ const Export = () => {
       .catch(error => error instanceof AppError && toast.error(error.message))
   }
 
-  const handleGenerateExport = (id: string) => {
-    api
-      .get('/monthlyFinancialCloseBanks/export/' + id)
+  const handleGenerateExport = (extractFileId: string) => {
+    financialCloseController
+      .generateExportFile({ extractFileId })
       .then(response => window.open(response.data))
-      .catch(() => toast.error('Erro ao gerar o arquivo, tente novamente mais tarde'))
+      .catch(error => error instanceof AppError && toast.error(error.message))
   }
 
   const handleCheckAction = (extractFileId: string, id: string) => {
