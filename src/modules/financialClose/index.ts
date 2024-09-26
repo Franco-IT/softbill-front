@@ -2,6 +2,7 @@ import { FinancialCloseController } from './controller/FinancialCloseController'
 import { FinancialCloseRepository } from './repositories/FinancialCloseRepository'
 import { DeleteMonthlyFinancialCloseBankUseCase } from './useCases/DeleteMonthlyFinancialCloseBankUseCase'
 import { DeleteStatementFileUseCase } from './useCases/DeleteStatementFileUseCase'
+import { ExportFileUseCase } from './useCases/ExportFileUseCase'
 import { GetMonthlyFinancialCloseBanksUseCase } from './useCases/GetMonthlyFinancialCloseBanksUseCase'
 import { GetMonthlyFinancialCloseBankUseCase } from './useCases/GetMonthlyFinancialCloseBankUseCase'
 import { GetMonthlyFinancialCloseDashboardDataUseCase } from './useCases/GetMonthlyFinancialCloseDashboardDataUseCase'
@@ -20,6 +21,8 @@ const getMonthlyFinancialCloseBanksUseCase = new GetMonthlyFinancialCloseBanksUs
 const deleteMonthlyFinancialCloseBankUseCase = new DeleteMonthlyFinancialCloseBankUseCase(financialCloseRepository)
 const sendStatementFileUseCase = new SendStatementFileUseCase(financialCloseRepository)
 const deleteStatementFileUseCase = new DeleteStatementFileUseCase(financialCloseRepository)
+const exportFileUseCase = new ExportFileUseCase(financialCloseRepository)
+
 const financialCloseController = new FinancialCloseController(
   getMonthlyFinancialCloseStatisticsUseCase,
   getMonthlyFinancialCloseDashboardDataUseCase,
@@ -27,7 +30,8 @@ const financialCloseController = new FinancialCloseController(
   getMonthlyFinancialCloseBanksUseCase,
   deleteMonthlyFinancialCloseBankUseCase,
   sendStatementFileUseCase,
-  deleteStatementFileUseCase
+  deleteStatementFileUseCase,
+  exportFileUseCase
 )
 
 export { financialCloseController }

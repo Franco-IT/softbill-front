@@ -1,13 +1,14 @@
 import { AxiosResponse } from 'axios'
+import { api } from 'src/services/api'
 import { IFinancialCloseRepository } from './IFinancialCloseRepository'
 import { IGetMonthlyFinancialCloseStatisticsDTO } from '../dtos/IGetMonthlyFinancialCloseStatisticsDTO'
 import { IGetMonthlyFinancialClosesDashboardDataDTO } from '../dtos/IGetMonthlyFinancialClosesDashboardDataDTO'
-import { api } from 'src/services/api'
 import { IGetMonthlyFinancialCloseBankDTO } from '../dtos/IGetMonthlyFinancialCloseBankDTO'
 import { IGetMonthlyFinancialCloseBanksDTO } from '../dtos/IGetMonthlyFinancialCloseBanksDTO'
 import { IDeleteMonthlyFinancialCloseBankDTO } from '../dtos/IDeleteMonthlyFinancialCloseBankDTO'
 import { ISendStatementFileDTO } from '../dtos/ISendStatementFileDTO'
 import { IDeleteStatementFileDTO } from '../dtos/IDeleteStatementFileDTO'
+import { IExportFileDTO } from '../dtos/IExportFileDTO'
 
 export class FinancialCloseRepository implements IFinancialCloseRepository {
   getMonthlyFinancialCloseDashboardData(
@@ -39,7 +40,7 @@ export class FinancialCloseRepository implements IFinancialCloseRepository {
   }
 
   async sendStatementFile(data: ISendStatementFileDTO): Promise<AxiosResponse<any, any>> {
-    return api.post('/monthlyFinancialCloseBanks/bank-monthly-financial-close/' + data.clientId, data.formData, {
+    return api.post('monthlyFinancialCloseBanks/bank-monthly-financial-close/' + data.clientId, data.formData, {
       params: {
         referenceDate: data.referenceDate
       },
@@ -51,5 +52,9 @@ export class FinancialCloseRepository implements IFinancialCloseRepository {
 
   async deleteStatementFile(data: IDeleteStatementFileDTO): Promise<AxiosResponse<any, any>> {
     return api.delete('monthlyFinancialCloseBanks/imported-file/' + data.id)
+  }
+
+  async exportFile(data: IExportFileDTO): Promise<AxiosResponse> {
+    return api.get('files/download-file/' + data.fileId)
   }
 }

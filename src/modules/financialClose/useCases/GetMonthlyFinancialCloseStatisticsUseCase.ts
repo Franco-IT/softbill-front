@@ -15,7 +15,7 @@ export class GetMonthlyFinancialCloseStatisticsUseCase {
 
       return response.data
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Error ao buscar estatísticas do dashboard, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Error ao buscar estatísticas do dashboard, tente novamente mais tarde.')
     }
   }
 }

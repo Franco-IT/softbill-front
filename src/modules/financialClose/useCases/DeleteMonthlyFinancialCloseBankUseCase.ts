@@ -13,7 +13,7 @@ export class DeleteMonthlyFinancialCloseBankUseCase {
     try {
       return this.financialCloseRepository.deleteMonthlyFinancialCloseBank(data)
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Error ao deletar o fechamento, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Error ao deletar o fechamento, tente novamente mais tarde.')
     }
   }
 }

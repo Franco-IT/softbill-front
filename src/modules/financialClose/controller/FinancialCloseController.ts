@@ -1,5 +1,6 @@
 import { IDeleteMonthlyFinancialCloseBankDTO } from '../dtos/IDeleteMonthlyFinancialCloseBankDTO'
 import { IDeleteStatementFileDTO } from '../dtos/IDeleteStatementFileDTO'
+import { IExportFileDTO } from '../dtos/IExportFileDTO'
 import { IGetMonthlyFinancialCloseBankDTO } from '../dtos/IGetMonthlyFinancialCloseBankDTO'
 import { IGetMonthlyFinancialCloseBanksDTO } from '../dtos/IGetMonthlyFinancialCloseBanksDTO'
 import { IGetMonthlyFinancialClosesDashboardDataDTO } from '../dtos/IGetMonthlyFinancialClosesDashboardDataDTO'
@@ -7,6 +8,7 @@ import { IGetMonthlyFinancialCloseStatisticsDTO } from '../dtos/IGetMonthlyFinan
 import { ISendStatementFileDTO } from '../dtos/ISendStatementFileDTO'
 import { DeleteMonthlyFinancialCloseBankUseCase } from '../useCases/DeleteMonthlyFinancialCloseBankUseCase'
 import { DeleteStatementFileUseCase } from '../useCases/DeleteStatementFileUseCase'
+import { ExportFileUseCase } from '../useCases/ExportFileUseCase'
 import { GetMonthlyFinancialCloseBanksUseCase } from '../useCases/GetMonthlyFinancialCloseBanksUseCase'
 import { GetMonthlyFinancialCloseBankUseCase } from '../useCases/GetMonthlyFinancialCloseBankUseCase'
 import { GetMonthlyFinancialCloseDashboardDataUseCase } from '../useCases/GetMonthlyFinancialCloseDashboardDataUseCase'
@@ -21,6 +23,7 @@ export class FinancialCloseController {
   private deleteMonthlyFinancialCloseBankUseCase: DeleteMonthlyFinancialCloseBankUseCase
   private sendStatementFileUseCase: SendStatementFileUseCase
   private deleteStatementFileUseCase: DeleteStatementFileUseCase
+  private exportFileUseCase: ExportFileUseCase
 
   constructor(
     getMonthlyFinancialCloseStatisticsUseCase: GetMonthlyFinancialCloseStatisticsUseCase,
@@ -29,7 +32,8 @@ export class FinancialCloseController {
     getMonthlyFinancialCloseBanksUseCase: GetMonthlyFinancialCloseBanksUseCase,
     deleteMonthlyFinancialCloseBankUseCase: DeleteMonthlyFinancialCloseBankUseCase,
     sendStatementFileUseCase: SendStatementFileUseCase,
-    deleteStatementFileUseCase: DeleteStatementFileUseCase
+    deleteStatementFileUseCase: DeleteStatementFileUseCase,
+    exportFileUseCase: ExportFileUseCase
   ) {
     this.getMonthlyFinancialCloseStatisticsUseCase = getMonthlyFinancialCloseStatisticsUseCase
     this.getMonthlyFinancialCloseDashboardDataUseCase = getMonthlyFinancialCloseDashboardDataUseCase
@@ -38,6 +42,7 @@ export class FinancialCloseController {
     this.deleteMonthlyFinancialCloseBankUseCase = deleteMonthlyFinancialCloseBankUseCase
     this.sendStatementFileUseCase = sendStatementFileUseCase
     this.deleteStatementFileUseCase = deleteStatementFileUseCase
+    this.exportFileUseCase = exportFileUseCase
   }
 
   async getMonthlyFinancialCloseStatistics(params: IGetMonthlyFinancialCloseStatisticsDTO) {
@@ -66,5 +71,9 @@ export class FinancialCloseController {
 
   async deleteStatementFile(data: IDeleteStatementFileDTO) {
     return this.deleteStatementFileUseCase.execute(data)
+  }
+
+  async exportFile(data: IExportFileDTO) {
+    return this.exportFileUseCase.execute(data)
   }
 }

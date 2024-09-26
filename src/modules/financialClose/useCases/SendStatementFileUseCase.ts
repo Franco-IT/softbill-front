@@ -13,7 +13,7 @@ export class SendStatementFileUseCase {
     try {
       return this.financialCloseRepository.sendStatementFile(data)
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Error ao enviar arquivo, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Error ao enviar arquivo, tente novamente mais tarde.')
     }
   }
 }

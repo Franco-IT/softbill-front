@@ -10,13 +10,13 @@ export class ErrorProvider implements IErrorProvider {
         const { message } = data
 
         if (errorReference[status]) {
-          if (errorReference[status][message]) throw new AppError(errorReference[status][message], status)
+          if (errorReference[status][message]) return new AppError(errorReference[status][message], status)
         }
 
-        throw new AppError(defaultErrorMessage, status)
+        return new AppError(defaultErrorMessage, status)
       }
     }
 
-    throw new AppError(defaultErrorMessage)
+    return new AppError(defaultErrorMessage)
   }
 }

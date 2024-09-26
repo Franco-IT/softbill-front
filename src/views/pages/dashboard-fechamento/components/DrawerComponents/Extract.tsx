@@ -150,10 +150,10 @@ const Extract = () => {
   }
 
   const handleDownloadImportedFile = (fileId: string) => {
-    api
-      .get('/files/download-file/' + fileId)
+    financialCloseController
+      .exportFile({ fileId })
       .then(response => window.open(response.data))
-      .catch(() => toast.error('Erro ao baixar o arquivo, tente novamente mais tarde'))
+      .catch(error => error instanceof AppError && toast.error(error.message))
   }
 
   const handleDeleteImportedFile = (monthlyFinancialCloseBankId: string) => {

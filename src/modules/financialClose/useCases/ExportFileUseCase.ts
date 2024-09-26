@@ -1,19 +1,21 @@
 import { errorProvider } from 'src/shared/providers'
-import { IDeleteStatementFileDTO } from '../dtos/IDeleteStatementFileDTO'
 import { IFinancialCloseRepository } from '../repositories/IFinancialCloseRepository'
+import { IExportFileDTO } from '../dtos/IExportFileDTO'
 
-export class DeleteStatementFileUseCase {
+export class ExportFileUseCase {
   private financialCloseRepository: IFinancialCloseRepository
 
   constructor(financialCloseRepository: IFinancialCloseRepository) {
     this.financialCloseRepository = financialCloseRepository
   }
 
-  async execute(data: IDeleteStatementFileDTO) {
+  async execute(data: IExportFileDTO) {
     try {
-      return this.financialCloseRepository.deleteStatementFile(data)
+      const response = await this.financialCloseRepository.exportFile(data)
+
+      return response
     } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Error ao deletar arquivo, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Error ao exportar arquivo, tente novamente mais tarde.')
     }
   }
 }
