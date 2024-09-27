@@ -12,7 +12,9 @@ export class DeleteStatementFileUseCase {
 
   async execute(data: IDeleteStatementFileDTO) {
     try {
-      return this.financialCloseRepository.deleteStatementFile(data)
+      const response = await this.financialCloseRepository.deleteStatementFile(data)
+
+      return response
     } catch (error: any) {
       throw errorProvider.handle(error, errors, 'Error ao deletar arquivo, tente novamente mais tarde.')
     }

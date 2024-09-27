@@ -27,7 +27,13 @@ export const errors = {
     'You cannot get the monthly financial close of this bank from this user':
       'Você não pode obter o fechamento deste banco deste usuário, tente novamente mais tarde.',
     'You cant get monthly financial close of this bank from another accounting':
-      'Você não pode obter o fechamento deste banco de outro contador, tente novamente mais tarde.'
+      'Você não pode obter o fechamento deste banco de outro contador, tente novamente mais tarde.',
+    'You cannot get transactions from this user':
+      'Você não pode obter transações deste usuário, tente novamente mais tarde.',
+    'You cant get an origin from another user':
+      'Você não pode obter uma origem de outro usuário, tente novamente mais tarde.',
+    'You cant get an origin from another accounting':
+      'Você não pode obter uma origem de outro contador, tente novamente mais tarde.'
   },
   404: {
     'Client not found': 'Cliente não encontrado, tente novamente mais tarde.',
@@ -44,7 +50,9 @@ export const errors = {
     'File cannot be deleted on a monthly_financial_close_bank DONE':
       'Arquivo não pode ser deletado em um fechamento bancário Aprovado, tente novamente mais tarde.',
     'monthlyFinancialCloseBank doesnt have any imported_file':
-      'Fechamento bancário não possui nenhum arquivo importado, tente novamente mais tarde.'
+      'Fechamento bancário não possui nenhum arquivo importado, tente novamente mais tarde.',
+    'transactionAccountOrigin Not Found': 'Conta de origem da transação não encontrada, tente novamente mais tarde.',
+    'Transaction Not Found': 'Transação não encontrada, tente novamente mais tarde.'
   },
   409: {
     'User isnt a client': 'Usuário não é um cliente, tente novamente mais tarde.',
@@ -74,6 +82,13 @@ export const errors = {
     'You cant get a client from another accounting':
       'Você não pode obter um cliente de outro contador, tente novamente mais tarde.',
     'You cant populate to this user': 'Você não pode buscar dados deste usuário, tente novamente mais tarde.',
-    'You cant populate to other client': 'Você não pode buscar dados de outro cliente, tente novamente mais tarde.'
+    'You cant populate to other client': 'Você não pode buscar dados de outro cliente, tente novamente mais tarde.',
+    'Invalid status': 'Status inválido, tente novamente mais tarde.',
+    'Invalid transaction_type_extract': 'Tipo de transação inválido, tente novamente mais tarde.',
+    'Invalid transaction_type_conciliation': 'Tipo de transação inválido, tente novamente mais tarde.',
+    'Invalid step': 'Passo inválido, tente novamente mais tarde.',
+    'Transaction Origin Already Exists': 'Origem da transação já existe, tente novamente mais tarde.',
+    'Error on send file, please send only csv files':
+      'Erro ao enviar arquivo, por favor envie apenas arquivos csv, tente novamente mais tarde.'
   }
 }

@@ -1,8 +1,9 @@
-// Pacotes externos
+// External Packages
 import { Suspense, useEffect, useState, ChangeEvent, MouseEvent, useMemo, useCallback } from 'react'
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
 import { useQuery } from 'react-query'
 
+// Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
 import Error from 'src/components/FeedbackAPIs/Error'
 import HeadCells from './HeadCells'
@@ -10,13 +11,17 @@ import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
+// Utilities
 import { Loading, Order, getComparator, stableSort } from 'src/utils/list'
+import { formatAmount } from 'src/utils/format'
 
+// Types and Hooks
 import { ThemeColor } from 'src/@core/layouts/types'
 import { useAppSelector } from 'src/hooks/useAppSelector'
-import { api } from 'src/services/api'
+
+// Providers and Controllers
 import { dateProvider } from 'src/shared/providers'
-import { formatAmount } from 'src/utils/format'
+import { financialCloseController } from 'src/modules/financialClose'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -59,29 +64,21 @@ const List = () => {
     [filter, monthlyFinancialCloseBank.bankAccountId, page, rowsPerPage]
   )
 
+  const data = useMemo(
+    () => ({ monthlyFinancialCloseId: monthlyFinancialClose.monthlyFinancialCloseId, params }),
+    [monthlyFinancialClose.monthlyFinancialCloseId, params]
+  )
+
   const {
     data: rows,
     isLoading,
     isError
-  } = useQuery(
-    ['financial-statements', params],
-    async () => {
-      const response = await api.get(
-        '/transactions/by-monthly-financial-close/' + monthlyFinancialClose.monthlyFinancialCloseId,
-        {
-          params
-        }
-      )
-
-      return response.data
-    },
-    {
-      keepPreviousData: true,
-      staleTime: 1000 * 60 * 5,
-      refetchOnWindowFocus: false,
-      enabled: showStatements
-    }
-  )
+  } = useQuery(['financial-statements', params], () => financialCloseController.getBankStatement(data), {
+    keepPreviousData: true,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    enabled: showStatements
+  })
 
   const handleRequestSort = useCallback(
     (event: MouseEvent<unknown>, property: keyof any) => {

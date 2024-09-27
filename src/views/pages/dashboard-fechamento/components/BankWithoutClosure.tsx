@@ -1,11 +1,11 @@
 // Material UI Imports
 import { Box, Button, IconButton } from '@mui/material'
 
-// Utilitários
+// Utils
 import { getInitials } from 'src/utils/getInitials'
 import { formatName } from 'src/utils/format'
 
-// Componentes internos
+// Custom Components
 import CustomAvatar from 'src/components/CustomAvatar'
 import IconifyIcon from 'src/@core/components/icon'
 
@@ -13,8 +13,8 @@ import IconifyIcon from 'src/@core/components/icon'
 import useToast from 'src/hooks/useToast'
 import { useQueryClient } from 'react-query'
 
-// Serviços
-import { api } from 'src/services/api'
+// Services
+import { financialCloseController } from 'src/modules/financialClose'
 
 interface BankWithoutClosureProps {
   bank: any
@@ -24,7 +24,7 @@ interface BankWithoutClosureProps {
 
 const BankWithoutClosure = ({ bank, monthlyFinancialCloseId, referenceDate }: BankWithoutClosureProps) => {
   const queryClient = useQueryClient()
-  const { toastSuccess, toastError } = useToast()
+  const { toastPromise } = useToast()
 
   const handleAddBankOnClosure = (
     bankAccountId: string,
@@ -32,8 +32,8 @@ const BankWithoutClosure = ({ bank, monthlyFinancialCloseId, referenceDate }: Ba
     monthlyFinancialCloseId: string,
     referenceDate: string
   ) => {
-    api
-      .post('monthlyFinancialCloseBanks', {
+    const myPromise = financialCloseController
+      .createMonthlyFinancialCloseBank({
         bankAccountId,
         clientId,
         monthlyFinancialCloseId,
@@ -42,9 +42,14 @@ const BankWithoutClosure = ({ bank, monthlyFinancialCloseId, referenceDate }: Ba
       .then(() => {
         queryClient.invalidateQueries(['financial-closing-list'])
         queryClient.invalidateQueries(['financial-closing-dashboard'])
-        toastSuccess('Fechamento bancário adicionado com sucesso!')
       })
-      .catch(() => toastError('Erro ao adicionar Fechamento Bancário!'))
+
+    toastPromise(
+      myPromise,
+      'Criando fechamento bancário...',
+      'Fechamento bancário adicionado com sucesso!',
+      'Erro ao criar fechamento bancário!'
+    )
   }
 
   return (

@@ -12,7 +12,9 @@ export class DeleteMonthlyFinancialCloseBankUseCase {
 
   async execute(data: IDeleteMonthlyFinancialCloseBankDTO) {
     try {
-      return this.financialCloseRepository.deleteMonthlyFinancialCloseBank(data)
+      const response = await this.financialCloseRepository.deleteMonthlyFinancialCloseBank(data)
+
+      return response
     } catch (error: any) {
       throw errorProvider.handle(error, errors, 'Error ao deletar o fechamento, tente novamente mais tarde.')
     }

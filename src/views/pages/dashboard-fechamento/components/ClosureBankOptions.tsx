@@ -25,12 +25,11 @@ const ClosureBankOptions: React.FC<ClosureBankOptionsProps> = React.memo(({ menu
   }
 
   const handleMenuItemClick = (item: MenuItemProps, event: React.MouseEvent<HTMLLIElement>) => {
-    if (item.action) {
-      item.action()
-    } else if (item.actionWithParam) {
-      item.actionWithParam(event)
-      handleClose()
-    }
+    if (item.action) item.action()
+
+    if (item.actionWithParam) item.actionWithParam(event)
+
+    handleClose()
   }
 
   return (

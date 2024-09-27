@@ -1,19 +1,19 @@
 // React Query
 import { useQueryClient } from 'react-query'
 
-// MUI
+// MUI Components
 import { Accordion, AccordionSummary, Avatar, Button, Box, useMediaQuery, IconButton } from '@mui/material'
 
-// Componentes internos
+// Custom Components
 import IconifyIcon from 'src/@core/components/icon'
 
-// Utilidades e hooks
+// Utilities and Hooks
 import { getInitials } from 'src/utils/getInitials'
 import { formatName } from 'src/utils/format'
 import useToast from 'src/hooks/useToast'
 
-// Serviços
-import { api } from 'src/services/api'
+// Services
+import { financialCloseController } from 'src/modules/financialClose'
 
 interface CustomBankAccordionWithoutClosureProps {
   bank: any
@@ -27,7 +27,7 @@ const CustomBankAccordionWithoutClosure = ({
   referenceDate
 }: CustomBankAccordionWithoutClosureProps) => {
   const queryClient = useQueryClient()
-  const { toastSuccess, toastError } = useToast()
+  const { toastPromise } = useToast()
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
   const handleAddBankOnClosure = (
@@ -36,8 +36,8 @@ const CustomBankAccordionWithoutClosure = ({
     monthlyFinancialCloseId: string,
     referenceDate: string
   ) => {
-    api
-      .post('monthlyFinancialCloseBanks', {
+    const myPromise = financialCloseController
+      .createMonthlyFinancialCloseBank({
         bankAccountId,
         clientId,
         monthlyFinancialCloseId,
@@ -45,9 +45,15 @@ const CustomBankAccordionWithoutClosure = ({
       })
       .then(() => {
         queryClient.invalidateQueries(['financial-closing-list'])
-        toastSuccess('Fechamento bancário adicionado com sucesso!')
+        queryClient.invalidateQueries(['financial-closing-dashboard'])
       })
-      .catch(() => toastError('Erro ao adicionar Fechamento Bancário!'))
+
+    toastPromise(
+      myPromise,
+      'Criando fechamento bancário...',
+      'Fechamento bancário adicionado com sucesso!',
+      'Erro ao criar fechamento bancário!'
+    )
   }
 
   return (

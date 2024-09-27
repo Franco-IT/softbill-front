@@ -12,7 +12,9 @@ export class SendStatementFileUseCase {
 
   async execute(data: ISendStatementFileDTO) {
     try {
-      return this.financialCloseRepository.sendStatementFile(data)
+      const response = await this.financialCloseRepository.sendStatementFile(data)
+
+      return response
     } catch (error: any) {
       throw errorProvider.handle(error, errors, 'Error ao enviar arquivo, tente novamente mais tarde.')
     }
