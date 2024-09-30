@@ -1,6 +1,3 @@
-// React Imports
-import { memo } from 'react'
-
 // Material UI Imports
 import { Card, Divider } from '@mui/material'
 
@@ -13,7 +10,7 @@ interface NoClosureCardProps {
   referenceDate: string
 }
 
-const NoClosureCard = memo(({ data, referenceDate }: NoClosureCardProps) => {
+const NoClosureCard = ({ data, referenceDate }: NoClosureCardProps) => {
   const headerProps = {
     client: data.client
   }
@@ -30,6 +27,6 @@ const NoClosureCard = memo(({ data, referenceDate }: NoClosureCardProps) => {
       <Content {...contentProps} />
     </Card>
   )
-})
+}
 
 export default NoClosureCard

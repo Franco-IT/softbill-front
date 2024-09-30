@@ -1,6 +1,3 @@
-// React Imports
-import { memo } from 'react'
-
 // Material UI Imports
 import { Card, Divider } from '@mui/material'
 
@@ -12,7 +9,7 @@ interface NoBanksCardProps {
   data: any
 }
 
-const NoBanksCard = memo(({ data }: NoBanksCardProps) => {
+const NoBanksCard = ({ data }: NoBanksCardProps) => {
   const headerProps = {
     client: data.client
   }
@@ -28,6 +25,6 @@ const NoBanksCard = memo(({ data }: NoBanksCardProps) => {
       <Content {...contentProps} />
     </Card>
   )
-})
+}
 
 export default NoBanksCard

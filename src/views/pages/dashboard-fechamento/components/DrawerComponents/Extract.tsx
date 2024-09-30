@@ -186,6 +186,7 @@ const Extract = () => {
       .then(response => {
         if (response?.status === 200) {
           queryClient.invalidateQueries(['financial-closing'])
+          queryClient.invalidateQueries(['financial-closing-list'])
           toast.success('Arquivo enviado com sucesso!')
           toggleDrawer(anchor, false, null)(e)
         }

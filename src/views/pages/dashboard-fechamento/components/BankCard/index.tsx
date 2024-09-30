@@ -1,6 +1,3 @@
-// React Imports
-import { memo } from 'react'
-
 // Material UI Imports
 import { Card, Divider } from '@mui/material'
 
@@ -13,7 +10,7 @@ interface BankCardProps {
   referenceDate: string
 }
 
-const BankCard = memo(({ client, referenceDate }: BankCardProps) => {
+const BankCard = ({ client, referenceDate }: BankCardProps) => {
   const headerProps = {
     client: client.monthlyFinancialClose,
     monthlyFinancialCloseId: client.monthlyFinancialClose.monthlyFinancialCloseId
@@ -31,6 +28,6 @@ const BankCard = memo(({ client, referenceDate }: BankCardProps) => {
       <Content {...contentProps} />
     </Card>
   )
-})
+}
 
 export default BankCard

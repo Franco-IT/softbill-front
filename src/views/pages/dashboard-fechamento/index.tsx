@@ -126,30 +126,27 @@ const Dashboard = () => {
     return date ? new Date(date) : null
   }
 
-  const handleCheckClientSituation = useCallback(
-    (clientData: any, showList: string) => {
-      if (!clientData.hasBankAccounts) {
-        return showList === 'GRID' ? <NoBanksCard data={clientData} /> : <NoBanksAccordion data={clientData} />
-      }
+  const handleCheckClientSituation = (clientData: any, showList: string) => {
+    if (!clientData.hasBankAccounts) {
+      return showList === 'GRID' ? <NoBanksCard data={clientData} /> : <NoBanksAccordion data={clientData} />
+    }
 
-      if (!clientData.hasMonthlyFinancialClose) {
-        return showList === 'GRID' ? (
-          <NoClosureCard data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
-        ) : (
-          <NoClosureAccordion data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
-        )
-      }
+    if (!clientData.hasMonthlyFinancialClose) {
+      return showList === 'GRID' ? (
+        <NoClosureCard data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
+      ) : (
+        <NoClosureAccordion data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
+      )
+    }
 
-      if (clientData.hasMonthlyFinancialClose) {
-        return showList === 'GRID' ? (
-          <BankCard client={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
-        ) : (
-          <CustomUserAccordion data={clientData} />
-        )
-      }
-    },
-    [date]
-  )
+    if (clientData.hasMonthlyFinancialClose) {
+      return showList === 'GRID' ? (
+        <BankCard client={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
+      ) : (
+        <CustomUserAccordion data={clientData} />
+      )
+    }
+  }
 
   const handleInvalidationQueries = () => {
     queryClient.invalidateQueries(['financial-closing-list'])
