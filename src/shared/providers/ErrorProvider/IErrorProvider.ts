@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios'
 import { AppError } from 'src/shared/errors/AppError'
 
-export type IErrorProps = Error | AxiosError<unknown, any>
+export type IErrorProps = Error | AxiosError<unknown, any> | unknown
 
 export type IErrorReference = { [errorStatus: number]: { [keyMessage: string]: string } }
 

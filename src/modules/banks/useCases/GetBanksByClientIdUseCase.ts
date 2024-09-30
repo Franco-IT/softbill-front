@@ -11,7 +11,7 @@ export class GetBanksByClientIdUseCase {
 
       return response.data
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao buscar bancos do cliente.')
+      throw errorProvider.handle(error, {}, 'Erro ao buscar bancos do cliente.')
     }
   }
 }

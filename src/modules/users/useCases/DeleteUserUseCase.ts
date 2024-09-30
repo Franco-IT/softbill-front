@@ -13,7 +13,7 @@ export class DeleteUserUseCase {
     try {
       return this.usersRepository.delete(data)
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao deletar usuário, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Erro ao deletar usuário, tente novamente mais tarde.')
     }
   }
 }

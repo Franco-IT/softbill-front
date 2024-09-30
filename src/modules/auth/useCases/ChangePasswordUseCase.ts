@@ -13,7 +13,7 @@ export class ChangePasswordUseCase {
     try {
       return await this.userAuthRepository.changePassword(data)
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Ocorreu um erro ao alterar a senha.')
+      throw errorProvider.handle(error, {}, 'Ocorreu um erro ao alterar a senha.')
     }
   }
 }

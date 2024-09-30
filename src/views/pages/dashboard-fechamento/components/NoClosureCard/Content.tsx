@@ -1,8 +1,12 @@
 // Material UI Imports
 import { Box, Button, CardContent, Typography } from '@mui/material'
+
+// Hooks
 import { useQueryClient } from 'react-query'
 import useToast from 'src/hooks/useToast'
-import { api } from 'src/services/api'
+
+// Providers and Controllers
+import { financialCloseController } from 'src/modules/financialClose'
 import { dateProvider } from 'src/shared/providers'
 
 interface ContentProps {
@@ -15,8 +19,8 @@ const Content = (props: ContentProps) => {
   const queryClient = useQueryClient()
 
   const handleCreateClosure = (clientId: string, referenceDate: string) => {
-    const myPromise = api
-      .post('monthlyFinancialCloses', {
+    const myPromise = financialCloseController
+      .createMonthlyFinancialClose({
         clientId,
         referenceDate
       })

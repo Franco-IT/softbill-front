@@ -11,7 +11,7 @@ export class ChangeBankDisponibilityUseCase {
 
       return response.data
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao alterar disponibilidade do banco.')
+      throw errorProvider.handle(error, {}, 'Erro ao alterar disponibilidade do banco.')
     }
   }
 }

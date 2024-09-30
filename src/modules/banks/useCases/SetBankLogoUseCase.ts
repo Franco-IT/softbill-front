@@ -13,7 +13,7 @@ export class SetBankLogoUseCase {
     try {
       return await this.bankRepository.setBankLogo(data)
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao atualizar imagem.')
+      throw errorProvider.handle(error, {}, 'Erro ao atualizar imagem.')
     }
   }
 }

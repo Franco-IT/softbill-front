@@ -14,11 +14,9 @@ import { useQueryClient } from 'react-query'
 // Utils
 import { statusColorsMUI } from '../../utils'
 
-// Services
-import { api } from 'src/services/api'
-
-// Types
+// Types and Controllers
 import { ChangeEvent } from 'react'
+import { financialCloseController } from 'src/modules/financialClose'
 
 // import { useDrawer } from 'src/hooks/useDrawer'
 
@@ -54,16 +52,22 @@ const Validation = () => {
 
   const handleChangeStatus = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = (e.target as HTMLInputElement).value
-    const myPromise = api
-      .put('monthlyFinancialCloseBanks/' + monthlyFinancialCloseBankId, {
-        validated: value === 'DONE' ? true : false
-      })
-      .then(() => {
-        queryClient.invalidateQueries(['financial-closing'])
-        queryClient.invalidateQueries(['financial-closing-dashboard"'])
-      })
 
-    toastPromise(myPromise, 'Enviando lembrete...', 'Lembrete enviado com sucesso', 'Erro ao enviar lembrete')
+    const reqBody = {
+      validated: value === 'DONE' ? true : false
+    }
+
+    const data = {
+      monthlyFinancialCloseBankId,
+      reqBody
+    }
+
+    const myPromise = financialCloseController.updateMonthlyFinancialCloseBank(data).then(() => {
+      queryClient.invalidateQueries(['financial-closing'])
+      queryClient.invalidateQueries(['financial-closing-dashboard"'])
+    })
+
+    toastPromise(myPromise, 'Validando...', 'Validado com sucesso.', 'Erro ao Validar, tente novamente mais tarde.')
   }
 
   return (

@@ -15,7 +15,7 @@ export class ChangeBankStatusUseCase {
 
       return response.data
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao alterar status do banco.')
+      throw errorProvider.handle(error, {}, 'Erro ao alterar status do banco.')
     }
   }
 }

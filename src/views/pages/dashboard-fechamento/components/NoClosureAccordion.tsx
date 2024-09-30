@@ -14,13 +14,17 @@ import MuiAccordionDetails, { AccordionDetailsProps } from '@mui/material/Accord
 import Icon from 'src/@core/components/icon'
 import CustomAvatar from 'src/components/CustomAvatar'
 
+// Hooks
+import { useQueryClient } from 'react-query'
+import useToast from 'src/hooks/useToast'
+
 // Utils
 import { getInitials } from 'src/utils/getInitials'
 import { formatName } from 'src/utils/format'
-import { useQueryClient } from 'react-query'
-import useToast from 'src/hooks/useToast'
-import { api } from 'src/services/api'
+
+// Providers and Controllers
 import { dateProvider } from 'src/shared/providers'
+import { financialCloseController } from 'src/modules/financialClose'
 
 const Accordion = styled(MuiAccordion)<AccordionProps>(({ theme }) => ({
   margin: 0,
@@ -99,8 +103,8 @@ const NoClosureAccordion = ({ data, referenceDate }: NoClosureAccordionProps) =>
   const expandIcon = (value: string) => <Icon icon={expanded === value ? 'tabler:minus' : 'tabler:plus'} />
 
   const handleCreateClosure = (clientId: string, referenceDate: string) => {
-    const myPromise = api
-      .post('monthlyFinancialCloses', {
+    const myPromise = financialCloseController
+      .createMonthlyFinancialClose({
         clientId,
         referenceDate
       })

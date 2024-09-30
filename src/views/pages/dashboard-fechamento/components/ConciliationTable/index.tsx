@@ -18,7 +18,7 @@ import { useAppSelector } from 'src/hooks/useAppSelector'
 import { getComparator, Order, stableSort } from 'src/utils/list'
 
 // Services
-import { api } from 'src/services/api'
+import { financialCloseController } from 'src/modules/financialClose'
 
 const ConciliationTable = () => {
   const showConciliations = useAppSelector(state => state.ClosingReducer.showConciliations)
@@ -49,29 +49,24 @@ const ConciliationTable = () => {
     [page, rowsPerPage, filter, validated, status, type, monthlyFinancialCloseBank.bankAccountId]
   )
 
+  const data = useMemo(
+    () => ({
+      monthlyFinancialCloseId: monthlyFinancialClose.monthlyFinancialCloseId,
+      params
+    }),
+    [monthlyFinancialClose.monthlyFinancialCloseId, params]
+  )
+
   const {
     data: rows,
     isLoading,
     isError
-  } = useQuery(
-    ['conciliations', params],
-    async () => {
-      const response = await api.get(
-        '/transactions/by-monthly-financial-close/' + monthlyFinancialClose.monthlyFinancialCloseId,
-        {
-          params
-        }
-      )
-
-      return response.data
-    },
-    {
-      staleTime: 1000 * 60 * 5,
-      keepPreviousData: true,
-      refetchOnWindowFocus: false,
-      enabled: showConciliations
-    }
-  )
+  } = useQuery(['conciliations', params], () => financialCloseController.getBankTransactions(data), {
+    staleTime: 1000 * 60 * 5,
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+    enabled: showConciliations
+  })
 
   const handleRequestSort = useCallback(
     (event: MouseEvent<unknown>, property: keyof any) => {

@@ -14,7 +14,7 @@ export class UpdateClientUseCase {
     try {
       return this.userRepository.updateClient(data)
     } catch (error: any) {
-      errorProvider.handle(error, errors, 'Erro ao atualizar cliente, tente novamente mais tarde.')
+      throw errorProvider.handle(error, errors, 'Erro ao atualizar cliente, tente novamente mais tarde.')
     }
   }
 }

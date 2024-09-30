@@ -13,18 +13,20 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // Hooks
-import { useDrawer } from 'src/hooks/useDrawer'
+import useToast from 'src/hooks/useToast'
 import { useQueryClient } from 'react-query'
+import { useDrawer } from 'src/hooks/useDrawer'
 
 // Utils
 import { formatAmount } from 'src/utils/format'
 import { applyAccountNumberMask } from 'src/utils/inputs'
 
-// Services
-import { api } from 'src/services/api'
+// Controllers and DTOs
+import { financialCloseController } from 'src/modules/financialClose'
+import { IUpdateBankTransactionDTO } from 'src/modules/financialClose/dtos/IUpdateBankTransactionDTO'
 
-// Notifications
-import toast from 'react-hot-toast'
+// Errors
+import { AppError } from 'src/shared/errors/AppError'
 
 const schema = yup.object().shape({
   account: yup.string().required('Campo obrigatório'),
@@ -62,8 +64,9 @@ const ConciliationItem = (props: ConciliationItemProps) => {
     transactionTypeConciliation
   } = props
 
-  const { anchor, toggleDrawer } = useDrawer()
   const queryClient = useQueryClient()
+  const { anchor, toggleDrawer } = useDrawer()
+  const { toastError, toastSuccess } = useToast()
 
   const {
     handleSubmit,
@@ -104,35 +107,38 @@ const ConciliationItem = (props: ConciliationItemProps) => {
     return statusValues[status]
   }
 
-  const onSubmit = (data: FormData, e?: React.KeyboardEvent | React.MouseEvent) => {
+  const onSubmit = (formData: FormData, e?: React.KeyboardEvent | React.MouseEvent) => {
     const bodyCredit = {
-      creditAccount: data.account,
-      conciliationDescription: data.conciliationDescription
+      creditAccount: formData.account,
+      conciliationDescription: formData.conciliationDescription
     }
 
     const bodyDebit = {
-      debitAccount: data.account,
-      conciliationDescription: data.conciliationDescription
+      debitAccount: formData.account,
+      conciliationDescription: formData.conciliationDescription
     }
 
-    const requestBody = new Object()
+    const reqBody: IUpdateBankTransactionDTO['reqBody'] = {} as IUpdateBankTransactionDTO['reqBody']
 
-    Object.assign(requestBody, transactionTypeConciliation === 'DEBIT' ? bodyCredit : bodyDebit)
+    Object.assign(reqBody, transactionTypeConciliation === 'DEBIT' ? bodyCredit : bodyDebit)
 
-    api
-      .put('transactions/' + data.id, requestBody)
+    const data: IUpdateBankTransactionDTO = {
+      transactionId: formData.id,
+      reqBody
+    }
+
+    financialCloseController
+      .updateBankTransaction(data)
       .then(response => {
         if (response.status === 200) {
           queryClient.invalidateQueries(['conciliations'])
           queryClient.invalidateQueries(['financial-closing-dashboard'])
           queryClient.invalidateQueries(['financial-closing-list'])
-          toast.success('Conciliação salva com sucesso')
+          toastSuccess('Transação salva com sucesso')
           toggleDrawer(anchor, false, null)(e as React.KeyboardEvent | React.MouseEvent)
         }
       })
-      .catch(() => {
-        toast.error('Erro ao salvar conciliação')
-      })
+      .catch(error => error instanceof AppError && toastError(error.message))
   }
 
   const handleCancel = (e?: React.KeyboardEvent | React.MouseEvent) => {

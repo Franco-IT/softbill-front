@@ -63,7 +63,7 @@ interface ImageCropperProps {
 
 const ASPECT_RATIO = Number(process.env.NEXT_PUBLIC_ASPECT_RATIO) || 1
 const MIN_CROP_DIMENSION = Number(process.env.NEXT_PUBLIC_MIN_CROP_DIMENSION) || 200
-const MAX_DIMENSION = Number(process.env.NEXT_PUBLIC_MAX_DIMENSION) || 600
+const MAX_DIMENSION = Number(process.env.NEXT_PUBLIC_MAX_DIMENSION) || 1200
 const MIN_DIMENSION = Number(process.env.NEXT_PUBLIC_MIN_DIMENSION) || 100
 
 const ImageCropper = ({ onClose, open, onSubmit }: ImageCropperProps) => {
@@ -89,7 +89,7 @@ const ImageCropper = ({ onClose, open, onSubmit }: ImageCropperProps) => {
         const { naturalWidth, naturalHeight } = e.currentTarget as HTMLImageElement
 
         if (naturalWidth > MAX_DIMENSION || naturalHeight > MAX_DIMENSION) {
-          setError('A imagem deve ter no máximo 600px de largura e altura.')
+          setError('A imagem deve ter no máximo 1200px de largura e altura.')
 
           return setImgSrc(null)
         }

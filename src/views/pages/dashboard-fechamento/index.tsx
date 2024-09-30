@@ -1,10 +1,10 @@
-// React
+// React Imports
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
 // React Query
 import { useQuery, useQueryClient } from 'react-query'
 
-// MUI
+// Material UI Imports
 import {
   Box,
   Button,
@@ -20,7 +20,7 @@ import {
   useMediaQuery
 } from '@mui/material'
 
-// Componentes internos
+// Internal Components
 import CustomTextField from 'src/@core/components/mui/text-field'
 import CardOptionHorizontal from 'src/@core/components/card-statistics/card-option-horizontal'
 import IconifyIcon from 'src/@core/components/icon'
@@ -37,17 +37,17 @@ import NoBanksCard from './components/NoBanksCard'
 import NoBanksAccordion from './components/NoBanksAccordion'
 import NoClosureAccordion from './components/NoClosureAccordion'
 
-// Providers e hooks
+// Providers and Hooks
 import { dateProvider } from 'src/shared/providers'
 import { useDrawer } from 'src/hooks/useDrawer'
 
-// Utilidades
+// Utilities
 import { statusOptions } from './options'
 import { statusColorsMUI } from './utils'
 
-// Tipos e serviços
+// Types and Services
 import { StatusValue } from './types'
-import { api } from 'src/services/api'
+import { financialCloseController } from 'src/modules/financialClose'
 
 const Dashboard = () => {
   const queryClient = useQueryClient()
@@ -82,10 +82,7 @@ const Dashboard = () => {
     isError: isErrorDashboardData
   } = useQuery(
     ['financial-closing-dashboard'],
-    async () =>
-      await api.get('/monthlyFinancialCloses/statistics', {
-        params: paramsDashboard
-      }),
+    () => financialCloseController.getMonthlyFinancialCloseStatistics(paramsDashboard),
     {
       staleTime: 1000 * 60 * 5,
       keepPreviousData: true
@@ -109,11 +106,7 @@ const Dashboard = () => {
     isError: isErrorFinancialClosingData
   } = useQuery(
     ['financial-closing-list', params],
-    async () => {
-      const response = await api.get('/monthlyFinancialCloses/dashboard-accounting', { params })
-
-      return response.data
-    },
+    () => financialCloseController.getMonthlyFinancialCloseDashboardData(params),
     {
       staleTime: 1000 * 60 * 5,
       keepPreviousData: true
@@ -170,7 +163,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (dashboardDataResponse) {
-      const { data } = dashboardDataResponse.data
+      const data = dashboardDataResponse.data
       const totalUsers = data.totalMonthlyFinancialCloses
       const totalApproved = data.monthlyFinancialClosesDone
       const totalPending = data.monthlyFinancialClosesPending

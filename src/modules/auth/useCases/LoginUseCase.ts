@@ -15,7 +15,7 @@ export class LoginUseCase {
 
       return response
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'E-mail ou senha incorretos, tente novamente.')
+      throw errorProvider.handle(error, {}, 'E-mail ou senha incorretos, tente novamente.')
     }
   }
 }

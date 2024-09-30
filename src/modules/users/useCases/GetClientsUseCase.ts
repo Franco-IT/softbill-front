@@ -15,7 +15,7 @@ export class GetClientsUseCase {
 
       return response.data
     } catch (error: any) {
-      errorProvider.handle(error, {}, 'Erro ao buscar clientes, tente novamente mais tarde.')
+      throw errorProvider.handle(error, {}, 'Erro ao buscar clientes, tente novamente mais tarde.')
     }
   }
 }
