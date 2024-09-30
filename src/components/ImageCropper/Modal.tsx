@@ -28,7 +28,8 @@ export default function BasicModal({ children, open, onClose }: BasicModalProps)
       sx={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        p: 4
       }}
     >
       <Box sx={style}>
