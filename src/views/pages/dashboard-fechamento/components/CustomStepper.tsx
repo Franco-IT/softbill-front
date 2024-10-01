@@ -1,4 +1,4 @@
-import { memo, ReactNode, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { Step, StepLabel, Stepper } from '@mui/material'
 import StepperCustomDot from './StepperCustomDot'
 import { StatusProps, SubStatusProps } from '../types'
@@ -8,7 +8,7 @@ interface CustomStepperProps {
   status: StatusProps
 }
 
-const CustomStepper = memo(({ status }: CustomStepperProps) => {
+const CustomStepper = ({ status }: CustomStepperProps) => {
   const { extract, conciliation, validation } = status
   const [activeStep, setActiveStep] = useState(0)
 
@@ -62,6 +62,6 @@ const CustomStepper = memo(({ status }: CustomStepperProps) => {
       })}
     </Stepper>
   )
-})
+}
 
 export default CustomStepper

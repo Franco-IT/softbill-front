@@ -58,7 +58,7 @@ const Dashboard = () => {
 
   const [search, setSearch] = useState('')
   const [month, setMonth] = useState('')
-  const [date, setDate] = useState<any>(new Date())
+  const [date, setDate] = useState<any>(null)
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [status, setStatus] = useState<any>('')
@@ -81,11 +81,12 @@ const Dashboard = () => {
     isLoading: isLoadingDashboardData,
     isError: isErrorDashboardData
   } = useQuery(
-    ['financial-closing-dashboard'],
+    ['financial-closing-dashboard', paramsDashboard],
     () => financialCloseController.getMonthlyFinancialCloseStatistics(paramsDashboard),
     {
       staleTime: 1000 * 60 * 5,
-      keepPreviousData: true
+      keepPreviousData: true,
+      enabled: !!date && !!paramsDashboard.referenceDate
     }
   )
 
@@ -109,7 +110,8 @@ const Dashboard = () => {
     () => financialCloseController.getMonthlyFinancialCloseDashboardData(params),
     {
       staleTime: 1000 * 60 * 5,
-      keepPreviousData: true
+      keepPreviousData: true,
+      enabled: !!date && !!params.referenceDate
     }
   )
 
@@ -126,30 +128,34 @@ const Dashboard = () => {
     return date ? new Date(date) : null
   }
 
-  const handleCheckClientSituation = (clientData: any, showList: string) => {
-    if (!clientData.hasBankAccounts) {
-      return showList === 'GRID' ? <NoBanksCard data={clientData} /> : <NoBanksAccordion data={clientData} />
-    }
+  const handleCheckClientSituation = useMemo(
+    () => (clientData: any, showList: string) => {
+      if (!clientData.hasBankAccounts) {
+        return showList === 'GRID' ? <NoBanksCard data={clientData} /> : <NoBanksAccordion data={clientData} />
+      }
 
-    if (!clientData.hasMonthlyFinancialClose) {
-      return showList === 'GRID' ? (
-        <NoClosureCard data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
-      ) : (
-        <NoClosureAccordion data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
-      )
-    }
+      if (!clientData.hasMonthlyFinancialClose) {
+        return showList === 'GRID' ? (
+          <NoClosureCard data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
+        ) : (
+          <NoClosureAccordion data={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
+        )
+      }
 
-    if (clientData.hasMonthlyFinancialClose) {
-      return showList === 'GRID' ? (
-        <BankCard client={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
-      ) : (
-        <CustomUserAccordion data={clientData} />
-      )
-    }
-  }
+      if (clientData.hasMonthlyFinancialClose) {
+        return showList === 'GRID' ? (
+          <BankCard client={clientData} referenceDate={dateProvider.formatDate(date, 'yyyy-MM-dd')} />
+        ) : (
+          <CustomUserAccordion data={clientData} />
+        )
+      }
+    },
+    [date]
+  )
 
   const handleInvalidationQueries = () => {
     queryClient.invalidateQueries(['financial-closing-list'])
+    queryClient.invalidateQueries(['financial-closing-dashboard'])
   }
 
   useEffect(() => {
@@ -384,9 +390,9 @@ const Dashboard = () => {
                 icon='tabler:loader-2'
               />
             </Grid>
-          ) : financialClosingData.data.length > 0 ? (
-            financialClosingData.data.map((client: any, index: number) => (
-              <Grid item {...gridProps[showList]} key={index}>
+          ) : financialClosingData?.data.length > 0 ? (
+            financialClosingData.data.map((client: any) => (
+              <Grid item {...gridProps[showList]} key={client.monthlyFinancialClose?.monthlyFinancialCloseId}>
                 {handleCheckClientSituation(client, showList)}
               </Grid>
             ))

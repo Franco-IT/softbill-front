@@ -1,5 +1,5 @@
 // React Imports
-import { SyntheticEvent, useState } from 'react'
+import { memo, SyntheticEvent, useState } from 'react'
 
 // Next.js Imports
 import Link from 'next/link'
@@ -80,7 +80,7 @@ interface NoBanksAccordionProps {
   data: any
 }
 
-const NoBanksAccordion = ({ data }: NoBanksAccordionProps) => {
+const NoBanksAccordion = memo(({ data }: NoBanksAccordionProps) => {
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
   const [expanded, setExpanded] = useState<string | false>(false)
@@ -137,6 +137,6 @@ const NoBanksAccordion = ({ data }: NoBanksAccordionProps) => {
       </AccordionDetails>
     </Accordion>
   )
-}
+})
 
 export default NoBanksAccordion

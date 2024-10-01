@@ -1,5 +1,5 @@
 // React Imports
-import { SyntheticEvent, useState } from 'react'
+import { memo, SyntheticEvent, useState } from 'react'
 
 // Next.js Imports
 import Link from 'next/link'
@@ -89,7 +89,7 @@ interface NoClosureAccordionProps {
   referenceDate: string
 }
 
-const NoClosureAccordion = ({ data, referenceDate }: NoClosureAccordionProps) => {
+const NoClosureAccordion = memo(({ data, referenceDate }: NoClosureAccordionProps) => {
   const { toastPromise } = useToast()
   const queryClient = useQueryClient()
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
@@ -166,6 +166,6 @@ const NoClosureAccordion = ({ data, referenceDate }: NoClosureAccordionProps) =>
       </AccordionDetails>
     </Accordion>
   )
-}
+})
 
 export default NoClosureAccordion
