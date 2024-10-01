@@ -19,10 +19,7 @@ const BankCard = memo(({ client, referenceDate }: BankCardProps) => {
     monthlyFinancialCloseId: client.monthlyFinancialClose.monthlyFinancialCloseId
   }
 
-  const contentProps = {
-    data: client,
-    referenceDate
-  }
+  const contentProps = { data: client, referenceDate }
 
   return (
     <Card sx={{ minHeight: '328px' }}>

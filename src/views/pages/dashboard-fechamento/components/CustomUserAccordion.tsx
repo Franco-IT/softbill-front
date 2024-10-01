@@ -1,5 +1,5 @@
 // React Imports
-import { SyntheticEvent, useState } from 'react'
+import { memo, SyntheticEvent, useState } from 'react'
 
 // Next.js Imports
 import Link from 'next/link'
@@ -87,7 +87,7 @@ interface CustomUserAccordionProps {
   data: any
 }
 
-const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
+const CustomUserAccordion = memo(({ data }: CustomUserAccordionProps) => {
   const { toggleDrawer } = useDrawer()
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
@@ -159,6 +159,6 @@ const CustomUserAccordion = ({ data }: CustomUserAccordionProps) => {
       </AccordionDetails>
     </Accordion>
   )
-}
+})
 
 export default CustomUserAccordion
