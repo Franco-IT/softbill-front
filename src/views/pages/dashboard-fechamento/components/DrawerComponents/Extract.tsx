@@ -143,7 +143,7 @@ const Extract = () => {
       .sendNotification({ monthlyFinancialCloseBankId, params })
       .then(() => toggleDrawer(anchor, false, null)(e))
 
-    toastPromise(myPromise, 'Enviando lembrete...', 'Lembrete enviado com sucesso', 'Erro ao enviar lembrete')
+    toastPromise(myPromise, 'Enviando lembrete...', 'Lembrete enviado com sucesso!', 'Erro ao enviar lembrete')
   }
 
   const handleDownloadImportedFile = (fileId: string) => {

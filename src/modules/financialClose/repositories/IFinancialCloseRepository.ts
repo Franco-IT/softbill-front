@@ -15,6 +15,7 @@ import { IUpdateBankTransactionDTO } from '../dtos/IUpdateBankTransactionDTO'
 import { IUpdateMonthlyFinancialCloseBankDTO } from '../dtos/IUpdateMonthlyFinancialCloseBankDTO'
 import { ICreateMonthlyFinancialCloseDTO } from '../dtos/ICreateMonthlyFinancialCloseDTO'
 import { ICreateMonthlyFinancialCloseBankDTO } from '../dtos/ICreateMonthlyFinancialCloseBankDTO'
+import { IRequestConciliationDTO } from '../dtos/IRequestConciliationDTO'
 
 export interface IFinancialCloseRepository {
   getMonthlyFinancialCloseStatistics(params: IGetMonthlyFinancialCloseStatisticsDTO): Promise<AxiosResponse>
@@ -33,4 +34,5 @@ export interface IFinancialCloseRepository {
   exportFile(data: IExportFileDTO): Promise<AxiosResponse>
   generateExportFile(data: IGenerateExportFileDTO): Promise<AxiosResponse>
   sendNotification(data: ISendNotificationDTO): Promise<AxiosResponse>
+  requestConciliation(data: IRequestConciliationDTO): Promise<AxiosResponse>
 }

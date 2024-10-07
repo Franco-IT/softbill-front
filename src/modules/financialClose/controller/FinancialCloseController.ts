@@ -10,6 +10,7 @@ import { IGetMonthlyFinancialCloseBankDTO } from '../dtos/IGetMonthlyFinancialCl
 import { IGetMonthlyFinancialCloseBanksDTO } from '../dtos/IGetMonthlyFinancialCloseBanksDTO'
 import { IGetMonthlyFinancialClosesDashboardDataDTO } from '../dtos/IGetMonthlyFinancialClosesDashboardDataDTO'
 import { IGetMonthlyFinancialCloseStatisticsDTO } from '../dtos/IGetMonthlyFinancialCloseStatisticsDTO'
+import { IRequestConciliationDTO } from '../dtos/IRequestConciliationDTO'
 import { ISendNotificationDTO } from '../dtos/ISendNotificationDTO'
 import { ISendStatementFileDTO } from '../dtos/ISendStatementFileDTO'
 import { IUpdateBankTransactionDTO } from '../dtos/IUpdateBankTransactionDTO'
@@ -26,6 +27,7 @@ import { GetMonthlyFinancialCloseBanksUseCase } from '../useCases/GetMonthlyFina
 import { GetMonthlyFinancialCloseBankUseCase } from '../useCases/GetMonthlyFinancialCloseBankUseCase'
 import { GetMonthlyFinancialCloseDashboardDataUseCase } from '../useCases/GetMonthlyFinancialCloseDashboardDataUseCase'
 import { GetMonthlyFinancialCloseStatisticsUseCase } from '../useCases/GetMonthlyFinancialCloseStatisticsUseCase'
+import { RequestConciliationUseCase } from '../useCases/RequestConciliationUseCase'
 import { SendNotificationUseCase } from '../useCases/SendNotificationUseCase'
 import { SendStatementFileUseCase } from '../useCases/SendStatementFileUseCase'
 import { UpdateBankTransactionUseCase } from '../useCases/UpdateBankTransactionUseCase'
@@ -48,7 +50,8 @@ export class FinancialCloseController {
     private updateBankTransactionUseCase: UpdateBankTransactionUseCase,
     private exportFileUseCase: ExportFileUseCase,
     private generateExportFileUseCase: GenerateExportFileUseCase,
-    private sendNotificationUseCase: SendNotificationUseCase
+    private sendNotificationUseCase: SendNotificationUseCase,
+    private requestConciliationUseCase: RequestConciliationUseCase
   ) {}
 
   async getMonthlyFinancialCloseStatistics(params: IGetMonthlyFinancialCloseStatisticsDTO) {
@@ -113,5 +116,9 @@ export class FinancialCloseController {
 
   async sendNotification(data: ISendNotificationDTO) {
     return this.sendNotificationUseCase.execute(data)
+  }
+
+  async requestConciliation(data: IRequestConciliationDTO) {
+    return this.requestConciliationUseCase.execute(data)
   }
 }

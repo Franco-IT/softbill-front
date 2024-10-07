@@ -19,6 +19,9 @@ import { setShowConciliations, setShowStatements } from 'src/store/modules/closi
 // Types
 import { ColorType } from '../../types'
 
+// Controllers
+import { financialCloseController } from 'src/modules/financialClose'
+
 const Conciliation = () => {
   const { toastPromise } = useToast()
   const queryClient = useQueryClient()
@@ -26,6 +29,7 @@ const Conciliation = () => {
 
   const dispatch = useAppDispatch()
   const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
+  const monthlyFinancialCloseId = monthlyFinancialClose.monthlyFinancialCloseId
   const status = monthlyFinancialClose.monthlyFinancialCloseBank.subStatus
   const showConcilations = useAppSelector(state => state.ClosingReducer.showConciliations)
 
@@ -52,20 +56,17 @@ const Conciliation = () => {
     DONE: false
   }
 
-  const handleSendReminder = (e: React.KeyboardEvent | React.MouseEvent) => {
-    const myPromise = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (Math.random() < 0.5) {
-          resolve('foo')
+  const handleRequestConciliation = (e: React.KeyboardEvent | React.MouseEvent) => {
+    const myPromise = financialCloseController
+      .requestConciliation({ monthlyFinancialCloseId })
+      .then(() => toggleDrawer(anchor, false, null)(e))
 
-          toggleDrawer(anchor, false, null)(e)
-        } else {
-          reject('fox')
-        }
-      }, 1000)
-    })
-
-    toastPromise(myPromise, 'Enviando lembrete...', 'Lembrete enviado com sucesso', 'Erro ao enviar lembrete')
+    toastPromise(
+      myPromise,
+      'Enviando lembrete...',
+      'Lembrete enviado com sucesso!',
+      'Erro ao enviar lembrete, tente novamente mais tarde.'
+    )
   }
 
   const handleGenerateConciliations = (e: React.KeyboardEvent | React.MouseEvent) => {
@@ -130,8 +131,8 @@ const Conciliation = () => {
               variant='outlined'
               color='primary'
               startIcon={<IconifyIcon icon='tabler:alert-circle' fontSize='1.7rem' />}
-              onClick={e => handleSendReminder(e)}
-              disabled
+              onClick={e => handleRequestConciliation(e)}
+              disabled={status !== 'TRANSACTION_UNTRACKED'}
             >
               Enviar Lembrete Para o Cliente
             </Button>
