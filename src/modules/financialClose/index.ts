@@ -12,6 +12,7 @@ import { GetMonthlyFinancialCloseBanksUseCase } from './useCases/GetMonthlyFinan
 import { GetMonthlyFinancialCloseBankUseCase } from './useCases/GetMonthlyFinancialCloseBankUseCase'
 import { GetMonthlyFinancialCloseDashboardDataUseCase } from './useCases/GetMonthlyFinancialCloseDashboardDataUseCase'
 import { GetMonthlyFinancialCloseStatisticsUseCase } from './useCases/GetMonthlyFinancialCloseStatisticsUseCase'
+import { RequestConciliationUseCase } from './useCases/RequestConciliationUseCase'
 import { SendNotificationUseCase } from './useCases/SendNotificationUseCase'
 import { SendStatementFileUseCase } from './useCases/SendStatementFileUseCase'
 import { UpdateBankTransactionUseCase } from './useCases/UpdateBankTransactionUseCase'
@@ -38,6 +39,7 @@ const updateBankTransactionUseCase = new UpdateBankTransactionUseCase(financialC
 const exportFileUseCase = new ExportFileUseCase(financialCloseRepository)
 const generateExportFileUseCase = new GenerateExportFileUseCase(financialCloseRepository)
 const sendNotificationUseCase = new SendNotificationUseCase(financialCloseRepository)
+const requestConciliationUseCase = new RequestConciliationUseCase(financialCloseRepository)
 
 const financialCloseController = new FinancialCloseController(
   getMonthlyFinancialCloseStatisticsUseCase,
@@ -55,7 +57,8 @@ const financialCloseController = new FinancialCloseController(
   updateBankTransactionUseCase,
   exportFileUseCase,
   generateExportFileUseCase,
-  sendNotificationUseCase
+  sendNotificationUseCase,
+  requestConciliationUseCase
 )
 
 export { financialCloseController }

@@ -17,6 +17,7 @@ import { IUpdateBankTransactionDTO } from '../dtos/IUpdateBankTransactionDTO'
 import { IUpdateMonthlyFinancialCloseBankDTO } from '../dtos/IUpdateMonthlyFinancialCloseBankDTO'
 import { ICreateMonthlyFinancialCloseDTO } from '../dtos/ICreateMonthlyFinancialCloseDTO'
 import { ICreateMonthlyFinancialCloseBankDTO } from '../dtos/ICreateMonthlyFinancialCloseBankDTO'
+import { IRequestConciliationDTO } from '../dtos/IRequestConciliationDTO'
 
 export class FinancialCloseRepository implements IFinancialCloseRepository {
   getMonthlyFinancialCloseDashboardData(params: IGetMonthlyFinancialClosesDashboardDataDTO): Promise<AxiosResponse> {
@@ -108,5 +109,9 @@ export class FinancialCloseRepository implements IFinancialCloseRepository {
     return api.get('monthlyFinancialCloseBanks/send-notification/' + monthlyFinancialCloseBankId, {
       params
     })
+  }
+
+  async requestConciliation(data: IRequestConciliationDTO): Promise<AxiosResponse> {
+    return api.get('monthlyFinancialCloses/request-conciliation/' + data.monthlyFinancialCloseId)
   }
 }
