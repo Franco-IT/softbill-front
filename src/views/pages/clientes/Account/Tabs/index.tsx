@@ -16,6 +16,7 @@ import Icon from 'src/@core/components/icon'
 import { ClientProps } from 'src/types/clients'
 import Banks from '../Banks'
 import { useRouter } from 'next/router'
+import AccountingAccounts from '../AccountingAccounts'
 
 interface TabsAccountProps {
   data: ClientProps
@@ -79,6 +80,11 @@ const Tabs = ({ data }: TabsAccountProps) => {
       >
         <Tab value='account' label='Informações' icon={<Icon fontSize='1.125rem' icon='tabler:user-check' />} />
         <Tab value='banks' label='Bancos' icon={<Icon fontSize='1.125rem' icon='tabler:building-bank' />} />
+        <Tab
+          value='accountingAccounts'
+          label='Contas Contábeis'
+          icon={<Icon fontSize='1.125rem' icon='tabler:list' />}
+        />
       </TabList>
       <Box sx={{ mt: 4 }}>
         {isLoading ? (
@@ -93,6 +99,9 @@ const Tabs = ({ data }: TabsAccountProps) => {
             </TabPanel>
             <TabPanel sx={{ p: 0 }} value='banks'>
               <Banks />
+            </TabPanel>
+            <TabPanel sx={{ p: 0 }} value='accountingAccounts'>
+              <AccountingAccounts />
             </TabPanel>
           </>
         )}
