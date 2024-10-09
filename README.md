@@ -1,11 +1,13 @@
-# DK Tech - FRONT
+# Softbill - FRONT
 
 ## Required versions
 
-| Engines | Min Version |
-| ------- | ----------- |
-| NodeJs  | 20.11.0     |
-| NPM     | 10.2.4      |
+| Engines | Min Version   |
+|---------|---------------|
+| NodeJs  | 20.11.0       |
+| ReactJs | 18.2.0        |
+| NextJs  | 13.3.2        |
+| NPM     | 10.2.4        |
 
 # Auth Structure
 
@@ -16,8 +18,21 @@
 Ensure that you set up your environment variables correctly. An example `.env.example` file is provided with the following environment variables:
 
 ```plaintext
-API_URL= http://localhost:3000/api/v1
-NEXT_PUBLIC_API_URL= http://localhost:3000/api/v1
+## Database
+API_URL= your_api_url
+NEXT_PUBLIC_API_KEY= your_api_key
+API_URL= your_api_url
+NEXT_PUBLIC_API_URL= your_api_url
+
+## CryptJS
+NEXT_PUBLIC_CRYPTO_KEY= your_crypto_key
+
+## React Image Crop
+NEXT_PUBLIC_ASPECT_RATIO= your_aspect_ratio
+NEXT_PUBLIC_MIN_CROP_DIMENSION= your_min_crop_dimension
+NEXT_PUBLIC_MAX_DIMENSION= your_max_dimension
+NEXT_PUBLIC_MIN_DIMENSION= your_min_dimension
+
 ```
 
 # Running the Project Locally
