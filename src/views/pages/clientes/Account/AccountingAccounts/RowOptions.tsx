@@ -1,78 +1,73 @@
-import { useState, MouseEvent } from 'react'
+import { useState, MouseEvent, useCallback, useMemo } from 'react'
 
-// Componentes internos
+// Internal Components
 import Icon from 'src/@core/components/icon'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import CustomBasicMenu from 'src/components/CustomBasicMenu'
-import BankInfo from './BankInfo'
+import Info from './Info'
 import DrawerAnchor from 'src/components/DrawerAnchor'
 
 // Hooks
 import { useDrawer } from 'src/hooks/useDrawer'
 import { useMediaQuery } from '@mui/material'
 
-// Serviços e notificações
-import { api } from 'src/services/api'
-import toast from 'react-hot-toast'
+// Services and Notifications
+import { clientsController } from 'src/modules/clients'
+import { AppError } from 'src/shared/errors/AppError'
+import useToast from 'src/hooks/useToast'
+import { useQueryClient } from 'react-query'
 
-// Tipos
-import { IBankAccountDTO } from 'src/modules/banks/dtos/IBankAccountDTO'
-
-// Editar
-import Edit from './Edit'
+// Types
+import { IAccountingAccountDTO } from 'src/modules/clients/dtos/IAccountingAccountDTO'
 
 interface RowOptionsProps {
-  data: IBankAccountDTO
+  data: IAccountingAccountDTO
 }
 
 const RowOptions = ({ data }: RowOptionsProps) => {
+  const queryClient = useQueryClient()
+  const { toastError, toastSuccess } = useToast()
   const { anchor, open, toggleDrawer, children } = useDrawer()
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
-  // const router = useRouter()
-
-  const [openEdit, setOpenEdit] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
-
-  const handleClickEdit = () => setOpenEdit(true)
 
   const handleClickDelete = () => setOpenDelete(true)
 
-  // const handleStatement = () =>
-  //   router.push({
-  //     pathname: '/clientes/banco/extrato/[id]',
-  //     query: { id: data.id, slug: data?.bank?.slug || data.importedBank, client: data.clientId }
-  //   })
-
-  const handleClickInfo = (e: MouseEvent<HTMLDivElement, any>) => {
-    toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <BankInfo data={data} />)(e)
-  }
-
-  const handleDelete = () => {
-    api
-      .delete(`/bankAccounts/${data.id}`)
-      .then(() => toast.success('Banco deletado com sucesso!'))
-      .catch(() => toast.error('Erro ao deletar banco'))
-      .finally(() => setOpenDelete(false))
-  }
-
-  const menuItems = [
-    {
-      label: 'Ver Informações',
-      icon: <Icon icon='tabler:eye' fontSize={20} />,
-      actionWithParam: handleClickInfo
+  const handleClickInfo = useCallback(
+    (e: MouseEvent<HTMLDivElement, any>) => {
+      toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <Info data={data} />)(e)
     },
-    {
-      label: 'Editar',
-      icon: <Icon icon='tabler:edit' fontSize={20} />,
-      action: handleClickEdit
-    },
-    {
-      label: 'Deletar',
-      icon: <Icon icon='tabler:trash' fontSize={20} />,
-      action: handleClickDelete
+    [data, isSmallerThanMd, toggleDrawer]
+  )
+
+  const handleDelete = async () => {
+    try {
+      await clientsController.deleteAccountingAccount({ clientAccountingAccountId: data.id })
+      await queryClient.invalidateQueries(['accounting-accounts-by-client'])
+      toastSuccess('Conta contábil deletada com sucesso!')
+    } catch (e) {
+      e instanceof AppError && toastError(e.message)
+    } finally {
+      setOpenDelete(false)
     }
-  ]
+  }
+
+  const menuItems = useMemo(
+    () => [
+      {
+        label: 'Ver Informações',
+        icon: <Icon icon='tabler:eye' fontSize={20} />,
+        actionWithParam: handleClickInfo
+      },
+      {
+        label: 'Deletar',
+        icon: <Icon icon='tabler:trash' fontSize={20} />,
+        action: handleClickDelete
+      }
+    ],
+    [handleClickInfo]
+  )
 
   const drawerProps = {
     anchor,
@@ -85,14 +80,12 @@ const RowOptions = ({ data }: RowOptionsProps) => {
     <>
       <CustomBasicMenu buttonLabel='Ações' menuItems={menuItems} />
 
-      {openEdit && <Edit data={data} openEdit={openEdit} handleEditClose={() => setOpenEdit(false)} />}
-
       {openDelete && (
         <DialogAlert
           id={data.id}
           open={openDelete}
           setOpen={setOpenDelete}
-          question={`Deseja realmente deletar este banco?`}
+          question={`Deseja realmente deletar esta conta?`}
           description='Essa ação não poderá ser desfeita.'
           handleConfirmDelete={handleDelete}
         />

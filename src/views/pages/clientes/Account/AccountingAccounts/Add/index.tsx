@@ -1,8 +1,18 @@
 // Material UI
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Box } from '@mui/material'
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  Box,
+  Grid,
+  MenuItem
+} from '@mui/material'
 
 // React Hook Form
-import { FormProvider, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 
 // Validation Utilities
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -11,7 +21,26 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
 import { useQueryClient } from 'react-query'
+
+// Schema
 import { AddAccountingAccounts } from './schema'
+
+// Custom Components
+import CustomTextField from 'src/@core/components/mui/text-field'
+
+// Next.js Router
+import { useRouter } from 'next/router'
+
+// DTOs and Controllers
+import { ICreateAccountingAccountDTO } from 'src/modules/clients/dtos/ICreateAccountingAccountDTO'
+import { clientsController } from 'src/modules/clients'
+
+// Utilities
+import { applyAccountNumberMask } from 'src/utils/inputs'
+import { AppError } from 'src/shared/errors/AppError'
+
+// Hooks
+import useToast from 'src/hooks/useToast'
 
 interface AddProps {
   open: boolean
@@ -19,40 +48,34 @@ interface AddProps {
 }
 
 const Add = ({ open, handleClose }: AddProps) => {
+  const router = useRouter()
+  const { toastSuccess, toastError } = useToast()
   const queryClient = useQueryClient()
 
-  const methods = useForm({
-    defaultValues: {},
-    resolver: yupResolver(AddAccountingAccounts as any)
+  const {
+    control,
+    formState: { errors },
+    handleSubmit
+  } = useForm({
+    defaultValues: {
+      clientId: router.query.id as string,
+      transactionType: '',
+      number: '',
+      description: ''
+    } as ICreateAccountingAccountDTO,
+    mode: 'onBlur',
+    resolver: yupResolver(AddAccountingAccounts)
   })
 
-  const onSubmit = (form: any) => {
-    const formData = new FormData()
-
-    const dataKeys = Object.keys(form)
-
-    const schemaKeys = ['bankId', 'agency', 'account', 'accountType', 'accountStatus']
-
-    for (const key of schemaKeys) {
-      if (dataKeys.includes(key)) formData.append(key, form[key])
+  const onSubmit = async (data: ICreateAccountingAccountDTO) => {
+    try {
+      await clientsController.createAccountingAccount(data)
+      await queryClient.invalidateQueries(['accounting-accounts-by-client'])
+      toastSuccess('Conta contábil adicionada com sucesso!')
+      handleClose()
+    } catch (e) {
+      e instanceof AppError && toastError(e.message)
     }
-
-    api
-      .put('/bankAccounts/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      .then(response => {
-        if (response.status === 200) {
-          toast.success('Dados atualizados com sucesso!')
-          queryClient.invalidateQueries(['bank-accounts'])
-          handleClose()
-        }
-      })
-      .catch(() => {
-        toast.error('Erro ao vincular banco, tente novamente mais tarde')
-      })
   }
 
   return (
@@ -75,29 +98,91 @@ const Add = ({ open, handleClose }: AddProps) => {
         }}
       >
         <DialogContentText variant='body2' sx={{ textAlign: 'center', mb: 7 }}>
-          Preencha os campos abaixo ou import o arquivo CSV
+          Preencha os campos abaixo ou importe o arquivo CSV
         </DialogContentText>
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <h2>Teste</h2>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 2,
-                mt: 4
-              }}
-            >
-              <Button variant='tonal' color='error' onClick={handleClose} sx={{ minWidth: 107 }}>
-                Cancelar
-              </Button>
-              <Button type='submit' variant='contained' color='primary' sx={{ minWidth: 107 }}>
-                Adicionar
-              </Button>
-            </Box>
-          </form>
-        </FormProvider>
+        <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={6}>
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name='number'
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <CustomTextField
+                    fullWidth
+                    label='Conta Contábel'
+                    placeholder='Ex: 2784623-7'
+                    value={value}
+                    onChange={e => onChange(applyAccountNumberMask(e.target.value))}
+                    onBlur={onBlur}
+                    error={Boolean(errors.number)}
+                    {...(errors.number && { helperText: errors.number.message })}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name='transactionType'
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <CustomTextField
+                    select
+                    fullWidth
+                    label='Tipo de Transação'
+                    value={value || 'default'}
+                    onBlur={onBlur}
+                    onChange={onChange}
+                    error={Boolean(errors.transactionType)}
+                    {...(errors.transactionType && { helperText: errors.transactionType.message })}
+                  >
+                    <MenuItem value='default' disabled>
+                      Selecione
+                    </MenuItem>
+                    <MenuItem value='CREDIT'>Crédito</MenuItem>
+                    <MenuItem value='DEBIT'>Débito</MenuItem>
+                  </CustomTextField>
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Controller
+                name='description'
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <CustomTextField
+                    {...field}
+                    multiline
+                    fullWidth
+                    required
+                    label='Descrição'
+                    placeholder='Digite a descrição da transação'
+                    error={Boolean(errors.description)}
+                    {...(errors.description && { helperText: errors.description.message })}
+                  />
+                )}
+              />
+            </Grid>
+          </Grid>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
+              mt: 4
+            }}
+          >
+            <Button variant='tonal' color='error' onClick={handleClose} sx={{ minWidth: 107 }}>
+              Cancelar
+            </Button>
+            <Button type='submit' variant='contained' color='primary' sx={{ minWidth: 107 }}>
+              Adicionar
+            </Button>
+          </Box>
+        </form>
       </DialogContent>
       <DialogActions
         sx={{
