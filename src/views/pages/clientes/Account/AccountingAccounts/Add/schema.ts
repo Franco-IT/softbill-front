@@ -17,4 +17,8 @@ export const isValidFileType = (file: File | null): boolean => {
   return fileExtension ? allowedExtensions.includes(`.${fileExtension}`) : false
 }
 
-export const AddAccountingAccounts: { [key: string]: any } = yup.object().shape({})
+export const AddAccountingAccounts = yup.object().shape({
+  transactionType: yup.string().required('Tipo de transação obrigatório'),
+  number: yup.string().required('Número da conta obrigatório'),
+  description: yup.string().required('Descrição obrigatória'),
+})

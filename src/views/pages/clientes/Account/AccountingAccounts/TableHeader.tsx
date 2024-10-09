@@ -1,20 +1,25 @@
+// React and Hooks
+import { Fragment, useState } from 'react'
+
+// Material UI
 import { CardHeader, Grid, Button, MenuItem } from '@mui/material'
 
+// Internal Components
 import CustomTextField from 'src/@core/components/mui/text-field'
-
 import Icon from 'src/@core/components/icon'
-import { Fragment, useState } from 'react'
 import Add from './Add'
 
 interface TableHeaderProps {
-  value: string
-  handleFilter: (val: string) => void
-  type: string
-  handleType: (val: string) => void
+  search: string
+  handleSearch: (val: string) => void
+  transactionType: string
+  handleTransactionType: (val: string) => void
+  number: string
+  handleNumber: (val: string) => void
 }
 
 const TableHeader = (props: TableHeaderProps) => {
-  const { handleFilter, value, handleType, type } = props
+  const { handleNumber, number, handleTransactionType, transactionType } = props
 
   const [open, setOpen] = useState(false)
 
@@ -36,9 +41,9 @@ const TableHeader = (props: TableHeaderProps) => {
               <CustomTextField
                 fullWidth
                 label='Buscar Conta'
-                value={value}
+                value={number}
                 placeholder='Buscar Conta'
-                onChange={e => handleFilter(e.target.value)}
+                onChange={e => handleNumber(e.target.value)}
               />
             </Grid>
 
@@ -48,8 +53,8 @@ const TableHeader = (props: TableHeaderProps) => {
                 fullWidth
                 label='Tipo'
                 placeholder='Selecione'
-                value={type || 'default'}
-                onChange={e => handleType(e.target.value)}
+                value={transactionType || 'default'}
+                onChange={e => handleTransactionType(e.target.value)}
               >
                 <MenuItem disabled value='default'>
                   <em>selecione</em>

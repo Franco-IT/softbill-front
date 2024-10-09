@@ -6,19 +6,24 @@ export interface HeadCellProps {
 
 const HeadCells: HeadCellProps[] = [
   {
-    id: 'bank',
+    id: 'number',
     disablePadding: true,
-    label: 'Nome'
+    label: 'Conta Contábil'
+  },
+  {
+    id: 'transactionType',
+    disablePadding: false,
+    label: 'Tipo'
+  },
+  {
+    id: 'description',
+    disablePadding: false,
+    label: 'Descrição'
   },
   {
     id: 'createdAt',
     disablePadding: false,
     label: 'Data de Cadastro'
-  },
-  {
-    id: 'status',
-    disablePadding: false,
-    label: 'Status'
   },
   {
     id: 'actions',

@@ -16,7 +16,7 @@ const ReactHotToast = styled(Box)<BoxProps>(({ theme }) => {
       right: `${theme.spacing(6)} !important`,
       bottom: `${theme.spacing(6)} !important`,
       top: layout === 'horizontal' && !navHidden ? '139px !important' : '75px !important',
-      zIndex: `${theme.zIndex.drawer + 1} !important`
+      zIndex: `${theme.zIndex.modal + 1} !important`
     },
     '& .react-hot-toast': {
       fontWeight: 400,
