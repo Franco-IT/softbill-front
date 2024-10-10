@@ -73,8 +73,8 @@ const FileUploaderRestrictions = ({
           <Typography className='file-name'>{file.name}</Typography>
           <Typography className='file-size' variant='body2'>
             {Math.round(file.size / 100) / 10 > 1000
-              ? `${(Math.round(file.size / 100) / 10000).toFixed(1)} mb`
-              : `${(Math.round(file.size / 100) / 10).toFixed(1)} kb`}
+              ? `${(Math.round(file.size / 100) / 10000).toFixed(1)} MB`
+              : `${(Math.round(file.size / 100) / 10).toFixed(1)} KB`}
           </Typography>
         </div>
       </div>
@@ -112,7 +112,9 @@ const FileUploaderRestrictions = ({
               .map(type => `*${accept[type].join(', *')}`)
               .join(', ')}
           </Typography>
-          <Typography sx={{ color: 'text.secondary' }}>Tamanho máximo 2 MB</Typography>
+          <Typography sx={{ color: 'text.secondary' }}>
+            Tamanho máximo {inputProps.maxSize ? inputProps.maxSize : '2 MB'}
+          </Typography>
         </Box>
       </div>
       {files.length ? (

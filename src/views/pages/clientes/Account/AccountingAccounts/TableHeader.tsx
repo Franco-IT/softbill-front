@@ -2,12 +2,13 @@
 import { Fragment, useState } from 'react'
 
 // Material UI
-import { CardHeader, Grid, Button, MenuItem } from '@mui/material'
+import { CardHeader, Grid, Button, MenuItem, Box } from '@mui/material'
 
 // Internal Components
 import CustomTextField from 'src/@core/components/mui/text-field'
 import Icon from 'src/@core/components/icon'
 import Add from './Add'
+import Import from './Import'
 
 interface TableHeaderProps {
   search: string
@@ -22,10 +23,11 @@ const TableHeader = (props: TableHeaderProps) => {
   const { handleNumber, number, handleTransactionType, transactionType } = props
 
   const [open, setOpen] = useState(false)
+  const [openImportFile, setOpenImportFile] = useState(false)
 
   return (
     <Fragment>
-      <Grid container gap={3} paddingX={6} paddingY={4}>
+      <Grid container gap={3} paddingX={6} paddingY={4} justifyContent={'end'}>
         <Grid item xs={12}>
           <CardHeader
             sx={{
@@ -33,6 +35,24 @@ const TableHeader = (props: TableHeaderProps) => {
             }}
             title='Contas Contábeis'
           />
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: {
+                xs: 'start',
+                md: 'flex-end'
+              }
+            }}
+          >
+            <Button variant='contained' sx={{ '& svg': { mr: 2 } }} onClick={() => setOpenImportFile(true)}>
+              <Icon fontSize='1.125rem' icon='tabler:file-import' />
+              Importar Arquivo
+            </Button>
+          </Box>
         </Grid>
 
         <Grid item xs={12}>
@@ -76,6 +96,7 @@ const TableHeader = (props: TableHeaderProps) => {
       </Grid>
 
       {open && <Add open={open} handleClose={() => setOpen(false)} />}
+      {openImportFile && <Import open={openImportFile} handleClose={() => setOpenImportFile(false)} />}
     </Fragment>
   )
 }
