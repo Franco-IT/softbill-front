@@ -209,7 +209,7 @@ const EditTransaction = (props: EditTransactionProps) => {
                 <CustomTextField
                   fullWidth
                   required
-                  value={value}
+                  value={value || ''}
                   onBlur={onBlur}
                   onChange={e => onChange(applyAccountNumberMask(e.target.value))}
                   label={transactionTypeExtract === 'DEBIT' ? 'Conta Destino' : 'Conta Origem'}
@@ -231,6 +231,7 @@ const EditTransaction = (props: EditTransactionProps) => {
                   multiline
                   fullWidth
                   required
+                  value={field.value || ''}
                   label='Nova Descrição'
                   placeholder='Digite a nova descrição'
                   error={Boolean(errors.conciliationDescription)}

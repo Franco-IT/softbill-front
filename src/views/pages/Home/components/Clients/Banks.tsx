@@ -1,12 +1,14 @@
+// Material UI Components
 import { useMediaQuery, Card, CardHeader, CardContent, Stack, Box, Typography, Button } from '@mui/material'
-import { useQuery } from 'react-query'
 
+// Custom Components
 import DrawerAnchor from 'src/components/DrawerAnchor'
 import BankInfo from './BankInfo'
 import Bank from './Bank'
 
+// Hooks
 import { useDrawer } from 'src/hooks/useDrawer'
-import { bankController } from 'src/modules/banks'
+import { useClientBanks } from 'src/hooks/clients/useClientBanks'
 
 interface BanksProps {
   id: string
@@ -31,13 +33,12 @@ const Banks = ({ id }: BanksProps) => {
     isLoading,
     isError,
     refetch
-  } = useQuery(['client-banks', id], () => bankController.getBanksByClientId(getBanksProps), {
+  } = useClientBanks(getBanksProps, {
     enabled: !!id,
     staleTime: 1000 * 60 * 5
   })
 
   const banks = response?.data || null
-
   const handleRefetch = () => refetch()
 
   const drawerProps = {

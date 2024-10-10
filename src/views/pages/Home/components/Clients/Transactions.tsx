@@ -39,9 +39,7 @@ const Transactions = () => {
 
       const { data } = response.data
 
-      const pendingTransactions = data.filter((transaction: any) => transaction.status === 'PENDING')
-
-      return pendingTransactions
+      return data.filter((transaction: any) => transaction.status === 'PENDING')
     },
     {
       staleTime: 1000 * 60 * 5,
@@ -71,7 +69,6 @@ const Transactions = () => {
             width: '100%',
             overflow: 'auto',
             maxHeight: 300,
-
             '&::-webkit-scrollbar': {
               width: '0.2em'
             },
