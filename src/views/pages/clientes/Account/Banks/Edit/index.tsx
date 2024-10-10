@@ -69,7 +69,7 @@ const Edit = ({ openEdit, handleEditClose, data }: EditProps) => {
       .then(response => {
         if (response.status === 200) {
           toast.success('Dados atualizados com sucesso!')
-          queryClient.invalidateQueries(['bank-accounts'])
+          queryClient.invalidateQueries(['client-bank-accounts'])
           handleEditClose()
         }
       })

@@ -1,24 +1,29 @@
+// React
 import { useState, MouseEvent } from 'react'
 
-// Componentes internos
+// Material UI
+import { useMediaQuery } from '@mui/material'
+
+// Hooks
+import { useDrawer } from 'src/hooks/useDrawer'
+import useToast from 'src/hooks/useToast'
+import { useQueryClient } from 'react-query'
+
+// Services and Notifications
+import { bankAccountsController } from 'src/modules/bankAccounts'
+import { AppError } from 'src/shared/errors/AppError'
+
+// Internal Components
 import Icon from 'src/@core/components/icon'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import CustomBasicMenu from 'src/components/CustomBasicMenu'
 import BankInfo from './BankInfo'
 import DrawerAnchor from 'src/components/DrawerAnchor'
 
-// Hooks
-import { useDrawer } from 'src/hooks/useDrawer'
-import { useMediaQuery } from '@mui/material'
+// Types
+import { IBankAccountDTO } from 'src/modules/bankAccounts/dtos/IBankAccountDTO'
 
-// Serviços e notificações
-import { api } from 'src/services/api'
-import toast from 'react-hot-toast'
-
-// Tipos
-import { IBankAccountDTO } from 'src/modules/banks/dtos/IBankAccountDTO'
-
-// Editar
+// Edit Component
 import Edit from './Edit'
 
 interface RowOptionsProps {
@@ -26,10 +31,10 @@ interface RowOptionsProps {
 }
 
 const RowOptions = ({ data }: RowOptionsProps) => {
+  const queryClient = useQueryClient()
+  const { toastSuccess, toastError } = useToast()
   const { anchor, open, toggleDrawer, children } = useDrawer()
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
-
-  // const router = useRouter()
 
   const [openEdit, setOpenEdit] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
@@ -38,22 +43,20 @@ const RowOptions = ({ data }: RowOptionsProps) => {
 
   const handleClickDelete = () => setOpenDelete(true)
 
-  // const handleStatement = () =>
-  //   router.push({
-  //     pathname: '/clientes/banco/extrato/[id]',
-  //     query: { id: data.id, slug: data?.bank?.slug || data.importedBank, client: data.clientId }
-  //   })
-
   const handleClickInfo = (e: MouseEvent<HTMLDivElement, any>) => {
     toggleDrawer(isSmallerThanMd ? 'bottom' : 'right', true, <BankInfo data={data} />)(e)
   }
 
-  const handleDelete = () => {
-    api
-      .delete(`/bankAccounts/${data.id}`)
-      .then(() => toast.success('Banco deletado com sucesso!'))
-      .catch(() => toast.error('Erro ao deletar banco'))
-      .finally(() => setOpenDelete(false))
+  const handleDelete = async () => {
+    try {
+      await bankAccountsController.deleteBankAccount({ id: data.id })
+      await queryClient.invalidateQueries(['client-bank-accounts'])
+      toastSuccess('Banco deletado com sucesso!')
+    } catch (e) {
+      e instanceof AppError && toastError(e.message)
+    } finally {
+      setOpenDelete(false)
+    }
   }
 
   const menuItems = [

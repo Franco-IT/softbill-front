@@ -2,9 +2,12 @@
 import { Box, TableCell, TableHead, TableRow, TableSortLabel, useTheme } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
 
-// Tipos
+// React
+import React from 'react'
+
+// Types
 import { HeadCellProps } from './HeadCells'
-import { IBankAccountDTO } from 'src/modules/banks/dtos/IBankAccountDTO'
+import { IBankAccountDTO } from 'src/modules/bankAccounts/dtos/IBankAccountDTO'
 
 type Order = 'asc' | 'desc'
 

@@ -1,4 +1,4 @@
-export interface IGetBanksByClientIdDTO {
+export interface IGetBankAccountsByClientIdDTO {
   id: string
   params: {
     page: number

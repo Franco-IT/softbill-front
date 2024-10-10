@@ -1,4 +1,4 @@
-export interface ILinkingBankDTO {
+export interface ICreateBankAccountDTO {
   bankClientId: string
   bankClientSecret: string
   accountNumber: string

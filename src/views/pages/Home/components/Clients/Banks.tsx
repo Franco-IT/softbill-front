@@ -8,7 +8,7 @@ import Bank from './Bank'
 
 // Hooks
 import { useDrawer } from 'src/hooks/useDrawer'
-import { useClientBanks } from 'src/hooks/clients/useClientBanks'
+import { useBankAccountsForClient } from '../../../../../hooks/bankAccounts/useBankAccountsForClient'
 
 interface BanksProps {
   id: string
@@ -33,7 +33,7 @@ const Banks = ({ id }: BanksProps) => {
     isLoading,
     isError,
     refetch
-  } = useClientBanks(getBanksProps, {
+  } = useBankAccountsForClient(getBanksProps, {
     enabled: !!id,
     staleTime: 1000 * 60 * 5
   })

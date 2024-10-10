@@ -1,33 +1,31 @@
-// React e hooks
+// React
 import { Suspense, useEffect, useState, ChangeEvent, MouseEvent, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/router'
-import { useQuery } from 'react-query'
 
-// MUI
+// Material UI
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
 
-// Componentes internos
+// Hooks
+import { useBankAccountsForClient } from 'src/hooks/bankAccounts/useBankAccountsForClient'
+
+// Utilities
+import { formatNameBank } from 'src/utils/format'
+import { getInitials } from 'src/utils/getInitials'
+import { formatDate } from 'src/@core/utils/format'
+
+import { Loading, Order, getComparator, stableSort } from 'src/utils/list'
+
+// Types
+import { ThemeColor } from 'src/@core/layouts/types'
+import { IBankAccountDTO } from 'src/modules/bankAccounts/dtos/IBankAccountDTO'
+
+// Components
 import CustomChip from 'src/@core/components/mui/chip'
 import HeadCells from './HeadCells'
 import RowOptions from './RowOptions'
 import TableHeader from './TableHeader'
 import EnhancedTableHead from './EnhancedTableHead'
 import Pagination from './Pagination'
-
-// Utilidades
-import { formatNameBank } from 'src/utils/format'
-import { formatDate } from 'src/@core/utils/format'
-import { getInitials } from 'src/utils/getInitials'
-import { Loading, Order, getComparator, stableSort } from 'src/utils/list'
-
-// Tipos e layouts
-import { ThemeColor } from 'src/@core/layouts/types'
-import { IBankAccountDTO } from 'src/modules/banks/dtos/IBankAccountDTO'
-
-// Controladores e serviços
-import { bankController } from 'src/modules/banks'
-
-// Componentes de feedback
 import Error from 'src/components/FeedbackAPIs/Error'
 import CustomAvatar from 'src/components/CustomAvatar'
 
@@ -70,7 +68,7 @@ const Banks = () => {
     data: rows,
     isLoading,
     isError
-  } = useQuery<any>(['bank-accounts', params], () => bankController.getBanksByClientId(requestParams), {
+  } = useBankAccountsForClient(requestParams, {
     enabled: router.isReady,
     staleTime: 1000 * 60 * 5,
     keepPreviousData: true
