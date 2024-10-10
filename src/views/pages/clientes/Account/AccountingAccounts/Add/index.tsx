@@ -17,9 +17,7 @@ import { Controller, useForm } from 'react-hook-form'
 // Validation Utilities
 import { yupResolver } from '@hookform/resolvers/yup'
 
-// Services and Notifications
-import { api } from 'src/services/api'
-import toast from 'react-hot-toast'
+// React query
 import { useQueryClient } from 'react-query'
 
 // Schema
@@ -98,7 +96,7 @@ const Add = ({ open, handleClose }: AddProps) => {
         }}
       >
         <DialogContentText variant='body2' sx={{ textAlign: 'center', mb: 7 }}>
-          Preencha os campos abaixo ou importe o arquivo CSV
+          Preencha os campos abaixo
         </DialogContentText>
         <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={6}>

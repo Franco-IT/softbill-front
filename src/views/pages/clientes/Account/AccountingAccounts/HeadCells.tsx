@@ -7,7 +7,7 @@ export interface HeadCellProps {
 const HeadCells: HeadCellProps[] = [
   {
     id: 'number',
-    disablePadding: true,
+    disablePadding: false,
     label: 'Conta Contábil'
   },
   {
