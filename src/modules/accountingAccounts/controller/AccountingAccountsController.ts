@@ -1,13 +1,16 @@
+// DTOs
 import { ICreateAccountingAccountDTO } from '../dtos/ICreateAccountingAccountDTO'
 import { IGetAccountingAccountsByClientDTO } from '../dtos/IGetAccountingAccountsByClientDTO'
+import { IDeleteAccountingAccountDTO } from '../dtos/IDeleteAccountingAccountDTO'
+import { IUpdateAccountingAccountDTO } from '../dtos/IUpdateAccountingAccountDTO'
+
+// Use Cases
 import { CreateAccountingAccountUseCase } from '../useCases/CreateAccountingAccountUseCase'
 import { GetAccountingAccountsByClientUseCase } from '../useCases/GetAccountingAccountsByClientUseCase'
 import { DeleteAccountingAccountUseCase } from '../useCases/DeleteAccountingAccountUseCase'
-import { IDeleteAccountingAccountDTO } from '../dtos/IDeleteAccountingAccountDTO'
 import { UpdateAccountingAccountUseCase } from '../useCases/UpdateAccountingAccountUseCase'
-import { IUpdateAccountingAccountDTO } from '../dtos/IUpdateAccountingAccountDTO'
 
-export class ClientsController {
+export class AccountingAccountsController {
   constructor(
     private getAccountingAccountsByClientUseCase: GetAccountingAccountsByClientUseCase,
     private createAccountingAccountUseCase: CreateAccountingAccountUseCase,

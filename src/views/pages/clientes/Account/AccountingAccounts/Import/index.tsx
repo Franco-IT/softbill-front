@@ -17,7 +17,7 @@ import { FILE_TYPES, ImportAccountingAccounts } from './schema'
 import { useRouter } from 'next/router'
 
 // DTOs and Controllers
-import { clientsController } from 'src/modules/clients'
+import { accountingAccountsController } from 'src/modules/accountingAccounts'
 
 // Utilities
 import { AppError } from 'src/shared/errors/AppError'
@@ -53,7 +53,7 @@ const Import = ({ open, handleClose }: ImportProps) => {
   //TODO: Refactor for import method
   const onSubmit = async (data: any) => {
     try {
-      await clientsController.createAccountingAccount(data)
+      await accountingAccountsController.createAccountingAccount(data)
       await queryClient.invalidateQueries(['accounting-accounts-by-client'])
       toastSuccess('Contas contábeis adicionadas com sucesso!')
       handleClose()

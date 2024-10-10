@@ -15,8 +15,8 @@ import { useQueryClient } from 'react-query'
 import useToast from 'src/hooks/useToast'
 
 // Types and Layouts
-import { IAccountingAccountDTO } from 'src/modules/clients/dtos/IAccountingAccountDTO'
-import { clientsController } from 'src/modules/clients'
+import { IAccountingAccountDTO } from 'src/modules/accountingAccounts/dtos/IAccountingAccountDTO'
+import { accountingAccountsController } from 'src/modules/accountingAccounts'
 import { AppError } from 'src/shared/errors/AppError'
 
 // Validation
@@ -57,7 +57,7 @@ const Info = ({ data }: InfoProps) => {
 
   const handleDelete = async () => {
     try {
-      await clientsController.deleteAccountingAccount({ clientAccountingAccountId: data.id })
+      await accountingAccountsController.deleteAccountingAccount({ clientAccountingAccountId: data.id })
       await queryClient.invalidateQueries(['accounting-accounts-by-client'])
       toastSuccess('Conta deletada com sucesso!')
     } catch (e) {
@@ -72,7 +72,7 @@ const Info = ({ data }: InfoProps) => {
 
   const onSubmit = async (data: IAccountingAccountDTO) => {
     try {
-      await clientsController.updateAccountingAccount({
+      await accountingAccountsController.updateAccountingAccount({
         clientAccountingAccountId: data.id,
         body: {
           description: data.description,

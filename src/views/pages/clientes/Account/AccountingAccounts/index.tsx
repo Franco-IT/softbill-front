@@ -20,11 +20,11 @@ import HeadCells from './HeadCells'
 import Pagination from './Pagination'
 
 // DTOs
-import { IGetAccountingAccountsByClientDTO } from 'src/modules/clients/dtos/IGetAccountingAccountsByClientDTO'
-import { IAccountingAccountDTO } from 'src/modules/clients/dtos/IAccountingAccountDTO'
+import { IGetAccountingAccountsByClientDTO } from 'src/modules/accountingAccounts/dtos/IGetAccountingAccountsByClientDTO'
+import { IAccountingAccountDTO } from 'src/modules/accountingAccounts/dtos/IAccountingAccountDTO'
 
 // Hooks
-import { useAccountingAccountsByClient } from 'src/hooks/clients/useAccountingAccountsByClient'
+import { useAccountingAccountsByClient } from '../../../../../hooks/accountingAccounts/useAccountingAccountsByClient'
 
 // Providers
 import { dateProvider } from 'src/shared/providers'

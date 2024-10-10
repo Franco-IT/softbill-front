@@ -9,7 +9,7 @@ import { visuallyHidden } from '@mui/utils'
 import { HeadCellProps } from './HeadCells'
 
 // Types
-import { IAccountingAccountDTO } from 'src/modules/clients/dtos/IAccountingAccountDTO'
+import { IAccountingAccountDTO } from 'src/modules/accountingAccounts/dtos/IAccountingAccountDTO'
 
 type Order = 'asc' | 'desc'
 

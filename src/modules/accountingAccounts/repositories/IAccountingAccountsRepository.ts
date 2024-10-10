@@ -1,10 +1,11 @@
+// Interfaces
 import { ICreateAccountingAccountDTO } from '../dtos/ICreateAccountingAccountDTO'
 import { IGetAccountingAccountsByClientResponseDTO } from '../dtos/IGetAccountingAccountsByClientResponseDTO'
 import { IGetAccountingAccountsByClientDTO } from '../dtos/IGetAccountingAccountsByClientDTO'
 import { IDeleteAccountingAccountDTO } from '../dtos/IDeleteAccountingAccountDTO'
 import { IUpdateAccountingAccountDTO } from '../dtos/IUpdateAccountingAccountDTO'
 
-export interface IClientsRepository {
+export interface IAccountingAccountsRepository {
   getAccountingAccountsByClient(
     data: IGetAccountingAccountsByClientDTO
   ): Promise<IGetAccountingAccountsByClientResponseDTO>

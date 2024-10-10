@@ -1,12 +1,17 @@
+// Services
 import { api } from 'src/services/api'
-import { IClientsRepository } from './IClientsRepository'
+
+// Interfaces
+import { IAccountingAccountsRepository } from './IAccountingAccountsRepository'
+
+// DTOs
 import { ICreateAccountingAccountDTO } from '../dtos/ICreateAccountingAccountDTO'
 import { IGetAccountingAccountsByClientResponseDTO } from '../dtos/IGetAccountingAccountsByClientResponseDTO'
 import { IGetAccountingAccountsByClientDTO } from '../dtos/IGetAccountingAccountsByClientDTO'
 import { IDeleteAccountingAccountDTO } from '../dtos/IDeleteAccountingAccountDTO'
 import { IUpdateAccountingAccountDTO } from '../dtos/IUpdateAccountingAccountDTO'
 
-export class ClientsRepository implements IClientsRepository {
+export class AccountingAccountsRepository implements IAccountingAccountsRepository {
   async getAccountingAccountsByClient(
     data: IGetAccountingAccountsByClientDTO
   ): Promise<IGetAccountingAccountsByClientResponseDTO> {

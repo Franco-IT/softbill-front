@@ -12,13 +12,13 @@ import { useDrawer } from 'src/hooks/useDrawer'
 import { useMediaQuery } from '@mui/material'
 
 // Services and Notifications
-import { clientsController } from 'src/modules/clients'
+import { accountingAccountsController } from 'src/modules/accountingAccounts'
 import { AppError } from 'src/shared/errors/AppError'
 import useToast from 'src/hooks/useToast'
 import { useQueryClient } from 'react-query'
 
 // Types
-import { IAccountingAccountDTO } from 'src/modules/clients/dtos/IAccountingAccountDTO'
+import { IAccountingAccountDTO } from 'src/modules/accountingAccounts/dtos/IAccountingAccountDTO'
 
 interface RowOptionsProps {
   data: IAccountingAccountDTO
@@ -43,7 +43,7 @@ const RowOptions = ({ data }: RowOptionsProps) => {
 
   const handleDelete = async () => {
     try {
-      await clientsController.deleteAccountingAccount({ clientAccountingAccountId: data.id })
+      await accountingAccountsController.deleteAccountingAccount({ clientAccountingAccountId: data.id })
       await queryClient.invalidateQueries(['accounting-accounts-by-client'])
       toastSuccess('Conta contábil deletada com sucesso!')
     } catch (e) {

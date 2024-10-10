@@ -30,8 +30,8 @@ import CustomTextField from 'src/@core/components/mui/text-field'
 import { useRouter } from 'next/router'
 
 // DTOs and Controllers
-import { ICreateAccountingAccountDTO } from 'src/modules/clients/dtos/ICreateAccountingAccountDTO'
-import { clientsController } from 'src/modules/clients'
+import { ICreateAccountingAccountDTO } from 'src/modules/accountingAccounts/dtos/ICreateAccountingAccountDTO'
+import { accountingAccountsController } from 'src/modules/accountingAccounts'
 
 // Utilities
 import { applyAccountNumberMask } from 'src/utils/inputs'
@@ -67,7 +67,7 @@ const Add = ({ open, handleClose }: AddProps) => {
 
   const onSubmit = async (data: ICreateAccountingAccountDTO) => {
     try {
-      await clientsController.createAccountingAccount(data)
+      await accountingAccountsController.createAccountingAccount(data)
       await queryClient.invalidateQueries(['accounting-accounts-by-client'])
       toastSuccess('Conta contábil adicionada com sucesso!')
       handleClose()
