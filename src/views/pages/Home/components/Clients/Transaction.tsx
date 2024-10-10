@@ -1,5 +1,5 @@
 // React
-import { Fragment } from 'react'
+import React, { Fragment, memo } from 'react'
 
 // Material UI
 import { Box, Card, CardContent, CardHeader, IconButton, Tooltip, Typography, useMediaQuery } from '@mui/material'
@@ -26,9 +26,9 @@ interface TransactionProps extends React.HTMLAttributes<HTMLDivElement> {
   data: any
 }
 
-const Transaction = ({ data, ...rest }: TransactionProps) => {
+const Transaction = memo(({ data, ...rest }: TransactionProps) => {
   const { anchor, open, toggleDrawer, children } = useDrawer()
-  const dataCached = useGetFetchQuery<any>('dashboard-client')
+  const dataCached = useGetFetchQuery<any>('client-dashboard')
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
   const bankAccount = dataCached?.bankAccounts?.find((item: any) => item.bankAccountId === data.bankAccountId) || null
@@ -136,6 +136,6 @@ const Transaction = ({ data, ...rest }: TransactionProps) => {
       <DrawerAnchor {...drawerProps} />
     </Fragment>
   )
-}
+})
 
 export default Transaction

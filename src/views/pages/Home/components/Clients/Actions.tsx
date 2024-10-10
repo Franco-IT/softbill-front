@@ -75,7 +75,7 @@ const Actions = () => {
         }
       })
       .then(() => {
-        queryClient.invalidateQueries(['dashboard-client'])
+        queryClient.invalidateQueries(['client-dashboard'])
         queryClient.invalidateQueries(['client-pending-transactions-list'])
         toast.success('Arquivos enviados com sucesso.')
         reset()

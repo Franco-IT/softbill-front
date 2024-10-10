@@ -1,40 +1,31 @@
 // React and Material UI
-import { Card, CardContent, CardHeader, Grid, Tooltip, Typography, useMediaQuery } from '@mui/material'
-import { Box } from '@mui/system'
+import { Card, CardContent, CardHeader, Grid, Tooltip, Typography, useMediaQuery, Box } from '@mui/material'
 
 // Hooks
 import { useAuth } from 'src/hooks/useAuth'
-import { useQuery } from 'react-query'
+import { useClientDashboard } from 'src/hooks/clients/useClientDashboard'
 
 // Services and Utilities
-import { api } from 'src/services/api'
-import { getInitials } from 'src/utils/getInitials'
 import { formatName } from 'src/utils/format'
+import { getInitials } from 'src/utils/getInitials'
 
 // Custom Components
 import Banks from './Banks'
 import Pendings from './Pendings'
 import Transactions from './Transactions'
-import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
 import Error from 'src/components/FeedbackAPIs/Error'
 import CustomAvatar from 'src/components/CustomAvatar'
+import FinancialCloseBanks from './FinancialCloseBanks'
+import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
 
 const Client = () => {
   const { user } = useAuth()
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
-  const { data, isLoading, isError } = useQuery(
-    ['dashboard-client'],
-    async () => {
-      const response = await api.get('monthlyFinancialCloses/dashboard-client')
-
-      return response.data
-    },
-    {
-      staleTime: 1000 * 60 * 5,
-      keepPreviousData: true
-    }
-  )
+  const { data, isLoading, isError } = useClientDashboard({
+    staleTime: 1000 * 60 * 5,
+    keepPreviousData: true
+  })
 
   if (isLoading) {
     return <LoadingCard title='Carregando...' subtitle='Aguarde um momento' icon='tabler:loader-2' />
@@ -57,7 +48,8 @@ const Client = () => {
             title={data.accounting.name}
             placement='top'
             sx={{
-              width: 'max-content'
+              width: 'max-content',
+              cursor: 'pointer'
             }}
           >
             <Typography variant='h5' color='text.secondary'>
@@ -68,6 +60,9 @@ const Client = () => {
       />
       <CardContent>
         <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <FinancialCloseBanks />
+          </Grid>
           <Grid item xs={12} md={6}>
             <Box
               sx={{
