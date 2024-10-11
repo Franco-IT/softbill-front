@@ -133,7 +133,6 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
       handleResetData(values)
 
       const bank = banks.find((bank: any) => bank.id === value)
-
       setBank(bank)
 
       setFormValues(() => {
@@ -142,7 +141,8 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
         const newValues = Object.assign(bankValues, {
           bank: {
             id: bank.id,
-            name: bank.name
+            name: bank.name,
+            code: bank.code
           },
           bankId: bank.id,
           clientId: client.id
@@ -153,7 +153,8 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
 
       methods.setValue('bank', {
         id: bank.id,
-        name: bank.name
+        name: bank.name,
+        code: bank.code
       })
     },
     [client.id, handleResetData, methods]

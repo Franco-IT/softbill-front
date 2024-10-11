@@ -6,7 +6,6 @@ import {
   Accordion,
   AccordionSummary,
   Typography,
-  Divider,
   ToggleButtonGroup,
   ToggleButton
 } from '@mui/material'
@@ -120,7 +119,6 @@ const OperationsTypes = ({ banksProps, methods, operationType, handleSetOperatio
               {handleCheckOperationTypeSelected(operationType) || 'Selecione uma operação para acessar as opções'}
             </Typography>
           </AccordionSummary>
-          <Divider sx={{ m: '0 !important' }} />
           {operationType === 'INTEGRATION' && <Banks {...bankProps} />}
           {operationType === 'IMPORT' && <OFX {...OFXProps} />}
         </Accordion>

@@ -25,7 +25,8 @@ const Banks = ({ handleSelectBank, methods, bank }: BanksProps) => {
   const { data: banks } = useGetDataApi<any>({
     url: '/banks',
     params: {
-      perPage: 1000
+      perPage: 1000,
+      integrated: true
     },
     callInit: router.isReady
   })
@@ -48,8 +49,7 @@ const Banks = ({ handleSelectBank, methods, bank }: BanksProps) => {
         <CustomTextField
           select
           fullWidth
-          label='Banco'
-          required
+          label={bank.id ? 'Banco' + ' - ' + bank.code : 'Banco'}
           value={bank.id || 'default'}
           onChange={e => handleSelectBank(e.target.value, banks?.data)}
           error={Boolean(methods.formState.errors?.bankId)}
