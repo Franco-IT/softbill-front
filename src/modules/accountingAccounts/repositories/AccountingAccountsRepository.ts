@@ -15,11 +15,8 @@ export class AccountingAccountsRepository implements IAccountingAccountsReposito
   async getAccountingAccountsByClient(
     data: IGetAccountingAccountsByClientDTO
   ): Promise<IGetAccountingAccountsByClientResponseDTO> {
-    const cleanObject = <T extends object>(obj: T): { [p: string]: unknown } => {
-      return Object.fromEntries(Object.entries(obj).filter(([, value]) => Boolean(value) || value === 0))
-    }
     const response = await api.get('clientAccountingAccounts/by-client/' + data.clientId, {
-      params: cleanObject(data.params)
+      params: data.params
     })
 
     return response.data

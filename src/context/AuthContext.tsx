@@ -51,7 +51,7 @@ const defaultProvider: AuthValuesType = {
 
 const AuthContext = createContext(defaultProvider)
 
-let authChannel: BroadcastChannel
+export let authChannel: BroadcastChannel
 
 type Props = {
   children: ReactNode
@@ -93,7 +93,8 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
 
         const returnUrl = router.query.returnUrl
         const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
-        router.replace(redirectURL as string)
+
+        return router.replace(redirectURL as string)
       },
       onError: (error: any) => {
         if (error instanceof AppError) toast.error(error.message)
@@ -117,7 +118,7 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(['auth-user'])
+        queryClient.removeQueries()
       }
     }
   )
@@ -167,11 +168,13 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
         const response = await authController.resetPassword(data)
         if (response && response.status === 200) {
           toast.success('Senha redefinida com sucesso')
-          router.push('/login')
+
+          await router.push('/login')
         }
       } catch (error) {
         if (error instanceof AppError) toast.error(error.message)
-        router.push('/esqueceu-a-senha')
+
+        await router.push('/esqueceu-a-senha')
       }
     },
     [router]
@@ -183,11 +186,11 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
         const response = await authController.emailResetPassword(data)
         if (response && response.status === 200) {
           toast.success('E-mail enviado com sucesso.')
-          router.push('/login')
+          await router.push('/login')
         }
       } catch (error) {
         if (error instanceof AppError) toast.error(error.message)
-        router.push('/esqueceu-a-senha')
+        await router.push('/esqueceu-a-senha')
       }
     },
     [router]
@@ -199,11 +202,11 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
         const response = await authController.firstAccess(data)
         if (response?.status === 200) {
           toast.success('Senha redefinida com sucesso')
-          router.push('/login')
+          await router.push('/login')
         }
       } catch (error) {
         if (error instanceof AppError) toast.error(error.message)
-        router.push('/login')
+        await router.push('/login')
       }
     },
     [router]
@@ -217,6 +220,7 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
     authChannel = new BroadcastChannel('auth')
 
     authChannel.onmessage = message => {
+      console.log('message', message)
       if (message.data === 'logout') handleLogout()
     }
 
