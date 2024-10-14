@@ -58,7 +58,7 @@ export const statusMap: StatusMapProps = {
   },
   WAITING_VALIDATION: {
     extract: { status: true, isError: false, isPending: false },
-    conciliation: { status: true, isError: false, isPending: false },
+    conciliation: { status: false, isError: false, isPending: true },
     validation: { status: false, isError: false, isPending: true }
   },
   PROCESSED: {

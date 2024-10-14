@@ -90,5 +90,9 @@ export const errors = {
     'Transaction Origin Already Exists': 'Origem da transação já existe, tente novamente mais tarde.',
     'Error on send file, please send only csv files':
       'Erro ao enviar arquivo, por favor envie apenas arquivos csv, tente novamente mais tarde.'
+  },
+  500: {
+    'Error: This OFX has transactions isnt in the same month of the current monthly financial close ':
+      'Este OFX possui transações que não estão no mesmo mês do fechamento financeiro mensal atual, tente novamente mais tarde.'
   }
 }

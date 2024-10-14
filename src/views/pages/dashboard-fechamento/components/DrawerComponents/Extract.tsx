@@ -153,11 +153,17 @@ const Extract = () => {
       .catch(error => error instanceof AppError && toast.error(error.message))
   }
 
-  const handleDeleteImportedFile = (monthlyFinancialCloseBankId: string) => {
-    financialCloseController
-      .deleteStatementFile({ id: monthlyFinancialCloseBankId })
-      .then(() => queryClient.invalidateQueries(['financial-closing']))
-      .catch(error => error instanceof AppError && toast.error(error.message))
+  const handleDeleteImportedFile = async (monthlyFinancialCloseBankId: string) => {
+    try {
+      await financialCloseController.deleteStatementFile({ id: monthlyFinancialCloseBankId })
+
+      await queryClient.invalidateQueries(['financial-closing'])
+      await queryClient.invalidateQueries(['conciliations'])
+      await queryClient.invalidateQueries(['financial-closing-dashboard'])
+      await queryClient.invalidateQueries(['financial-closing-list'])
+    } catch (e) {
+      e instanceof AppError && toast.error(e.message)
+    }
   }
 
   const handleGenerateExtract = (e: React.KeyboardEvent | React.MouseEvent) => {
@@ -272,13 +278,13 @@ const Extract = () => {
               <Grid item xs={12} md={6}>
                 <Button
                   fullWidth
-                  variant='contained'
-                  color='primary'
+                  variant='tonal'
+                  color='error'
                   disabled={statusValues[status] || false}
-                  startIcon={<IconifyIcon icon='tabler:eye' fontSize='1.7rem' />}
-                  onClick={e => handleGenerateExtract(e)}
+                  startIcon={<IconifyIcon icon='tabler:trash' fontSize='1.7rem' />}
+                  onClick={() => handleDeleteImportedFile(monthlyFinancialCloseBankId as string)}
                 >
-                  Visualizar
+                  Deletar
                 </Button>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -287,10 +293,10 @@ const Extract = () => {
                   variant='contained'
                   color='primary'
                   disabled={statusValues[status] || false}
-                  startIcon={<IconifyIcon icon='tabler:trash' fontSize='1.7rem' />}
-                  onClick={() => handleDeleteImportedFile(monthlyFinancialCloseBankId as string)}
+                  startIcon={<IconifyIcon icon='tabler:eye' fontSize='1.7rem' />}
+                  onClick={e => handleGenerateExtract(e)}
                 >
-                  Deletar
+                  Visualizar
                 </Button>
               </Grid>
               {method === 'IMPORT' && status === 'PENDING' && (

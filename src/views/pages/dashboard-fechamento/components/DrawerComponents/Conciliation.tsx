@@ -37,7 +37,8 @@ const Conciliation = () => {
     PENDING: 'Pendente',
     PROCESSING: 'Processando',
     DONE: 'Aprovado',
-    TRANSACTION_UNTRACKED: 'Conciliações Pendentes'
+    TRANSACTION_UNTRACKED: 'Conciliações Pendentes',
+    WAITING_VALIDATION: 'Aguardando Validação'
   }
 
   const statusColorsMUI: { [key: string]: ColorType } = {
@@ -45,7 +46,8 @@ const Conciliation = () => {
     PENDING: 'error',
     PROCESSING: 'error',
     PROCESSED: 'success',
-    TRANSACTION_UNTRACKED: 'warning'
+    TRANSACTION_UNTRACKED: 'warning',
+    WAITING_VALIDATION: 'warning'
   }
 
   const statusValuesBoolean: any = {
@@ -81,7 +83,7 @@ const Conciliation = () => {
       PROCESSING: 'REJECTED',
       PROCESSED: 'DONE',
       TRANSACTION_UNTRACKED: 'PENDING',
-      WAITING_VALIDATION: 'DONE',
+      WAITING_VALIDATION: 'PENDING',
       DONE: 'DONE'
     }
 
