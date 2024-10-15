@@ -59,15 +59,13 @@ const ChangePassword = () => {
   })
 
   const handleChangePassword = useMutation((data: IChangePasswordAuthUserDTO) => authController.changePassword(data), {
-    onSuccess: response => {
-      if (response?.status === 200) {
-        toast.success('Senha alterada com sucesso, faça login novamente')
-        queryClient.invalidateQueries(['profile'])
+    onSuccess: async () => {
+      toast.success('Senha alterada com sucesso, faça login novamente')
+      await queryClient.invalidateQueries(['profile'])
 
-        delay(2000).then(() => {
-          logout()
-        })
-      }
+      delay(2000).then(() => {
+        logout()
+      })
     },
     onError: error => {
       if (error instanceof AppError) toast.error(error.message)

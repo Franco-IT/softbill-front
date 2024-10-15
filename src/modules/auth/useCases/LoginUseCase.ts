@@ -1,21 +1,23 @@
-import { UserAuthRepository } from '../repositories/UserAuthRepository'
-import { IUserLoginDTO, IUserLoginResponseDTO } from '../dtos/IUserLoginDTO'
+// Providers
 import { errorProvider } from 'src/shared/providers'
 
+// Errors
+import { errors } from '../erros'
+
+// DTOs
+import { IUserLoginDTO, IUserLoginResponseDTO } from '../dtos/IUserLoginDTO'
+
+// Repositories
+import { UserAuthRepository } from '../repositories/UserAuthRepository'
+
 export class LoginUseCase {
-  private userAuthRepository: UserAuthRepository
+  constructor(private userAuthRepository: UserAuthRepository) {}
 
-  constructor(userAuthRepository: UserAuthRepository) {
-    this.userAuthRepository = userAuthRepository
-  }
-
-  async execute(data: IUserLoginDTO): Promise<IUserLoginResponseDTO | undefined> {
+  async execute(data: IUserLoginDTO): Promise<IUserLoginResponseDTO> {
     try {
-      const response = await this.userAuthRepository.login(data)
-
-      return response
-    } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'E-mail ou senha incorretos, tente novamente.')
+      return await this.userAuthRepository.login(data)
+    } catch (error) {
+      throw errorProvider.handle(error, errors, 'Ocorreu um erro ao realizar o login, tente novamente.')
     }
   }
 }

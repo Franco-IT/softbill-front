@@ -10,38 +10,22 @@ import { ChangePasswordUseCase } from '../useCases/ChangePasswordUseCase'
 import { IChangePasswordAuthUserDTO } from '../dtos/IChangePasswordAuthUserDTO'
 
 export class AuthController {
-  private loginUseCase: LoginUseCase
-  private logoutUseCase: LogoutUseCase
-  private getAuthUserUseCase: GetAuthUserUseCase
-  private changePasswordUseCase: ChangePasswordUseCase
-  private firstAccessUseCase: FirstAccessUseCase
-  private resetPasswordUseCase: ResetPasswordUseCase
-  private emailResetPasswordUseCase: EmailResetPasswordUseCase
-
   constructor(
-    loginUseCase: LoginUseCase,
-    logoutUseCase: LogoutUseCase,
-    getAuthUserUseCase: GetAuthUserUseCase,
-    changePasswordUseCase: ChangePasswordUseCase,
-    firstAccessUseCase: FirstAccessUseCase,
-    resetPasswordUseCase: ResetPasswordUseCase,
-    emailResetPasswordUseCase: EmailResetPasswordUseCase
-  ) {
-    this.loginUseCase = loginUseCase
-    this.logoutUseCase = logoutUseCase
-    this.getAuthUserUseCase = getAuthUserUseCase
-    this.changePasswordUseCase = changePasswordUseCase
-    this.firstAccessUseCase = firstAccessUseCase
-    this.resetPasswordUseCase = resetPasswordUseCase
-    this.emailResetPasswordUseCase = emailResetPasswordUseCase
-  }
+    private loginUseCase: LoginUseCase,
+    private logoutUseCase: LogoutUseCase,
+    private getAuthUserUseCase: GetAuthUserUseCase,
+    private changePasswordUseCase: ChangePasswordUseCase,
+    private firstAccessUseCase: FirstAccessUseCase,
+    private resetPasswordUseCase: ResetPasswordUseCase,
+    private emailResetPasswordUseCase: EmailResetPasswordUseCase
+  ) {}
 
   async login(data: IUserLoginDTO) {
     return this.loginUseCase.execute(data)
   }
 
   logout() {
-    this.logoutUseCase.execute()
+    return this.logoutUseCase.execute()
   }
 
   async getAuthUser(id: string) {

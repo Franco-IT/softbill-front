@@ -10,7 +10,7 @@ export class GetAccountingAccountsByClientUseCase {
 
   async execute(data: IGetAccountingAccountsByClientDTO) {
     try {
-      return this.accountingAccountsRepository.getAccountingAccountsByClient(data)
+      return await this.accountingAccountsRepository.getAccountingAccountsByClient(data)
     } catch (e) {
       throw errorProvider.handle(e, {}, 'Erro ao buscar contas contábeis, tente novamente mais tarde.')
     }

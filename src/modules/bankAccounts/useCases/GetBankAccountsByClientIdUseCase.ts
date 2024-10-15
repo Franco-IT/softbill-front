@@ -12,7 +12,7 @@ export class GetBankAccountsByClientIdUseCase {
 
   async execute(data: IGetBankAccountsByClientIdDTO) {
     try {
-      return this.bankAccountRepository.getBankAccountsByClientId(data)
+      return await this.bankAccountRepository.getBankAccountsByClientId(data)
     } catch (error: any) {
       throw errorProvider.handle(error, {}, 'Erro ao buscar contas do cliente, tente novamente mais tarde.')
     }
