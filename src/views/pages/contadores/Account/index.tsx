@@ -27,7 +27,7 @@ import { delay } from 'src/utils/delay'
 // Controladores e serviços
 import { userController } from 'src/modules/users'
 
-// Toast e erros
+// Toast e errors
 import toast from 'react-hot-toast'
 import { AppError } from 'src/shared/errors/AppError'
 

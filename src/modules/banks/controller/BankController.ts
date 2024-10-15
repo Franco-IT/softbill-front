@@ -1,7 +1,10 @@
+// DTOs
 import { IChangeBankDisponibility } from '../dtos/IChangeBankDisponibility'
 import { IChangeBankStatusDTO } from '../dtos/IChangeBankStatusDTO'
 import { IGetBanksDTO } from '../dtos/IGetBanksDTO'
 import { ISetBankLogoDTO } from '../dtos/ISetBankLogoDTO'
+
+// Use Cases
 import { ChangeBankDisponibilityUseCase } from '../useCases/ChangeBankDisponibilityUseCase'
 import { ChangeBankStatusUseCase } from '../useCases/ChangeBankStatusUseCase'
 import { GetBanksUseCase } from '../useCases/GetBanksUseCase'

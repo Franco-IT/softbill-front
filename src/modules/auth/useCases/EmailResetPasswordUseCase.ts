@@ -8,7 +8,7 @@ import { IUserEmailResetPasswordDTO } from '../dtos/IUserEmailResetPasswordDTO'
 import { errorProvider } from 'src/shared/providers'
 
 // Errors
-import { errors } from '../erros'
+import { errors } from '../errors'
 
 export class EmailResetPasswordUseCase {
   constructor(private userAuthRepository: IUserAuthRepository) {}

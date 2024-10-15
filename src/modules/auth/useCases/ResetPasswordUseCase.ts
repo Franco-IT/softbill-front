@@ -8,7 +8,7 @@ import { IUserResetPasswordDTO } from '../dtos/IUserResetPasswordDTO'
 import { IUserAuthRepository } from '../repositories/IUserAuthRepository'
 
 // Errors
-import { errors } from '../erros'
+import { errors } from '../errors'
 
 export class ResetPasswordUseCase {
   constructor(private userAuthRepository: IUserAuthRepository) {}

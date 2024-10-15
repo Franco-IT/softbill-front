@@ -14,7 +14,7 @@ import Tabs from 'src/views/pages/clientes/Account/Tabs'
 // Controladores
 import { userController } from 'src/modules/users'
 
-// Tipos e erros
+// Tipos e errors
 import { IAppError } from 'src/shared/errors/AppError'
 
 export default function Client() {

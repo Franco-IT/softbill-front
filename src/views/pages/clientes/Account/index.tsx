@@ -28,7 +28,7 @@ import { applyPhoneMask } from 'src/utils/inputs'
 import { formatDate } from 'src/@core/utils/format'
 import { renderInitials, renderUser } from 'src/utils/list'
 
-// Controladores e erros
+// Controladores e errors
 import { userController } from 'src/modules/users'
 import { AppError } from 'src/shared/errors/AppError'
 import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'

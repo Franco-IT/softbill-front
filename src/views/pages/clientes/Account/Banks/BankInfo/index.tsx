@@ -13,7 +13,7 @@ import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 
 // Tipos e Layouts
 import { ThemeColor } from 'src/@core/layouts/types'
-import { IBankAccountDTO } from 'src/modules/banks/dtos/IBankAccountDTO'
+import { IBankAccountDTO } from 'src/modules/bankAccounts/dtos/IBankAccountDTO'
 
 // Providers e Serviços
 import { dateProvider } from 'src/shared/providers'

@@ -208,7 +208,6 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
     authChannel = new BroadcastChannel('auth')
 
     authChannel.onmessage = message => {
-      console.log('message', message)
       if (message.data === 'logout') handleLogout()
     }
 

@@ -1,19 +1,23 @@
-import { errorProvider } from 'src/shared/providers'
-import { ISetBankLogoDTO } from '../dtos/ISetBankLogoDTO'
+// Repositories
 import { IBankRepository } from '../repositories/IBankRepository'
 
-export class SetBankLogoUseCase {
-  private bankRepository: IBankRepository
+// DTOs
+import { ISetBankLogoDTO } from '../dtos/ISetBankLogoDTO'
 
-  constructor(bankRepository: IBankRepository) {
-    this.bankRepository = bankRepository
-  }
+// Providers
+import { errorProvider } from 'src/shared/providers'
+
+// Errors
+import { errors } from '../errors'
+
+export class SetBankLogoUseCase {
+  constructor(private bankRepository: IBankRepository) {}
 
   async execute(data: ISetBankLogoDTO) {
     try {
-      return await this.bankRepository.setBankLogo(data)
+      await this.bankRepository.setBankLogo(data)
     } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Erro ao atualizar imagem.')
+      throw errorProvider.handle(error, errors, 'Erro ao atualizar imagem, tente novamente mais tarde.')
     }
   }
 }

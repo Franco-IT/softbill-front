@@ -7,18 +7,18 @@ export interface Bank {
 
 export interface IBankAccountDTO {
   id: string
-  client_id: string
-  bank_id: string
-  bank_client_id?: string
-  bank_client_secret?: string
+  clientId: string
+  bankId: string
+  bankClientId?: string
+  bankClientSecret?: string
   status: string
-  bank_hash_cert: any
-  bank_hash_key: any
-  account_number: string
-  agency_number: string
-  generated_by: string
-  bank_ofx_branch_id: any
-  bank_ofx_acct_id?: string
+  bankHashCert: any
+  bankHashKey: any
+  accountNumber: string
+  agencyNumber: string
+  generatedBy: string
+  bankOFXBranchId: any
+  bankOFXAcctId?: string
   createdAt: string
   updatedAt: string
   bank: Bank

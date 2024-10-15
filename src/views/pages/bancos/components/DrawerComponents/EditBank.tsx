@@ -87,10 +87,10 @@ const EditBank = ({ data }: EditBankProps) => {
       return bankController.changeBankStatus({ id, status })
     },
     {
-      onSuccess: () => {
+      onSuccess: async () => {
         toast.success('Status alterado com sucesso!')
         setStatus(status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')
-        queryClient.invalidateQueries(['banks'])
+        await queryClient.invalidateQueries(['banks'])
       },
       onError: (error: any) => {
         if (error instanceof AppError) toast.error(error.message)
@@ -123,15 +123,14 @@ const EditBank = ({ data }: EditBankProps) => {
       return bankController.changeBankDisponibility({ id, integrated })
     },
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['banks'])
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['banks'])
         setAvaliableForIntegration(!avaliableForIntegration)
         toast.success('Disponibilidade alterada com sucesso!')
       },
       onError: (error: any) => {
         if (error instanceof AppError) toast.error(error.message)
-      },
-      onSettled: () => setOpen(false)
+      }
     }
   )
 

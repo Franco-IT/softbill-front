@@ -8,7 +8,7 @@ import { IUserFirstAccessDTO } from '../dtos/IUserFirstAccessDTO'
 import { IUserAuthRepository } from '../repositories/IUserAuthRepository'
 
 // Errors
-import { errors } from '../erros'
+import { errors } from '../errors'
 
 export class FirstAccessUseCase {
   constructor(private userAuthRepository: IUserAuthRepository) {}

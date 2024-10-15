@@ -5,7 +5,7 @@ import { errorProvider } from 'src/shared/providers'
 import { IUserAuthRepository } from '../repositories/IUserAuthRepository'
 
 // Errors
-import { errors } from '../erros'
+import { errors } from '../errors'
 
 export class GetAuthUserUseCase {
   constructor(private userAuthRepository: IUserAuthRepository) {}

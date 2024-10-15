@@ -2,7 +2,7 @@
 import { errorProvider } from 'src/shared/providers'
 
 // Errors
-import { errors } from '../erros'
+import { errors } from '../errors'
 
 // DTOs
 import { IUserLoginDTO, IUserLoginResponseDTO } from '../dtos/IUserLoginDTO'

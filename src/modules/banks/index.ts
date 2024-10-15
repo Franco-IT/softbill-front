@@ -1,5 +1,10 @@
+// Controller
 import { BankController } from './controller/BankController'
+
+// Repository
 import { BankRepository } from './repositories/BankRepository'
+
+// Use Cases
 import { ChangeBankDisponibilityUseCase } from './useCases/ChangeBankDisponibilityUseCase'
 import { ChangeBankStatusUseCase } from './useCases/ChangeBankStatusUseCase'
 import { GetBanksUseCase } from './useCases/GetBanksUseCase'

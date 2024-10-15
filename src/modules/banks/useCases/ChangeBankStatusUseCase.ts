@@ -1,21 +1,23 @@
-import { errorProvider } from 'src/shared/providers'
+// Repositories
 import { IBankRepository } from '../repositories/IBankRepository'
+
+// DTOs
 import { IChangeBankStatusDTO } from '../dtos/IChangeBankStatusDTO'
 
-export class ChangeBankStatusUseCase {
-  private bankRepository: IBankRepository
+// Providers
+import { errorProvider } from 'src/shared/providers'
 
-  constructor(bankRepository: IBankRepository) {
-    this.bankRepository = bankRepository
-  }
+// Errors
+import { errors } from '../errors'
+
+export class ChangeBankStatusUseCase {
+  constructor(private bankRepository: IBankRepository) {}
 
   async execute(data: IChangeBankStatusDTO) {
     try {
-      const response = await this.bankRepository.changeBankStatus(data)
-
-      return response.data
+      await this.bankRepository.changeBankStatus(data)
     } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Erro ao alterar status do banco.')
+      throw errorProvider.handle(error, errors, 'Erro ao alterar status do banco, tente novamente mais tarde.')
     }
   }
 }

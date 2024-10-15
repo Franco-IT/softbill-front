@@ -4,6 +4,8 @@ export interface IBankDTO {
   slug: string
   status: 'ACTIVE' | 'INACTIVE'
   logo: string
+  ispb: string
+  code: string
   createdAt: Date
   updatedAt: Date
 }

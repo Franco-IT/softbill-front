@@ -107,13 +107,9 @@ const List = () => {
       return bankController.setBankLogo(formData)
     },
     {
-      onSuccess: response => {
-        if (response) {
-          if (response.status === 201) {
-            queryClient.invalidateQueries(['banks'])
-            toast.success('Imagem alterada com sucesso!')
-          }
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['banks'])
+        toast.success('Imagem alterada com sucesso!')
       },
       onError: error => {
         if (error instanceof AppError) toast.error(error.message)
