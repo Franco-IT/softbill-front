@@ -1,19 +1,20 @@
+// Providers
 import { errorProvider } from 'src/shared/providers'
-import { IUserLoggedDTO } from '../dtos/IUserLoggedDTO'
+
+// Repositories
 import { IUserAuthRepository } from '../repositories/IUserAuthRepository'
 
+// Errors
+import { errors } from '../erros'
+
 export class GetAuthUserUseCase {
-  private userAuthRepository: IUserAuthRepository
+  constructor(private userAuthRepository: IUserAuthRepository) {}
 
-  constructor(userAthRepository: IUserAuthRepository) {
-    this.userAuthRepository = userAthRepository
-  }
-
-  async execute(id: string): Promise<IUserLoggedDTO | undefined> {
+  async execute(id: string) {
     try {
-      return await this.userAuthRepository.getAuthUser({ id })
-    } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Sua sessão expirou, faça login novamente.')
+      return this.userAuthRepository.getAuthUser({ id })
+    } catch (error) {
+      throw errorProvider.handle(error, errors, 'Sua sessão expirou, faça login novamente.')
     }
   }
 }

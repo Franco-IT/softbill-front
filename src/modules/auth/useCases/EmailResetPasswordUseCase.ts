@@ -1,25 +1,28 @@
+// Repositories
 import { IUserAuthRepository } from '../repositories/IUserAuthRepository'
+
+// DTOs
 import { IUserEmailResetPasswordDTO } from '../dtos/IUserEmailResetPasswordDTO'
-import { AxiosResponse } from 'axios'
+
+// Providers
 import { errorProvider } from 'src/shared/providers'
 
+// Errors
+import { errors } from '../erros'
+
 export class EmailResetPasswordUseCase {
-  private userAuthRepository: IUserAuthRepository
+  constructor(private userAuthRepository: IUserAuthRepository) {}
 
-  constructor(userAuthRepository: IUserAuthRepository) {
-    this.userAuthRepository = userAuthRepository
-  }
-
-  async execute(data: IUserEmailResetPasswordDTO): Promise<AxiosResponse | void> {
+  async execute(data: IUserEmailResetPasswordDTO) {
     try {
-      return await this.userAuthRepository.emailResetPassword(data)
+      await this.userAuthRepository.emailResetPassword(data)
     } catch (error: any) {
       throw errorProvider.handle(
         error,
-        {},
+        errors,
         error.response.status == 409
-          ? 'Usuário não encontrado, verifique o email informado.'
-          : 'Erro ao enviar e-mail de recuperação de senha.'
+          ? 'Usuário não encontrado, verifique o email informado e tente novamente.'
+          : 'Erro ao enviar e-mail de recuperação de senha, tente novamente mais tarde.'
       )
     }
   }

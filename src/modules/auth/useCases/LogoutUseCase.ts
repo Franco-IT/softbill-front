@@ -1,14 +1,13 @@
+// Providers
 import { errorProvider } from 'src/shared/providers'
+
+// Repositories
 import { UserAuthRepository } from '../repositories/UserAuthRepository'
 
 export class LogoutUseCase {
-  private userAuthRepository: UserAuthRepository
+  constructor(private userAuthRepository: UserAuthRepository) {}
 
-  constructor(userAuthRepository: UserAuthRepository) {
-    this.userAuthRepository = userAuthRepository
-  }
-
-  execute(): void {
+  execute() {
     try {
       this.userAuthRepository.logout()
     } catch (error: any) {

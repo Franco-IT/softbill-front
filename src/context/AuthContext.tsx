@@ -67,7 +67,6 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
   const loginMutation = useMutation(
     async (params: IUserLoginDTO) => {
       const response = await authController.login(params)
-      if (!response) throw new Error('Erro ao fazer login. Tente novamente.')
 
       const { token, userId } = response
       api.defaults.headers['Authorization'] = `Bearer ${token}`
@@ -80,11 +79,7 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
       setCookie(authConfig.storageUserDataKeyName, encryptedUserId)
       setCookie(`${authConfig.storageUserDataKeyName}-iv`, ivUserId)
 
-      const userData = await authController.getAuthUser(userId)
-
-      if (!userData) throw new AppError('Erro ao buscar usuário logado. Tente novamente.')
-
-      return userData
+      return authController.getAuthUser(userId)
     },
     {
       onSuccess: (userData: IUserLoggedDTO) => {
@@ -165,12 +160,9 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
   const handleResetPassword = useCallback(
     async (data: IUserResetPasswordDTO) => {
       try {
-        const response = await authController.resetPassword(data)
-        if (response && response.status === 200) {
-          toast.success('Senha redefinida com sucesso')
-
-          await router.push('/login')
-        }
+        await authController.resetPassword(data)
+        toast.success('Senha redefinida com sucesso')
+        await router.push('/login')
       } catch (error) {
         if (error instanceof AppError) toast.error(error.message)
 
@@ -183,11 +175,9 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
   const handleEmailResetPassword = useCallback(
     async (data: IUserEmailResetPasswordDTO) => {
       try {
-        const response = await authController.emailResetPassword(data)
-        if (response && response.status === 200) {
-          toast.success('E-mail enviado com sucesso.')
-          await router.push('/login')
-        }
+        await authController.emailResetPassword(data)
+        toast.success('E-mail enviado com sucesso.')
+        await router.push('/login')
       } catch (error) {
         if (error instanceof AppError) toast.error(error.message)
         await router.push('/esqueceu-a-senha')
@@ -199,11 +189,9 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
   const handleFirstAccess = useCallback(
     async (data: IUserFirstAccessDTO) => {
       try {
-        const response = await authController.firstAccess(data)
-        if (response?.status === 200) {
-          toast.success('Senha redefinida com sucesso')
-          await router.push('/login')
-        }
+        await authController.firstAccess(data)
+        toast.success('Senha redefinida com sucesso')
+        await router.push('/login')
       } catch (error) {
         if (error instanceof AppError) toast.error(error.message)
         await router.push('/login')
