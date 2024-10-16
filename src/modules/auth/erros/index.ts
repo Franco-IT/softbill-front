@@ -7,7 +7,7 @@ export const errors = {
     'Invalid token': 'Token inválido, faça login novamente.'
   },
   404: {
-    'User Not found': 'Email ou senha inválidos, verifique os dados e tente novamente.',
+    'User Not Found': 'Email ou senha inválidos, verifique os dados e tente novamente.',
     'Email or Password Invalid': 'Email ou senha inválidos, verifique os dados e tente novamente.'
   },
   409: {
