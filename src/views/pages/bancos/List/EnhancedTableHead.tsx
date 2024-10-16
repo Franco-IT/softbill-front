@@ -1,9 +1,14 @@
+// React
 import { memo } from 'react'
+
+// Material UI
 import { Box, TableCell, TableHead, TableRow, TableSortLabel, useTheme } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
 
+// Internal Components
 import { HeadCellProps } from './HeadCells'
 
+// Types
 import { IBankDTO } from 'src/modules/banks/dtos/IBankDTO'
 
 type Order = 'asc' | 'desc'
