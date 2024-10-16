@@ -1,28 +1,58 @@
-// Pacotes externos
+// React hooks for managing component state and memoization
 import { Suspense, useEffect, useState, ChangeEvent, MouseEvent, useMemo, useCallback } from 'react'
-import Link from 'next/link'
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
-import toast from 'react-hot-toast'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
 
+// Next.js Link component for navigation
+import Link from 'next/link'
+
+// Material UI components for layout and styling
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
+
+// Toast notifications for user feedback
+import toast from 'react-hot-toast'
+
+// React Query hooks for data fetching and mutation
+import { useMutation, useQueryClient } from 'react-query'
+
+// Custom chip component for displaying tags or labels
 import CustomChip from 'src/@core/components/mui/chip'
+
+// Error component for displaying API errors
 import Error from 'src/components/FeedbackAPIs/Error'
+
+// Custom components for table header and options
 import HeadCells from './HeadCells'
 import RowOptions from './RowOptions'
 import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
+// Utility functions for formatting names and dates
 import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
+
+// Utility functions for verifying user status and type
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
+
+// Utilities for sorting and loading states
 import { Loading, Order, getComparator, renderUser, stableSort } from 'src/utils/list'
 
+// Type definitions for theme colors
 import { ThemeColor } from 'src/@core/layouts/types'
-import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
-import { userController } from 'src/modules/users'
+
+// Error handling class for managing application errors
 import { AppError } from 'src/shared/errors/AppError'
 
+// Custom hook for managing accountings data
+import { useAccountings } from 'src/hooks/accountings/useAccountings'
+
+// DTO for fetching accountings data
+import { IGetAccountingsDTO } from 'src/modules/accounting/dtos/IGetAccountingsDTO'
+
+// Controller for handling accounting API calls
+import { accountingsController } from 'src/modules/accounting'
+
+// DTO for accounting data structure
+import { IAccountingDTO } from 'src/modules/accounting/dtos/IAccountingDTO'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -45,13 +75,13 @@ const List = () => {
   const queryClient = useQueryClient()
 
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof IUserDTO>('createdAt')
+  const [orderBy, setOrderBy] = useState<keyof IAccountingDTO>('createdAt')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [filter, setFilter] = useState('')
-  const [users, setUsers] = useState<IUserDTO[]>([])
+  const [users, setUsers] = useState<IAccountingDTO[]>([])
 
-  const params = useMemo(
+  const params: IGetAccountingsDTO = useMemo(
     () => ({ type: 'ACCOUNTING', page: page + 1, perPage: rowsPerPage, search: filter }),
     [page, rowsPerPage, filter]
   )
@@ -60,13 +90,14 @@ const List = () => {
     data: rows,
     isLoading,
     isError
-  } = useQuery(['accountings', params], () => userController.getUsers(params), {
+  } = useAccountings(params, {
     staleTime: 1000 * 60 * 5,
-    keepPreviousData: true
+    keepPreviousData: true,
+    refetchOnWindowFocus: false
   })
 
   const handleRequestSort = useCallback(
-    (event: MouseEvent<unknown>, property: keyof IUserDTO) => {
+    (event: MouseEvent<unknown>, property: keyof IAccountingDTO) => {
       const isAsc = orderBy === property && order === 'asc'
       setOrder(isAsc ? 'desc' : 'asc')
       setOrderBy(property)
@@ -87,14 +118,12 @@ const List = () => {
 
   const handleConfirmDelete = useMutation(
     (id: string) => {
-      return userController.delete({ id })
+      return accountingsController.delete({ id })
     },
     {
-      onSuccess: response => {
-        if (response?.status === 200) {
-          queryClient.invalidateQueries(['accountings'])
-          toast.success('Contabilidade deletada com sucesso!')
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['accountings'])
+        toast.success('Contabilidade deletada com sucesso!')
       },
       onError: error => {
         if (error instanceof AppError) toast.error(error.message)

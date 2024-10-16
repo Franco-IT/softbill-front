@@ -1,6 +1,7 @@
-// ** React Imports
+// React Imports
 import { SyntheticEvent, useState, useEffect } from 'react'
 
+// MUI Imports
 import Box from '@mui/material/Box'
 import TabPanel from '@mui/lab/TabPanel'
 import TabContext from '@mui/lab/TabContext'
@@ -10,18 +11,19 @@ import MuiTab, { TabProps } from '@mui/material/Tab'
 import MuiTabList, { TabListProps } from '@mui/lab/TabList'
 import CircularProgress from '@mui/material/CircularProgress'
 
+// Custom Components
 import Info from '../Info'
 import ChangePassword from '../changePassword'
-
 import Icon from 'src/@core/components/icon'
 
-import { UserProps } from 'src/types/users'
+// DTOs
+import { IAccountantDTO } from 'src/modules/accountant/dtos/IAccountantDTO'
 
 interface TabsProps {
-  data: UserProps
+  data: IAccountantDTO
 }
 
-// ** Styled Tab component
+// Styled Tab component
 const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
   flexDirection: 'row',
   '& svg': {

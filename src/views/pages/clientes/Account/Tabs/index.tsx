@@ -1,5 +1,7 @@
+// React hooks for managing state and lifecycle events
 import { SyntheticEvent, useState, useEffect } from 'react'
 
+// MUI components for layout and styling
 import Box from '@mui/material/Box'
 import TabPanel from '@mui/lab/TabPanel'
 import TabContext from '@mui/lab/TabContext'
@@ -9,17 +11,20 @@ import MuiTab, { TabProps } from '@mui/material/Tab'
 import MuiTabList, { TabListProps } from '@mui/lab/TabList'
 import CircularProgress from '@mui/material/CircularProgress'
 
+// Custom components for displaying information and icons
 import Info from '../Info'
-
 import Icon from 'src/@core/components/icon'
 
-import { ClientProps } from 'src/types/clients'
+// Custom components for Banks and Accounting Accounts
 import Banks from '../Banks'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router' // Router hook for navigation
 import AccountingAccounts from '../AccountingAccounts'
 
+// DTO for Client data structure
+import { IClientDTO } from 'src/modules/clients/dtos/IClientDTO'
+
 interface TabsAccountProps {
-  data: ClientProps
+  data: IClientDTO
 }
 
 const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({

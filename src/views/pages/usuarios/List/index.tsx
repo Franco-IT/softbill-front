@@ -1,27 +1,53 @@
+// React imports for state and effect management
 import { Suspense, useEffect, useState, ChangeEvent, MouseEvent, useMemo, useCallback } from 'react'
+
+// Link component for navigation
 import Link from 'next/link'
+
+// Material UI components
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
+
+// Custom chip component
 import CustomChip from 'src/@core/components/mui/chip'
 
+// Local components for table rendering
 import HeadCells from './HeadCells'
 import RowOptions from './RowOptions'
 import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
+// Utility functions for formatting
 import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
+
+// Utilities for sorting and rendering
 import { Loading, Order, getComparator, renderUser, stableSort } from 'src/utils/list'
 
+// Theme color type
 import { ThemeColor } from 'src/@core/layouts/types'
 
+// Toast notifications for feedback
 import toast from 'react-hot-toast'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+
+// React Query for data fetching
+import { useMutation, useQueryClient } from 'react-query'
+
+// User controller for API interactions
 import { userController } from 'src/modules/users'
+
+// Error handling component
 import Error from 'src/components/FeedbackAPIs/Error'
+
+// User DTO for type safety
 import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
+
+// Application error handling
 import { AppError } from 'src/shared/errors/AppError'
+
+// Custom hook for fetching users
+import { useUsers } from 'src/hooks/users/useUsers'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -59,9 +85,10 @@ const List = () => {
     data: rows,
     isLoading,
     isError
-  } = useQuery(['users', page, rowsPerPage, filter], async () => userController.getUsers(params), {
+  } = useUsers(params, {
     staleTime: 1000 * 60 * 5,
-    keepPreviousData: true
+    keepPreviousData: true,
+    refetchOnWindowFocus: false
   })
 
   const handleRequestSort = useCallback(
@@ -89,11 +116,9 @@ const List = () => {
       return userController.delete({ id })
     },
     {
-      onSuccess: response => {
-        if (response?.status === 200) {
-          queryClient.invalidateQueries(['users'])
-          toast.success('Usuário deletado com sucesso!')
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['users'])
+        toast.success('Usuário deletado com sucesso!')
       },
       onError: error => {
         if (error instanceof AppError) toast.error(error.message)

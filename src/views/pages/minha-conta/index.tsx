@@ -78,14 +78,12 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
       return userController.delete({ id })
     },
     {
-      onSuccess: response => {
-        if (response?.status === 200) {
-          toast.success('Conta deletada com sucesso!')
-          queryClient.invalidateQueries(['profile'])
-          delay(2000).then(() => {
-            router.reload()
-          })
-        }
+      onSuccess: async () => {
+        toast.success('Conta deletada com sucesso!')
+        await queryClient.invalidateQueries(['profile'])
+        delay(2000).then(() => {
+          router.reload()
+        })
       },
       onError: error => {
         if (error instanceof AppError) toast.error(error.message)

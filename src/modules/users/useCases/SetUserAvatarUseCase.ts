@@ -1,19 +1,19 @@
-import { AxiosResponse } from 'axios'
+// DTOs
 import { ISetUserAvatarDTO } from '../dtos/ISetUserAvatarDTO'
+
+// Repository
 import { IUserRepository } from '../repositories/IUserRepository'
+
+// Providers
 import { errorProvider } from 'src/shared/providers'
 
 export class SetUserAvatarUseCase {
-  private userRepository: IUserRepository
+  constructor(private userRepository: IUserRepository) {}
 
-  constructor(userRepository: IUserRepository) {
-    this.userRepository = userRepository
-  }
-
-  async execute(data: ISetUserAvatarDTO): Promise<AxiosResponse | undefined> {
+  async execute(data: ISetUserAvatarDTO) {
     try {
       return this.userRepository.setAvatar(data)
-    } catch (error: any) {
+    } catch (error) {
       throw errorProvider.handle(error, {}, 'Erro ao enviar imagem, tente novamente mais tarde.')
     }
   }

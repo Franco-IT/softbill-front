@@ -1,17 +1,26 @@
+// Effect hook for managing side effects in functional components
 import { useEffect } from 'react'
 
+// Router hook for navigating between pages in Next.js
 import { useRouter } from 'next/router'
+
+// SEO component for managing the document head in Next.js
 import { NextSeo } from 'next-seo'
 
+// Material UI components for layout and progress indicators
 import { Grid, LinearProgress } from '@mui/material'
 
+// Tabs component for displaying different views or categories within the Account page
 import Tabs from 'src/views/pages/contabilidades/Account/Tabs'
+
+// Main Account component for handling accounting features
 import Account from 'src/views/pages/contabilidades/Account'
 
+// Theme configuration settings for the application
 import themeConfig from 'src/configs/themeConfig'
 
-import useGetDataApi from 'src/hooks/useGetDataApi'
-import { UserDataProps } from 'src/types/users'
+// Custom hook for accessing accounting data and functionalities
+import { useAccounting } from 'src/hooks/accountings/useAccounting'
 
 export default function Accounting() {
   const router = useRouter()
@@ -20,31 +29,33 @@ export default function Accounting() {
 
   const {
     data: accounting,
-    loading,
-    error,
-    refresh,
-    setRefresh
-  } = useGetDataApi<UserDataProps>({ url: `/users/${id}`, callInit: router.isReady })
+    isLoading,
+    isError
+  } = useAccounting(id as string, {
+    enabled: router.isReady,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false
+  })
 
   useEffect(() => {
-    if (!loading) error && router.push('/404')
-  }, [error, loading, router])
+    if (!isLoading) isError && router.push('/404')
+  }, [isError, isLoading, router])
 
-  if (loading) return <LinearProgress />
+  if (isLoading) return <LinearProgress />
 
   if (accounting) {
     return (
       <>
         <NextSeo
-          title={`${themeConfig.templateName} - ${accounting.data.name}`}
-          description={`${themeConfig.templateName} - ${accounting.data.name}`}
+          title={`${themeConfig.templateName} - ${accounting.name}`}
+          description={`${themeConfig.templateName} - ${accounting.name}`}
         />
         <Grid container spacing={6}>
           <Grid item xs={12} xl={4}>
-            <Account data={accounting.data} refresh={refresh} setRefresh={setRefresh} />
+            <Account data={accounting} />
           </Grid>
           <Grid item xs={12} xl={8}>
-            <Tabs data={accounting.data} />
+            <Tabs data={accounting} />
           </Grid>
         </Grid>
       </>

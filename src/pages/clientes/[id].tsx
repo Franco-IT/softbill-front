@@ -1,21 +1,26 @@
-// Bibliotecas externas
+// Navigation hook from Next.js for routing
 import { useRouter } from 'next/router'
-import { NextSeo } from 'next-seo'
-import { Grid, LinearProgress } from '@mui/material'
-import { useQuery } from 'react-query'
 
-// Configurações
+// SEO component for setting page metadata
+import { NextSeo } from 'next-seo'
+
+// MUI components for layout and progress indicators
+import { Grid, LinearProgress } from '@mui/material'
+
+// Theme configuration for application styling
 import themeConfig from 'src/configs/themeConfig'
 
-// Componentes e páginas internas
+// Account component for displaying client account information
 import Account from 'src/views/pages/clientes/Account'
+
+// Tabs component for managing different views in the client account
 import Tabs from 'src/views/pages/clientes/Account/Tabs'
 
-// Controladores
-import { userController } from 'src/modules/users'
-
-// Tipos e errors
+// Error interface for application error handling
 import { IAppError } from 'src/shared/errors/AppError'
+
+// Custom hook for fetching client data
+import { useClient } from 'src/hooks/clients/useClient'
 
 export default function Client() {
   const router = useRouter()
@@ -26,7 +31,7 @@ export default function Client() {
     id: id as string
   }
 
-  const { data: client, isLoading } = useQuery(['client-data', id], () => userController.findByID(getClientProps), {
+  const { data: client, isLoading } = useClient(getClientProps.id, {
     onError: (error: IAppError) => {
       router.push(error.statusCode === 404 ? '/404' : '/500')
     },
@@ -41,15 +46,15 @@ export default function Client() {
     return (
       <>
         <NextSeo
-          title={`${themeConfig.templateName} - ${client.data.name}`}
-          description={`${themeConfig.templateName} - ${client.data.name}`}
+          title={`${themeConfig.templateName} - ${client.name}`}
+          description={`${themeConfig.templateName} - ${client.name}`}
         />
         <Grid container spacing={6}>
           <Grid item xs={12} xl={4}>
-            <Account data={client.data} />
+            <Account data={client} />
           </Grid>
           <Grid item xs={12} xl={8}>
-            <Tabs data={client.data} />
+            <Tabs data={client} />
           </Grid>
         </Grid>
       </>

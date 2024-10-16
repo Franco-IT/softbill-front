@@ -1,16 +1,19 @@
+// Material UI Components
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
+// Utility Functions
 import { applyDocumentMask } from 'src/utils/inputs'
 import verifyDataValue from 'src/utils/verifyDataValue'
 
-import { UserProps } from 'src/types/users'
+// DTOs
+import { IAccountantDTO } from 'src/modules/accountant/dtos/IAccountantDTO'
 
 interface InfoProps {
-  data: UserProps
+  data: IAccountantDTO
 }
 
 const Info = ({ data }: InfoProps) => {

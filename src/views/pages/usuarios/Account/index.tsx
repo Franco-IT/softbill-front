@@ -1,32 +1,42 @@
-// React e hooks
+// React imports for state management and routing
 import { Suspense, useState } from 'react'
 import { useRouter } from 'next/router'
 
-// MUI
+// Material UI components for layout and styling
 import { Grid, Card, CardContent, Typography, Divider, CardActions, Button, Box } from '@mui/material'
 
-// Componentes internos
+// Custom components for UI elements
 import Chip from 'src/@core/components/mui/chip'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import Edit from './Edit'
 
-// Tipos e layouts
-import { UserProps } from 'src/types/users'
+// Theme color type definition
 import { ThemeColor } from 'src/@core/layouts/types'
 
-// Utilidades
+// Utility functions for user verification
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
+
+// Utility functions for rendering data
 import { renderInitials, renderUser } from 'src/utils/list'
 import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
 import verifyDataValue from 'src/utils/verifyDataValue'
 import { delay } from 'src/utils/delay'
 
-// Serviços
-import { api } from 'src/services/api'
-
-// Toast
+// Toast notifications for user feedback
 import toast from 'react-hot-toast'
+
+// User controller for handling user-related operations
+import { userController } from 'src/modules/users'
+
+// Query client from react-query for data fetching
+import { useQueryClient } from 'react-query'
+
+// Custom error handling
+import { AppError } from 'src/shared/errors/AppError'
+
+// User Data Transfer Object (DTO) for type safety
+import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -42,13 +52,12 @@ const statusColors: ColorsType = {
 }
 
 interface AccountProps {
-  data: UserProps
-  refresh: boolean
-  setRefresh: (value: boolean) => void
+  data: IUserDTO
 }
 
-const Account = ({ data, refresh, setRefresh }: AccountProps) => {
+const Account = ({ data }: AccountProps) => {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const [openEdit, setOpenEdit] = useState<boolean>(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
@@ -56,21 +65,19 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
   const handleEditClickOpen = () => setOpenEdit(true)
   const handleEditClose = () => setOpenEdit(false)
 
-  const handleConfirmDeleteProfile = (id: string) => {
-    api
-      .delete(`/users/${id}`)
-      .then(response => {
-        if (response.status === 200) {
-          toast.success('Usuário deletado com sucesso!')
-          delay(2000).then(() => {
-            router.push('/usuarios')
-          })
-        }
+  const handleConfirmDeleteProfile = async (id: string) => {
+    try {
+      await userController.delete({ id })
+      await queryClient.invalidateQueries(['users'])
+      toast.success('Usuário deletado com sucesso!')
+      delay(2000).then(() => {
+        router.push('/usuarios')
       })
-      .catch(() => {
-        toast.error('Erro ao deletar usuário, tente novamente mais tarde.')
-      })
-      .finally(() => setDeleteDialogOpen(false))
+    } catch (e) {
+      e instanceof AppError && toast.error(e.message)
+    } finally {
+      setDeleteDialogOpen(false)
+    }
   }
 
   return (
@@ -172,13 +179,7 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
             </Button>
           </CardActions>
 
-          <Edit
-            data={data}
-            handleEditClose={handleEditClose}
-            openEdit={openEdit}
-            refresh={refresh}
-            setRefresh={setRefresh}
-          />
+          <Edit data={data} handleEditClose={handleEditClose} openEdit={openEdit} />
 
           <DialogAlert
             open={deleteDialogOpen}

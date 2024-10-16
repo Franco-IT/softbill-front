@@ -1,19 +1,38 @@
+// React hook for managing component state
 import { useState } from 'react'
+
+// Next.js router for navigation
 import { useRouter } from 'next/router'
+
+// React Query hooks for data fetching and mutations
 import { useMutation, useQueryClient } from 'react-query'
 
+// Material UI components for layout and styling
 import { Box, Button, Card, CardContent, CardHeader, Grid, IconButton, InputAdornment, MenuItem } from '@mui/material'
 
+// Custom icon component for UI
 import Icon from 'src/@core/components/icon'
+
+// Custom text field component for form inputs
 import CustomTextField from 'src/@core/components/mui/text-field'
 
+// React Hook Form for handling form state and validation
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+
+// Toast notifications for user feedback
 import toast from 'react-hot-toast'
 
+// Utility for applying document input masks
 import { applyDocumentMask } from 'src/utils/inputs'
+
+// User controller for handling API calls related to users
 import { userController } from 'src/modules/users'
+
+// Error handling class for managing application errors
 import { AppError } from 'src/shared/errors/AppError'
+
+// Schema validation for creating users
 import { createUserSchema } from 'src/services/yup/schemas/users/createUserSchema'
 
 interface FormData {
@@ -58,12 +77,10 @@ const CreateUser = () => {
       return userController.create(data)
     },
     {
-      onSuccess: response => {
-        if (response?.status === 201) {
-          queryClient.invalidateQueries(['users'])
-          toast.success('Usuário adicionado com sucesso!')
-          router.push('/usuarios')
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['users'])
+        toast.success('Usuário adicionado com sucesso!')
+        await router.push('/usuarios')
       },
       onError: error => {
         if (error instanceof AppError) {

@@ -1,17 +1,20 @@
+// React and Next.js
 import { useEffect } from 'react'
-
 import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
 
+// Material UI Components
 import { Grid, LinearProgress } from '@mui/material'
 
+// Custom Components
 import Tabs from 'src/views/pages/contadores/Account/Tabs'
 import Account from 'src/views/pages/contadores/Account'
 
+// Configurations
 import themeConfig from 'src/configs/themeConfig'
 
-import useGetDataApi from 'src/hooks/useGetDataApi'
-import { UserDataProps } from 'src/types/users'
+// Hooks
+import { useAccountant } from 'src/hooks/accountants/useAccountant'
 
 export default function Accounting() {
   const router = useRouter()
@@ -20,31 +23,33 @@ export default function Accounting() {
 
   const {
     data: accounting,
-    loading,
-    error,
-    refresh,
-    setRefresh
-  } = useGetDataApi<UserDataProps>({ url: `/users/${id}`, callInit: router.isReady })
+    isLoading,
+    isError
+  } = useAccountant(id as string, {
+    enabled: router.isReady,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5
+  })
 
   useEffect(() => {
-    if (!loading) error && router.push('/404')
-  }, [error, loading, router])
+    if (!isLoading) isError && router.push('/404')
+  }, [isError, isLoading, router])
 
-  if (loading) return <LinearProgress />
+  if (isLoading) return <LinearProgress />
 
   if (accounting) {
     return (
       <>
         <NextSeo
-          title={`${themeConfig.templateName} - ${accounting.data.name}`}
-          description={`${themeConfig.templateName} - ${accounting.data.name}`}
+          title={`${themeConfig.templateName} - ${accounting.name}`}
+          description={`${themeConfig.templateName} - ${accounting.name}`}
         />
         <Grid container spacing={6}>
           <Grid item xs={12} xl={4}>
-            <Account data={accounting.data} refresh={refresh} setRefresh={setRefresh} />
+            <Account data={accounting} />
           </Grid>
           <Grid item xs={12} xl={8}>
-            <Tabs data={accounting.data} />
+            <Tabs data={accounting} />
           </Grid>
         </Grid>
       </>

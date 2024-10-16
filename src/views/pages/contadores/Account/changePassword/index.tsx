@@ -1,9 +1,11 @@
 // ** React Imports
 import { useState } from 'react'
 
+// React Hook Form and Yup
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
+// Material UI Components
 import { Box } from '@mui/system'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
@@ -15,15 +17,20 @@ import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import InputAdornment from '@mui/material/InputAdornment'
 
+// Custom Components
 import Icon from 'src/@core/components/icon'
 import CustomTextField from 'src/@core/components/mui/text-field'
 
+// Toast Notifications
 import toast from 'react-hot-toast'
 
+// Controllers and DTOs
 import { userController } from 'src/modules/users'
 import { AppError } from 'src/shared/errors/AppError'
-import { changePasswordSchema } from 'src/services/yup/schemas/changePasswordSchema'
 import { IChangeUserPasswordDTO } from 'src/modules/users/dtos/IChangeUserPasswordDTO'
+
+// Yup Schema
+import { changePasswordSchema } from 'src/services/yup/schemas/changePasswordSchema'
 
 interface ChangePasswordProps {
   id: string
@@ -48,11 +55,14 @@ const ChangePassword = ({ id }: ChangePasswordProps) => {
     resolver: yupResolver(changePasswordSchema)
   })
 
-  const onSubmit = (data: IChangeUserPasswordDTO) => {
-    userController
-      .changePassword(data)
-      .then(response => response?.status === 200 && (toast.success('Senha alterada com sucesso'), reset()))
-      .catch(error => error instanceof AppError && toast.error(error.message))
+  const onSubmit = async (data: IChangeUserPasswordDTO) => {
+    try {
+      await userController.changePassword(data)
+      toast('Senha alterada com sucesso!')
+      reset()
+    } catch (e) {
+      e instanceof AppError && toast.error(e.message)
+    }
   }
 
   return (

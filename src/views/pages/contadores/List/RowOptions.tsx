@@ -1,13 +1,19 @@
+// ** React & Next Imports
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 
+// ** Hooks
 import useClipBoard from 'src/hooks/useClipboard'
 
+// ** Notifications
 import toast from 'react-hot-toast'
+
+// ** Components
 import Icon from 'src/@core/components/icon'
 import CustomBasicMenu from 'src/components/CustomBasicMenu'
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 
+// ** Controllers & Errors
 import { userController } from 'src/modules/users'
 import { AppError } from 'src/shared/errors/AppError'
 

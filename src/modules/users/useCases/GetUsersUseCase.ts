@@ -1,20 +1,19 @@
+// Providers
 import { errorProvider } from 'src/shared/providers'
+
+// DTOs
 import { IGetUsersDTO } from '../dtos/IGetUsersDTO'
+
+// Repositories
 import { IUserRepository } from '../repositories/IUserRepository'
 
 export class GetUsersUseCase {
-  private userRepository: IUserRepository
-
-  constructor(userRepository: IUserRepository) {
-    this.userRepository = userRepository
-  }
+  constructor(private userRepository: IUserRepository) {}
 
   async execute(params: IGetUsersDTO) {
     try {
-      const response = await this.userRepository.getUsers(params)
-
-      return response.data
-    } catch (error: any) {
+      return await this.userRepository.findAll(params)
+    } catch (error) {
       throw errorProvider.handle(error, {}, 'Erro ao buscar usuários, tente novamente mais tarde.')
     }
   }

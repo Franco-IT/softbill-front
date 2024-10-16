@@ -1,10 +1,17 @@
-import { memo } from 'react'
+// React library for building user interfaces
+import React, { memo } from 'react'
 
+// Material UI components for layout and styling of tables
 import { Box, TableCell, TableHead, TableRow, TableSortLabel, useTheme } from '@mui/material'
+
+// Utility for visually hiding elements but keeping them accessible for screen readers
 import { visuallyHidden } from '@mui/utils'
 
+// Type definitions for the head cell properties in the table
 import { HeadCellProps } from './HeadCells'
-import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
+
+// DTO for accounting data structure
+import { IClientDTO } from 'src/modules/clients/dtos/IClientDTO'
 
 type Order = 'asc' | 'desc'
 
