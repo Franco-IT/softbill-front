@@ -1,22 +1,25 @@
-import { AxiosResponse } from 'axios'
+// Providers
 import { errorProvider } from 'src/shared/providers'
+
+// DTOs
 import { IUserResetPasswordDTO } from '../dtos/IUserResetPasswordDTO'
+
+// Repositories
 import { IUserAuthRepository } from '../repositories/IUserAuthRepository'
 
+// Errors
+import { errors } from '../errors'
+
 export class ResetPasswordUseCase {
-  private userAuthRepository: IUserAuthRepository
+  constructor(private userAuthRepository: IUserAuthRepository) {}
 
-  constructor(userAuthRepository: IUserAuthRepository) {
-    this.userAuthRepository = userAuthRepository
-  }
-
-  async execute(data: IUserResetPasswordDTO): Promise<AxiosResponse | void> {
+  async execute(data: IUserResetPasswordDTO) {
     try {
-      return await this.userAuthRepository.resetPassword(data)
+      await this.userAuthRepository.resetPassword(data)
     } catch (error: any) {
       throw errorProvider.handle(
         error,
-        {},
+        errors,
         error.response.status == 401
           ? 'Token inválido, solicite uma nova redefinição de senha.'
           : 'Erro ao redefinir a senha, solicite uma nova redefinição de senha.'

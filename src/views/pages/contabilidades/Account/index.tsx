@@ -1,33 +1,60 @@
-// React e hooks
+// React hook for managing component state
 import { useState } from 'react'
+
+// Next.js router hook for navigation
 import { useRouter } from 'next/router'
 
-// MUI
+// Material UI components for layout and user interface
 import { Grid, Card, CardContent, Typography, Divider, CardActions, Button } from '@mui/material'
 import { Box } from '@mui/system'
 
-// Componentes internos
+// Custom dialog component for alerts
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
+
+// Custom avatar component for displaying user images
 import Avatar from 'src/@core/components/mui/avatar'
+
+// Custom chip component for displaying information or status
 import Chip from 'src/@core/components/mui/chip'
+
+// Importing the Edit component for user editing functionality
 import Edit from './Edit'
 
-// Tipos e layouts
+// Type definitions for theme colors
 import { ThemeColor } from 'src/@core/layouts/types'
-import { UserProps } from 'src/types/users'
 
-// Utilidades
+// Utility function for extracting initials from names
 import { getInitials } from 'src/@core/utils/get-initials'
+
+// Utility function for formatting user names
 import { formatName } from 'src/utils/formatName'
+
+// Utility functions for verifying user status and type
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
+
+// Utility function for formatting dates
 import { formatDate } from 'src/@core/utils/format'
+
+// Utility function for verifying data values
 import verifyDataValue from 'src/utils/verifyDataValue'
+
+// Utility function for creating delays
 import { delay } from 'src/utils/delay'
 
-// Serviços
-import { api } from 'src/services/api'
+// Notification library for displaying messages to the user
 import toast from 'react-hot-toast'
 
+// React Query hooks for data fetching and mutation
+import { useMutation, useQueryClient } from 'react-query'
+
+// Controller for managing accounting-related operations
+import { accountingsController } from 'src/modules/accounting'
+
+// Custom error class for handling application errors
+import { AppError } from 'src/shared/errors/AppError'
+
+// Type definition for accounting data transfer objects
+import { IAccountingDTO } from 'src/modules/accounting/dtos/IAccountingDTO'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -43,13 +70,12 @@ const statusColors: ColorsType = {
 }
 
 interface AccountProps {
-  data: UserProps
-  refresh: boolean
-  setRefresh: (value: boolean) => void
+  data: IAccountingDTO
 }
 
-const Account = ({ data, refresh, setRefresh }: AccountProps) => {
+const Account = ({ data }: AccountProps) => {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const [openEdit, setOpenEdit] = useState<boolean>(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
@@ -57,22 +83,21 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
   const handleEditClickOpen = () => setOpenEdit(true)
   const handleEditClose = () => setOpenEdit(false)
 
-  const handleConfirmDeleteProfile = (id: string) => {
-    api
-      .delete(`/users/${id}`)
-      .then(response => {
-        if (response.status === 200) {
-          toast.success('Contabilidade deletada com sucesso!')
-          delay(2000).then(() => {
-            router.push('/contabilidades')
-          })
-        }
-      })
-      .catch(() => {
-        toast.error('Erro ao deletar contabilidade, tente novamente mais tarde.')
-      })
-      .finally(() => setDeleteDialogOpen(false))
-  }
+  const handleConfirmDeleteProfile = useMutation(
+    (id: string) => {
+      return accountingsController.delete({ id })
+    },
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['accountings'])
+        toast.success('Contabilidade deletada com sucesso!')
+        delay(2000).then(() => router.push('/contabilidades'))
+      },
+      onError: error => {
+        if (error instanceof AppError) toast.error(error.message)
+      }
+    }
+  )
 
   return (
     <Grid container spacing={6}>
@@ -157,20 +182,14 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
             </Button>
           </CardActions>
 
-          <Edit
-            data={data}
-            handleEditClose={handleEditClose}
-            openEdit={openEdit}
-            refresh={refresh}
-            setRefresh={setRefresh}
-          />
+          <Edit data={data} handleEditClose={handleEditClose} openEdit={openEdit} />
 
           <DialogAlert
             open={deleteDialogOpen}
             setOpen={setDeleteDialogOpen}
             question={'Você tem certeza que deseja deletar esta contabilidade?'}
             description={'Essa ação não poderá ser desfeita.'}
-            handleConfirmDelete={() => handleConfirmDeleteProfile(data.id)}
+            handleConfirmDelete={() => handleConfirmDeleteProfile.mutateAsync(data.id)}
           />
         </Card>
       </Grid>

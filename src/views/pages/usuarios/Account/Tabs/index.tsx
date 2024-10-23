@@ -1,6 +1,7 @@
-// ** React Imports
+// React imports for managing state and events
 import { SyntheticEvent, useState, useEffect } from 'react'
 
+// Material UI components for layout and UI elements
 import Box from '@mui/material/Box'
 import TabPanel from '@mui/lab/TabPanel'
 import TabContext from '@mui/lab/TabContext'
@@ -10,15 +11,18 @@ import MuiTab, { TabProps } from '@mui/material/Tab'
 import MuiTabList, { TabListProps } from '@mui/lab/TabList'
 import CircularProgress from '@mui/material/CircularProgress'
 
+// Custom components for displaying information and changing passwords
 import Info from '../Info'
 import ChangePassword from '../changePassword'
 
+// Icon component for visual elements
 import Icon from 'src/@core/components/icon'
 
-import { UserProps } from 'src/types/users'
+// User Data Transfer Object (DTO) for type safety
+import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
 
 interface TabsProps {
-  data: UserProps
+  data: IUserDTO
 }
 
 // ** Styled Tab component

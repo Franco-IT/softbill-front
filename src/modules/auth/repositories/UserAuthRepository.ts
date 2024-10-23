@@ -1,16 +1,23 @@
+// Entities
 import { UserAuth } from '../entities/UserAuth'
+
+// DTOs
 import { IUserLoggedDTO } from '../dtos/IUserLoggedDTO'
 import { IGetAuthUserDTO } from '../dtos/IGetAuthUserDTO'
-import { IUserAuthRepository } from './IUserAuthRepository'
 import { IUserFirstAccessDTO } from '../dtos/IUserFirstAccessDTO'
 import { IUserResetPasswordDTO } from '../dtos/IUserResetPasswordDTO'
 import { IChangePasswordAuthUserDTO } from '../dtos/IChangePasswordAuthUserDTO'
 import { IUserLoginDTO, IUserLoginResponseDTO } from '../dtos/IUserLoginDTO'
 import { IUserEmailResetPasswordDTO } from '../dtos/IUserEmailResetPasswordDTO'
 
-import { AxiosResponse } from 'axios'
-import { api } from '../../../services/api'
-import authConfig from '../../../configs/auth'
+// Repositories
+import { IUserAuthRepository } from './IUserAuthRepository'
+
+// Services
+import { api } from 'src/services/api'
+
+// Configurations
+import authConfig from 'src/configs/auth'
 
 export class UserAuthRepository implements IUserAuthRepository {
   async login(data: IUserLoginDTO): Promise<IUserLoginResponseDTO> {
@@ -29,23 +36,21 @@ export class UserAuthRepository implements IUserAuthRepository {
 
     const { data: userData } = response.data
 
-    const user = new UserAuth({
+    return new UserAuth({
       id: userData.id,
       role: userData.type,
       email: userData.email,
       name: userData.name,
       avatar: userData.avatar
     })
-
-    return user
   }
 
-  async changePassword(data: IChangePasswordAuthUserDTO): Promise<AxiosResponse> {
-    return api.put('/auth/change-password', data)
+  async changePassword(data: IChangePasswordAuthUserDTO): Promise<void> {
+    await api.put('/auth/change-password', data)
   }
 
-  async firtsAccess({ newPassword, confirmPassword, token }: IUserFirstAccessDTO): Promise<AxiosResponse<any, any>> {
-    return api.post(
+  async firtsAccess({ newPassword, confirmPassword, token }: IUserFirstAccessDTO): Promise<void> {
+    await api.post(
       '/auth/reset-password',
       { newPassword, confirmPassword },
       {
@@ -56,16 +61,12 @@ export class UserAuthRepository implements IUserAuthRepository {
     )
   }
 
-  async emailResetPassword(data: IUserEmailResetPasswordDTO): Promise<AxiosResponse<any, any>> {
-    return api.post('/auth/email-reset-password', data)
+  async emailResetPassword(data: IUserEmailResetPasswordDTO): Promise<void> {
+    await api.post('/auth/email-reset-password', data)
   }
 
-  async resetPassword({
-    newPassword,
-    confirmPassword,
-    token
-  }: IUserResetPasswordDTO): Promise<AxiosResponse<any, any>> {
-    return api.post(
+  async resetPassword({ newPassword, confirmPassword, token }: IUserResetPasswordDTO): Promise<void> {
+    await api.post(
       '/auth/reset-password',
       {
         newPassword,

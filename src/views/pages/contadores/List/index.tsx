@@ -1,9 +1,18 @@
+// React and Next
 import { Suspense, useEffect, useState, ChangeEvent, MouseEvent, useMemo, useCallback } from 'react'
 import Link from 'next/link'
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
-import toast from 'react-hot-toast'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
 
+// Material UI Components
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
+
+// Hooks
+import { useAccountants } from 'src/hooks/accountants/useAccountants'
+
+// Notifications and React Query
+import toast from 'react-hot-toast'
+import { useMutation, useQueryClient } from 'react-query'
+
+// Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
 import Error from 'src/components/FeedbackAPIs/Error'
 import HeadCells from './HeadCells'
@@ -12,15 +21,20 @@ import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
+// Utils
 import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
 import { Loading, Order, getComparator, renderUser, stableSort } from 'src/utils/list'
 
+// Types and DTOs
 import { ThemeColor } from 'src/@core/layouts/types'
-import { ICounterDTO } from 'src/modules/users/dtos/ICounterDTO'
 import { AppError } from 'src/shared/errors/AppError'
-import { userController } from 'src/modules/users'
+import { IGetAccountantsDTO } from 'src/modules/accountant/dtos/IGetAccountantsDTO'
+import { IAccountantDTO } from 'src/modules/accountant/dtos/IAccountantDTO'
+
+// Controllers
+import { accountantsController } from 'src/modules/accountant'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -43,13 +57,13 @@ const List = () => {
   const queryClient = useQueryClient()
 
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof ICounterDTO>('createdAt')
+  const [orderBy, setOrderBy] = useState<keyof IAccountantDTO>('createdAt')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [filter, setFilter] = useState('')
-  const [users, setUsers] = useState<ICounterDTO[]>([])
+  const [users, setUsers] = useState<IAccountantDTO[]>([])
 
-  const params = useMemo(
+  const params: IGetAccountantsDTO = useMemo(
     () => ({ type: 'ACCOUNTANT', page: page + 1, perPage: rowsPerPage, search: filter }),
     [page, rowsPerPage, filter]
   )
@@ -58,13 +72,13 @@ const List = () => {
     data: rows,
     isLoading,
     isError
-  } = useQuery(['counters', params], async () => userController.getUsers(params), {
+  } = useAccountants(params, {
     staleTime: 1000 * 60 * 5,
     keepPreviousData: true
   })
 
   const handleRequestSort = useCallback(
-    (event: MouseEvent<unknown>, property: keyof ICounterDTO) => {
+    (event: MouseEvent<unknown>, property: keyof IAccountantDTO) => {
       const isAsc = orderBy === property && order === 'asc'
       setOrder(isAsc ? 'desc' : 'asc')
       setOrderBy(property)
@@ -91,14 +105,12 @@ const List = () => {
 
   const handleConfirmDelete = useMutation(
     (id: string) => {
-      return userController.delete({ id })
+      return accountantsController.delete({ id })
     },
     {
-      onSuccess: response => {
-        if (response?.status === 200) {
-          queryClient.invalidateQueries(['counters'])
-          toast.success('Contador deletado com sucesso!')
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['accountants'])
+        toast.success('Contador deletado com sucesso!')
       },
       onError: error => {
         if (error instanceof AppError) toast.error(error.message)

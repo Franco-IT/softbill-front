@@ -1,32 +1,49 @@
+// React imports for managing component lifecycle, state, events, and memoization
 import { Suspense, useEffect, useState, ChangeEvent, MouseEvent, useMemo, useCallback } from 'react'
+
+// Next.js Link for client-side navigation
 import Link from 'next/link'
 
+// MUI components for UI structure and table management
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material'
 
+// Notification system (Toast)
 import toast from 'react-hot-toast'
 
+// Custom MUI components and error handling
 import CustomChip from 'src/@core/components/mui/chip'
 import Error from 'src/components/FeedbackAPIs/Error'
 
+// Local components for table functionalities
 import HeadCells from './HeadCells'
 import RowOptions from './RowOptions'
 import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
+// Utility functions for formatting and user data validation
 import { formatName } from 'src/utils/formatName'
 import { formatDate } from 'src/@core/utils/format'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
+
+// Additional utility functions for sorting and data rendering
 import { Loading, Order, getComparator, renderUser, stableSort } from 'src/utils/list'
 
+// Theme type definitions
 import { ThemeColor } from 'src/@core/layouts/types'
 
+// Hooks for authentication and client data queries
 import { useAuth } from 'src/hooks/useAuth'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from 'react-query'
 
+// User and client controllers for API management
 import { userController } from 'src/modules/users'
-import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
+import { IClientDTO } from 'src/modules/clients/dtos/IClientDTO'
 import { AppError } from 'src/shared/errors/AppError'
+import { useClients } from 'src/hooks/clients/useClients'
+
+// DTO for retrieving multiple clients
+import { IGetClientsDTO } from 'src/modules/clients/dtos/IGetClientsDTO'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -56,7 +73,7 @@ const List = () => {
   const [filter, setFilter] = useState('')
   const [clients, setClients] = useState<IClientDTO[]>([])
 
-  const params = useMemo(
+  const params: IGetClientsDTO = useMemo(
     () => ({ accountingId: user?.id || '', type: 'CLIENT', page: page + 1, perPage: rowsPerPage, search: filter }),
     [user?.id, page, rowsPerPage, filter]
   )
@@ -65,9 +82,10 @@ const List = () => {
     data: rows,
     isLoading,
     isError
-  } = useQuery(['clients', page, rowsPerPage, filter], async () => userController.getClients(params), {
+  } = useClients(params, {
     staleTime: 1000 * 60 * 5,
-    keepPreviousData: true
+    keepPreviousData: true,
+    refetchOnWindowFocus: false
   })
 
   const handleRequestSort = useCallback(
@@ -95,11 +113,9 @@ const List = () => {
       return userController.delete({ id })
     },
     {
-      onSuccess: response => {
-        if (response?.status === 200) {
-          queryClient.invalidateQueries(['clients'])
-          toast.success('Cliente deletado com sucesso!')
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['clients'])
+        toast.success('Cliente deletado com sucesso!')
       },
       onError: error => {
         if (error instanceof AppError) toast.error(error.message)

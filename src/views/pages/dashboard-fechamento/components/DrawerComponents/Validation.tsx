@@ -54,7 +54,7 @@ const Validation = () => {
     const value = (e.target as HTMLInputElement).value
 
     const reqBody = {
-      validated: value === 'DONE' ? true : false
+      validated: value === 'DONE'
     }
 
     const data = {

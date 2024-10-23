@@ -8,7 +8,8 @@ export const BB = {
   generatedBy: 'API',
   bank: {
     id: '',
-    name: ''
+    name: '',
+    code: ''
   }
 }
 
@@ -22,7 +23,8 @@ export const INTER = {
   generatedBy: 'API',
   bank: {
     id: '',
-    name: ''
+    name: '',
+    code: ''
   },
   files: []
 }
@@ -33,7 +35,8 @@ export const OFX = {
   agencyNumber: '',
   bank: {
     id: '',
-    name: ''
+    name: '',
+    code: ''
   },
   generatedBy: 'IMPORT'
 }

@@ -1,10 +1,15 @@
+// React
 import { useState, MouseEvent, memo, useCallback } from 'react'
 
+// Next
 import { useRouter } from 'next/router'
 
+// MUI
 import { Button, IconButton, Menu, MenuItem, useMediaQuery, Box } from '@mui/material'
-import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
+
+// Components
 import Icon from 'src/@core/components/icon'
+import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 
 const RowOptions = memo(({ id, handleConfirmDelete }: { id: string; handleConfirmDelete: (id: string) => void }) => {
   const router = useRouter()

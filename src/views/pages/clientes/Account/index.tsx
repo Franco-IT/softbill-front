@@ -1,12 +1,16 @@
-// React e hooks
+// State and suspense handling
 import { Suspense, useState } from 'react'
+
+// Navigation
 import { useRouter } from 'next/router'
+
+// React Query hooks for mutation and cache management
 import { useMutation, useQueryClient } from 'react-query'
 
-// MUI
+// MUI components for layout and UI structure
 import { Grid, Card, CardContent, Typography, Divider, CardActions, Button, Box } from '@mui/material'
 
-// Componentes internos
+// Custom components for dialog alerts, chips, image cropping, and badges
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import Chip from 'src/@core/components/mui/chip'
 import Edit from './Edit'
@@ -14,13 +18,14 @@ import ImageCropper from 'src/components/ImageCropper'
 import CustomBadge from 'src/components/CustomBadge'
 import Icon from 'src/@core/components/icon'
 
-// Tipos e layouts
+// Theme color types for consistent styling
 import { ThemeColor } from 'src/@core/layouts/types'
+
+// DTOs related to user avatar functionality
 import { ISetUserAvatarDTO } from 'src/modules/users/dtos/ISetUserAvatarDTO'
 
-// Utilidades
+// Utilities for data validation, formatting, and introducing delays
 import verifyDataValue from 'src/utils/verifyDataValue'
-import { api } from 'src/services/api'
 import toast from 'react-hot-toast'
 import { delay } from 'src/utils/delay'
 import { formatName } from 'src/utils/formatName'
@@ -28,10 +33,17 @@ import { applyPhoneMask } from 'src/utils/inputs'
 import { formatDate } from 'src/@core/utils/format'
 import { renderInitials, renderUser } from 'src/utils/list'
 
-// Controladores e erros
+// Controllers for user and client operations
 import { userController } from 'src/modules/users'
+
+// Error handling utilities
 import { AppError } from 'src/shared/errors/AppError'
-import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
+
+// DTOs related to client data
+import { IClientDTO } from 'src/modules/clients/dtos/IClientDTO'
+
+// Controllers for client-related operations
+import { clientsController } from 'src/modules/clients'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -66,22 +78,20 @@ const Account = ({ data }: AccountProps) => {
   const handleEditClickOpen = () => setOpenEdit(true)
   const handleEditClose = () => setOpenEdit(false)
 
-  const handleConfirmDeleteClient = (id: string) => {
-    api
-      .delete(`/users/${id}`)
-      .then(response => {
-        if (response.status === 200) {
-          setDeleteDialogOpen(false)
-          queryClient.invalidateQueries(['clients'])
-          toast.success('Cliente deletado com sucesso!')
-          delay(2000).then(() => {
-            router.push('/clientes')
-          })
-        }
+  const handleConfirmDeleteClient = async (id: string) => {
+    try {
+      await clientsController.delete({ id })
+      await queryClient.invalidateQueries(['client', data.id])
+      await queryClient.invalidateQueries(['clients'])
+      toast.success('Cliente deletado com sucesso!')
+      delay(2000).then(() => {
+        router.push('/clientes')
       })
-      .catch(() => {
-        setDeleteDialogOpen(false)
-      })
+    } catch (e) {
+      e instanceof AppError && toast.error(e.message)
+    } finally {
+      setDeleteDialogOpen(false)
+    }
   }
 
   const handleSetAvatar = useMutation(
@@ -95,11 +105,10 @@ const Account = ({ data }: AccountProps) => {
       return userController.setAvatar(formData)
     },
     {
-      onSuccess: response => {
-        if (response && response.status === 201) {
-          queryClient.invalidateQueries(['client-data'])
-          toast.success('Imagem alterada com sucesso!')
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['client', data.id])
+        await queryClient.invalidateQueries(['clients'])
+        toast.success('Imagem alterada com sucesso!')
       },
       onError: error => {
         if (error instanceof AppError) toast.error(error.message)

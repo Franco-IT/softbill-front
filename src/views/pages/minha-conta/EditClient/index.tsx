@@ -19,7 +19,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 
 // Tipos e dados
 import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
-import { IUpdateClientDTO } from 'src/modules/users/dtos/IUpdateClientDTO'
+import { IUpdateClientDTO } from 'src/modules/clients/dtos/IUpdateClientDTO'
 
 // Serviços e utilidades
 import toast from 'react-hot-toast'
@@ -31,7 +31,7 @@ import { useMutation, useQueryClient } from 'react-query'
 // Erros
 import { AppError } from 'src/shared/errors/AppError'
 import { updateClientSchema } from 'src/services/yup/schemas/clients/updateClientSchema'
-import { userController } from 'src/modules/users'
+import { clientsController } from 'src/modules/clients'
 import { useAuth } from 'src/hooks/useAuth'
 
 interface EditProfileProps {
@@ -72,15 +72,13 @@ const EditClient = ({ openEdit, handleEditClose, data }: EditProfileProps) => {
 
   const handleEditClient = useMutation(
     async (formData: IUpdateClientDTO) => {
-      return userController.updateClient(formData)
+      return clientsController.update(formData)
     },
     {
-      onSuccess: response => {
-        if (response?.status === 200) {
-          queryClient.invalidateQueries(['profile'])
-          refetchAuthUser()
-          toast.success('Conta atualizada com sucesso!')
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['profile'])
+        await refetchAuthUser()
+        toast.success('Conta atualizada com sucesso!')
       },
       onError: error => {
         if (error instanceof AppError) {

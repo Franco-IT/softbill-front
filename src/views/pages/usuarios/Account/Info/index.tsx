@@ -1,15 +1,19 @@
-// ** MUI Imports
+// MUI
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
-import { UserProps } from 'src/types/users'
+
+// Utils
 import { applyDocumentMask } from 'src/utils/inputs'
 import verifyDataValue from 'src/utils/verifyDataValue'
 
+// DTOs
+import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
+
 interface InfoProps {
-  data: UserProps
+  data: IUserDTO
 }
 
 const Info = ({ data }: InfoProps) => {

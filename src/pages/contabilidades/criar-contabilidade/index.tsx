@@ -1,18 +1,41 @@
+// React hook for managing component state
 import { useState } from 'react'
+
+// Hook for managing forms with validation
 import { useForm, Controller } from 'react-hook-form'
+
+// Yup resolver for schema validation with React Hook Form
 import { yupResolver } from '@hookform/resolvers/yup'
+
+// Next.js router hook for navigation
 import { useRouter } from 'next/router'
+
+// Notification library for displaying messages to the user
 import toast from 'react-hot-toast'
+
+// React Query hooks for data fetching and mutation
 import { useMutation, useQueryClient } from 'react-query'
+
+// Material UI components for layout and user interface
 import { Box, Button, Card, CardContent, CardHeader, Grid, IconButton, InputAdornment, MenuItem } from '@mui/material'
 
+// Custom text field component for form inputs
 import CustomTextField from 'src/@core/components/mui/text-field'
+
+// Icon component for displaying icons
 import Icon from 'src/@core/components/icon'
 
+// Utility function for applying input masks to document fields
 import { applyDocumentMask } from 'src/utils/inputs'
+
+// Yup schema for validating accounting data during creation
 import { createAccountingSchema } from 'src/services/yup/schemas/accountings/createAccountingSchema'
+
+// Custom error class for handling application errors
 import { AppError } from 'src/shared/errors/AppError'
-import { userController } from 'src/modules/users'
+
+// Controller for managing accounting-related operations
+import { accountingsController } from 'src/modules/accounting'
 
 interface FormData {
   name: string
@@ -53,15 +76,13 @@ const CreateAccounting = () => {
 
   const handleCreateAccounting = useMutation(
     (data: FormData) => {
-      return userController.create(data)
+      return accountingsController.create(data)
     },
     {
-      onSuccess: response => {
-        if (response?.status === 201) {
-          queryClient.invalidateQueries(['accountings'])
-          toast.success('Contabilidade adicionada com sucesso!')
-          router.push('/contabilidades')
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['accountings'])
+        toast.success('Contabilidade adicionada com sucesso!')
+        await router.push('/contabilidades')
       },
       onError: error => {
         if (error instanceof AppError) {

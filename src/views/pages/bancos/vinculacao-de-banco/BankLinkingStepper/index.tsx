@@ -1,30 +1,40 @@
+// React
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 
+// MUI
 import { Box, Step, Grid, Button, Divider, Stepper, StepLabel, Typography } from '@mui/material'
 
+// React Hook Form
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm, FormProvider } from 'react-hook-form'
 
+// Custom Components
 import Client from './steps/Client'
 import Summary from './steps/Summary'
-import stepsOptions from './steps/stepsOptions'
-import { getValidationSchema } from './steps/utils'
 import OperationsTypes from './steps/OperationsTypes'
 import StepperCustomDot from './steps/StepperCustomDot'
-import { baseValidationSchemaByStep, OFXValidationSchema } from './steps/schemas'
-import { validationSchemaByBank } from './forms/DynamicFormFields/schemas'
-import { defaultValuesByStep, Step1DefaultValues } from './steps/defaultValues'
-
-import toast from 'react-hot-toast'
 import StepperWrapper from 'src/@core/styles/mui/stepper'
 
+// Step Configuration
+import stepsOptions from './steps/stepsOptions'
+import { defaultValuesByStep, Step1DefaultValues } from './steps/defaultValues'
+import { getValidationSchema } from './steps/utils'
+import { baseValidationSchemaByStep, OFXValidationSchema } from './steps/schemas'
+import { validationSchemaByBank } from './forms/DynamicFormFields/schemas'
+
+// Services
 import { api } from 'src/services/api'
 
+// Types
 import { ClientProps } from 'src/types/clients'
 
+// Utilities
 import { verifyObjectErrorsIsEmpty } from 'src/utils/verifyErrors'
 import { useQueryClient } from 'react-query'
+
+// Notifications
+import toast from 'react-hot-toast'
 
 const BackButton = memo(({ activeStep, handleBack }: { activeStep: number; handleBack: () => void }) => {
   return (
@@ -123,7 +133,6 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
       handleResetData(values)
 
       const bank = banks.find((bank: any) => bank.id === value)
-
       setBank(bank)
 
       setFormValues(() => {
@@ -132,7 +141,8 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
         const newValues = Object.assign(bankValues, {
           bank: {
             id: bank.id,
-            name: bank.name
+            name: bank.name,
+            code: bank.code
           },
           bankId: bank.id,
           clientId: client.id
@@ -143,7 +153,8 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
 
       methods.setValue('bank', {
         id: bank.id,
-        name: bank.name
+        name: bank.name,
+        code: bank.code
       })
     },
     [client.id, handleResetData, methods]
@@ -224,7 +235,7 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
         .then(response => {
           if (response.status === 201) {
             toast.success('Banco vinculado com sucesso!')
-            queryClient.invalidateQueries(['bank-accounts'])
+            queryClient.invalidateQueries(['client-bank-accounts'])
             router.push(`/clientes/${client.id}`)
           }
         })

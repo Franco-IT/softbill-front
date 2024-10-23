@@ -1,21 +1,23 @@
-import { IGetBanksDTO } from '../dtos/IGetBanksDTO'
+// Repositories
 import { IBankRepository } from '../repositories/IBankRepository'
+
+// DTOs
+import { IGetBanksDTO } from '../dtos/IGetBanksDTO'
+
+// Providers
 import { errorProvider } from 'src/shared/providers'
 
-export class GetBanksUseCase {
-  private bankRepository: IBankRepository
+// Errors
+import { errors } from '../errors'
 
-  constructor(bankRepository: IBankRepository) {
-    this.bankRepository = bankRepository
-  }
+export class GetBanksUseCase {
+  constructor(private bankRepository: IBankRepository) {}
 
   async execute(params: IGetBanksDTO) {
     try {
-      const response = await this.bankRepository.getBanks(params)
-
-      return response.data
-    } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Erro ao buscar bancos.')
+      return await this.bankRepository.getBanks(params)
+    } catch (error) {
+      throw errorProvider.handle(error, errors, 'Erro ao buscar bancos, tente novamente mais tarde.')
     }
   }
 }

@@ -1,20 +1,19 @@
-import { errorProvider } from 'src/shared/providers'
+// DTOs
 import { IGetUserDTO } from '../dtos/IGetUserDTO'
+
+// Repository
 import { IUserRepository } from '../repositories/IUserRepository'
 
-export class FindByIDUseCase {
-  private userRepository: IUserRepository
+// Providers
+import { errorProvider } from 'src/shared/providers'
 
-  constructor(userRepository: IUserRepository) {
-    this.userRepository = userRepository
-  }
+export class FindByIDUseCase {
+  constructor(private userRepository: IUserRepository) {}
 
   async execute(data: IGetUserDTO) {
     try {
-      const response = await this.userRepository.findByID(data)
-
-      return response.data
-    } catch (error: any) {
+      return await this.userRepository.findByID(data)
+    } catch (error) {
       throw errorProvider.handle(error, {}, 'Erro ao buscar usuário, tente novamente mais tarde.')
     }
   }

@@ -64,7 +64,7 @@ const BankStepper = ({ bank }: BankStepperProps) => {
         queryClient.invalidateQueries(['financial-closing'])
         queryClient.invalidateQueries(['financial-closing-list'])
         queryClient.invalidateQueries(['financial-closing-dashboard'])
-        toastSuccess('Fechamento Bancário excluído com sucesso!')
+        toastSuccess('Fechamento bancário excluído com sucesso!')
       })
       .catch(error => {
         if (error instanceof AppError) toastError(error.message)

@@ -1,22 +1,26 @@
-// React e hooks
+// React
 import { useState } from 'react'
+
+// Next
 import { useRouter } from 'next/router'
 
 // MUI
-import { Grid, Card, CardContent, Typography, Divider, CardActions, Button } from '@mui/material'
-import { Box } from '@mui/system'
+import { Grid, Card, CardContent, Typography, Divider, CardActions, Button, Box } from '@mui/material'
 
-// Componentes internos
+// React Query
+import { useMutation, useQueryClient } from 'react-query'
+
+// Custom Components
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 import Avatar from 'src/@core/components/mui/avatar'
 import Chip from 'src/@core/components/mui/chip'
 import Edit from './Edit'
 
-// Tipos e layouts
+// Types
 import { ThemeColor } from 'src/@core/layouts/types'
-import { UserProps } from 'src/types/users'
+import { IAccountantDTO } from 'src/modules/accountant/dtos/IAccountantDTO'
 
-// Utilidades
+// Utils
 import { getInitials } from 'src/@core/utils/get-initials'
 import { formatName } from 'src/utils/formatName'
 import { verifyUserStatus, verifyUserType } from 'src/@core/utils/user'
@@ -24,12 +28,14 @@ import { formatDate } from 'src/@core/utils/format'
 import verifyDataValue from 'src/utils/verifyDataValue'
 import { delay } from 'src/utils/delay'
 
-// Controladores e serviços
-import { userController } from 'src/modules/users'
-
-// Toast e erros
+// Notifications
 import toast from 'react-hot-toast'
+
+// Error Handling
 import { AppError } from 'src/shared/errors/AppError'
+
+// Controllers
+import { accountantsController } from 'src/modules/accountant'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -45,13 +51,12 @@ const statusColors: ColorsType = {
 }
 
 interface AccountProps {
-  data: UserProps
-  refresh: boolean
-  setRefresh: (value: boolean) => void
+  data: IAccountantDTO
 }
 
-const Account = ({ data, refresh, setRefresh }: AccountProps) => {
+const Account = ({ data }: AccountProps) => {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const [openEdit, setOpenEdit] = useState<boolean>(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
@@ -59,17 +64,24 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
   const handleEditClickOpen = () => setOpenEdit(true)
   const handleEditClose = () => setOpenEdit(false)
 
-  const handleConfirmDeleteProfile = (id: string) => {
-    userController
-      .delete({ id })
-      .then(
-        response =>
-          response?.status === 200 &&
-          (toast.success('Contador deletado com sucesso!'), delay(2000).then(() => router.push('/contadores')))
-      )
-      .catch(error => error instanceof AppError && toast.error(error.message))
-      .finally(() => setDeleteDialogOpen(false))
-  }
+  const handleConfirmDeleteProfile = useMutation(
+    (id: string) => {
+      return accountantsController.delete({ id })
+    },
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['accountants'])
+        toast.success('Contador deletado com sucesso!')
+        delay(2000).then(() => router.push('/contadores'))
+      },
+      onError: error => {
+        if (error instanceof AppError) toast.error(error.message)
+      },
+      onSettled: () => {
+        setDeleteDialogOpen(false)
+      }
+    }
+  )
 
   return (
     <Grid container spacing={6}>
@@ -154,20 +166,14 @@ const Account = ({ data, refresh, setRefresh }: AccountProps) => {
             </Button>
           </CardActions>
 
-          <Edit
-            data={data}
-            handleEditClose={handleEditClose}
-            openEdit={openEdit}
-            refresh={refresh}
-            setRefresh={setRefresh}
-          />
+          <Edit data={data} handleEditClose={handleEditClose} openEdit={openEdit} />
 
           <DialogAlert
             open={deleteDialogOpen}
             setOpen={setDeleteDialogOpen}
             question={'Você tem certeza que deseja deletar este contador?'}
             description={'Essa ação não poderá ser desfeita.'}
-            handleConfirmDelete={() => handleConfirmDeleteProfile(data.id)}
+            handleConfirmDelete={() => handleConfirmDeleteProfile.mutateAsync(data.id)}
           />
         </Card>
       </Grid>

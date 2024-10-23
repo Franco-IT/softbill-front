@@ -1,9 +1,11 @@
-// ** React Imports
+// React hook for managing component state
 import { useState } from 'react'
 
+// React Hook Form for form handling and validation
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
+// Material UI components for layout and alerts
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
 import Alert from '@mui/material/Alert'
@@ -14,14 +16,28 @@ import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import InputAdornment from '@mui/material/InputAdornment'
 
+// Custom icon component
 import Icon from 'src/@core/components/icon'
 
+// Custom text field component for form inputs
 import CustomTextField from 'src/@core/components/mui/text-field'
+
+// Box component for layout
 import { Box } from '@mui/system'
+
+// Toast notifications for user feedback
 import toast from 'react-hot-toast'
+
+// Schema validation for changing passwords
 import { changePasswordSchema } from 'src/services/yup/schemas/changePasswordSchema'
+
+// Data Transfer Object (DTO) for changing user password
 import { IChangeUserPasswordDTO } from 'src/modules/users/dtos/IChangeUserPasswordDTO'
+
+// User controller for handling user-related API calls
 import { userController } from 'src/modules/users'
+
+// Error handling class for managing application errors
 import { AppError } from 'src/shared/errors/AppError'
 
 interface ChangePasswordProps {
@@ -47,11 +63,14 @@ const ChangePassword = ({ id }: ChangePasswordProps) => {
     resolver: yupResolver(changePasswordSchema)
   })
 
-  const onSubmit = (data: IChangeUserPasswordDTO) => {
-    userController
-      .changePassword(data)
-      .then(response => response?.status === 200 && (toast.success('Senha alterada com sucesso'), reset()))
-      .catch(error => error instanceof AppError && toast.error(error.message))
+  const onSubmit = async (data: IChangeUserPasswordDTO) => {
+    try {
+      await userController.changePassword(data)
+      toast.success('Senha alterada com sucesso')
+      reset()
+    } catch (e) {
+      e instanceof AppError && toast.error(e.message)
+    }
   }
 
   return (

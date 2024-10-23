@@ -1,3 +1,4 @@
+// Material UI Components
 import {
   Dialog,
   DialogTitle,
@@ -9,23 +10,31 @@ import {
   Button
 } from '@mui/material'
 
+// Custom Components
 import CustomTextField from 'src/@core/components/mui/text-field'
 
+// React Hook Form and Yup Resolver
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-import { UserProps } from 'src/types/users'
+// Notifications and Error Handling
 import toast from 'react-hot-toast'
-import { updateCounterSchema } from 'src/services/yup/schemas/counters/updateCounterSchema'
-import { userController } from 'src/modules/users'
 import { AppError } from 'src/shared/errors/AppError'
+
+// Validation Schema
+import { updateCounterSchema } from 'src/services/yup/schemas/counters/updateCounterSchema'
+
+// React Query and Controllers
+import { useQueryClient } from 'react-query'
+import { accountantsController } from 'src/modules/accountant'
+
+// DTOs
+import { IAccountantDTO } from 'src/modules/accountant/dtos/IAccountantDTO'
 
 interface EditProps {
   openEdit: boolean
   handleEditClose: () => void
-  data: UserProps
-  refresh: boolean
-  setRefresh: (value: boolean) => void
+  data: IAccountantDTO
 }
 
 interface FormData {
@@ -34,7 +43,9 @@ interface FormData {
   status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
 }
 
-const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProps) => {
+const Edit = ({ openEdit, handleEditClose, data }: EditProps) => {
+  const queryClient = useQueryClient()
+
   const {
     control,
     handleSubmit,
@@ -45,20 +56,21 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProp
     resolver: yupResolver(updateCounterSchema)
   })
 
-  const onSubmit = ({ name, email, status }: FormData) => {
-    userController
-      .updateCounter({
+  const onSubmit = async ({ name, email, status }: FormData) => {
+    try {
+      await accountantsController.update({
         id: data.id,
         name,
         email,
         status
       })
-      .then(
-        response =>
-          response?.status === 200 && (setRefresh(!refresh), toast.success('Contador atualizado com sucesso!'))
-      )
-      .catch(error => error instanceof AppError && toast.error(error.message))
-      .finally(handleEditClose)
+      await queryClient.invalidateQueries(['accountant', data.id])
+      await queryClient.invalidateQueries(['accountants'])
+      toast.success('Contador atualizado com sucesso!')
+      handleEditClose()
+    } catch (e) {
+      e instanceof AppError && toast.error(e.message)
+    }
   }
 
   return (

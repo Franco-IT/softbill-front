@@ -1,19 +1,41 @@
+// Navigation hook from Next.js for routing
 import { useRouter } from 'next/router'
+
+// MUI components for layout and UI elements
 import { Box, Button, Card, CardContent, CardHeader, Grid } from '@mui/material'
+
+// React Hook Form for form management and validation
 import { useForm, Controller } from 'react-hook-form'
+
+// Yup resolver for schema validation with React Hook Form
 import { yupResolver } from '@hookform/resolvers/yup'
+
+// Toast notifications for user feedback
 import toast from 'react-hot-toast'
+
+// React Query hooks for data fetching and state management
 import { useMutation, useQueryClient } from 'react-query'
 
+// Custom MUI text field component
 import CustomTextField from 'src/@core/components/mui/text-field'
+
+// Custom hook for authentication
 import { useAuth } from 'src/hooks/useAuth'
 
+// Utility functions for input formatting (document and phone masks)
 import { applyDocumentMask, applyPhoneMask } from 'src/utils/inputs'
-import { userController } from 'src/modules/users'
+
+// Client controller for managing client-related operations
+import { clientsController } from 'src/modules/clients'
+
+// Error handling utility
 import { AppError } from 'src/shared/errors/AppError'
 
+// Yup schema for client creation validation
 import { createClientSchema } from 'src/services/yup/schemas/clients/createClientSchema'
-import { ICreateClientDTO } from 'src/modules/users/dtos/ICreateClientDTO'
+
+// DTO for creating a new client
+import { ICreateClientDTO } from 'src/modules/clients/dtos/ICreateClientDTO'
 
 const CreateClient = () => {
   const router = useRouter()
@@ -47,16 +69,14 @@ const CreateClient = () => {
 
   const handleCreateClient = useMutation(
     (data: ICreateClientDTO) => {
-      return userController.createClient(data)
+      return clientsController.create(data)
     },
     {
-      onSuccess: response => {
-        if (response?.status === 201) {
-          queryClient.invalidateQueries(['clients'])
-          queryClient.invalidateQueries(['financial-closing-list'])
-          toast.success('Cliente adicionado com sucesso!')
-          router.push('/clientes')
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['clients'])
+        await queryClient.invalidateQueries(['financial-closing-list'])
+        toast.success('Cliente adicionado com sucesso!')
+        await router.push('/clientes')
       },
       onError: error => {
         if (error instanceof AppError) {

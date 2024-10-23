@@ -11,6 +11,7 @@ export type BBValues = {
   bank: {
     id: string | undefined
     name: string | undefined
+    code: string | undefined
   }
 }
 
@@ -23,6 +24,7 @@ export type InterValues = {
   bank: {
     id: string | undefined
     name: string | undefined
+    code: string | undefined
   }
   files: File[] | undefined
 }
@@ -31,6 +33,7 @@ export type OFXValues = {
   bank: {
     id: string | undefined
     name: string | undefined
+    code: string | undefined
   }
   generatedBy: string | undefined
   clientId: string | undefined

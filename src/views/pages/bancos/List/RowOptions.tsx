@@ -1,10 +1,16 @@
+// React
 import { memo, MouseEvent } from 'react'
+
+// Material UI
 import { Button, useMediaQuery } from '@mui/material'
 
+// Internal Components
 import Icon from 'src/@core/components/icon'
-import { useDrawer } from 'src/hooks/useDrawer'
 import DrawerAnchor from 'src/components/DrawerAnchor'
 import EditBank from '../components/DrawerComponents/EditBank'
+
+// Hooks
+import { useDrawer } from 'src/hooks/useDrawer'
 
 interface RowOptionsProps {
   bankData: any

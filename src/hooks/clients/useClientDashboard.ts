@@ -13,6 +13,6 @@ export async function getClientDashboard() {
   }
 }
 
-export function useClientDashboard(options?: UseQueryOptions<null, AppError, any, ['client-dashboard']>) {
+export function useClientDashboard(options?: UseQueryOptions<any, AppError, any, ['client-dashboard']>) {
   return useQuery(['client-dashboard'], () => getClientDashboard(), options)
 }

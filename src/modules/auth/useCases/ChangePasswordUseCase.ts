@@ -1,19 +1,23 @@
+// Providers
 import { errorProvider } from 'src/shared/providers'
+
+// DTOs
 import { IChangePasswordAuthUserDTO } from '../dtos/IChangePasswordAuthUserDTO'
+
+// Repositories
 import { IUserAuthRepository } from '../repositories/IUserAuthRepository'
 
-export class ChangePasswordUseCase {
-  private userAuthRepository: IUserAuthRepository
+// Errors
+import { errors } from '../errors'
 
-  constructor(userAuthRepository: IUserAuthRepository) {
-    this.userAuthRepository = userAuthRepository
-  }
+export class ChangePasswordUseCase {
+  constructor(private userAuthRepository: IUserAuthRepository) {}
 
   async execute(data: IChangePasswordAuthUserDTO) {
     try {
-      return await this.userAuthRepository.changePassword(data)
-    } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Ocorreu um erro ao alterar a senha.')
+      await this.userAuthRepository.changePassword(data)
+    } catch (error) {
+      throw errorProvider.handle(error, errors, 'Ocorreu um erro ao alterar a senha, tente novamente mais tarde.')
     }
   }
 }

@@ -1,17 +1,23 @@
-import { errorProvider } from 'src/shared/providers'
-import { IChangeBankDisponibility } from '../dtos/IChangeBankDisponibility'
+// Repositories
 import { IBankRepository } from '../repositories/IBankRepository'
+
+// DTOs
+import { IChangeBankDisponibility } from '../dtos/IChangeBankDisponibility'
+
+// Providers
+import { errorProvider } from 'src/shared/providers'
+
+// Errors
+import { errors } from '../errors'
 
 export class ChangeBankDisponibilityUseCase {
   constructor(private bankRepository: IBankRepository) {}
 
   async execute(data: IChangeBankDisponibility) {
     try {
-      const response = await this.bankRepository.changeBankDisponibility(data)
-
-      return response.data
+      await this.bankRepository.changeBankDisponibility(data)
     } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Erro ao alterar disponibilidade do banco.')
+      throw errorProvider.handle(error, errors, 'Erro ao alterar disponibilidade do banco, tente novamente mais tarde.')
     }
   }
 }

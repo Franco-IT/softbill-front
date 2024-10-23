@@ -10,8 +10,7 @@ import Tabs from 'src/views/pages/usuarios/Account/Tabs'
 
 import themeConfig from 'src/configs/themeConfig'
 
-import useGetDataApi from 'src/hooks/useGetDataApi'
-import { UserDataProps } from 'src/types/users'
+import { useUser } from 'src/hooks/users/useUser'
 
 export default function User() {
   const router = useRouter()
@@ -20,31 +19,33 @@ export default function User() {
 
   const {
     data: user,
-    loading,
-    error,
-    refresh,
-    setRefresh
-  } = useGetDataApi<UserDataProps>({ url: `/users/${id}`, callInit: router.isReady })
+    isLoading,
+    isError
+  } = useUser(id as string, {
+    enabled: router.isReady,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false
+  })
 
   useEffect(() => {
-    if (!loading) error && router.push('/404')
-  }, [error, loading, router])
+    if (!isLoading) isError && router.push('/404')
+  }, [isError, isLoading, router])
 
-  if (loading) return <LinearProgress />
+  if (isLoading) return <LinearProgress />
 
   if (user) {
     return (
       <>
         <NextSeo
-          title={`${themeConfig.templateName} - ${user.data.name}`}
-          description={`${themeConfig.templateName} - ${user.data.name}`}
+          title={`${themeConfig.templateName} - ${user.name}`}
+          description={`${themeConfig.templateName} - ${user.name}`}
         />
         <Grid container spacing={6}>
           <Grid item xs={12} xl={4}>
-            <Account data={user.data} refresh={refresh} setRefresh={setRefresh} />
+            <Account data={user} />
           </Grid>
           <Grid item xs={12} xl={8}>
-            <Tabs data={user.data} />
+            <Tabs data={user} />
           </Grid>
         </Grid>
       </>

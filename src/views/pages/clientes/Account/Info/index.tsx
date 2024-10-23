@@ -1,15 +1,15 @@
 // MUI
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material'
 
-// Tipos
-import { ClientProps } from 'src/types/clients'
+// Types
+import { IClientDTO } from 'src/modules/clients/dtos/IClientDTO'
 
-// Utilidades
+// Utils
 import verifyDataValue from 'src/utils/verifyDataValue'
 import { applyCnpjMask, applyPhoneMask } from 'src/utils/inputs'
 
 interface InfoProps {
-  data: ClientProps
+  data: IClientDTO
 }
 
 const Info = ({ data }: InfoProps) => {

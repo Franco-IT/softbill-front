@@ -21,6 +21,7 @@ export type OFXValues = {
   bank: {
     id: string | undefined
     name: string | undefined
+    code: string | undefined
   }
 }
 

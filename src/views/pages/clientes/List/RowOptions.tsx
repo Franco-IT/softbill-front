@@ -1,14 +1,28 @@
-import { memo, useCallback, useMemo, useState } from 'react'
+// React hooks for managing component state and memoization
+import { useCallback, useMemo, useState, memo } from 'react'
+
+// Next.js router for navigation
 import { useRouter } from 'next/router'
 
+// Custom hook for clipboard functionality
 import useClipBoard from 'src/hooks/useClipboard'
 
+// Toast notifications for user feedback
 import toast from 'react-hot-toast'
+
+// Custom icon component for UI
 import Icon from 'src/@core/components/icon'
+
+// Custom basic menu component for dropdowns
 import CustomBasicMenu from 'src/components/CustomBasicMenu'
+
+// Dialog alert component for displaying messages
 import DialogAlert from 'src/@core/components/dialogs/dialog-alert'
 
+// User controller
 import { userController } from 'src/modules/users'
+
+// Error handling
 import { AppError } from 'src/shared/errors/AppError'
 
 const RowOptions = memo(({ id, handleConfirmDelete }: { id: string; handleConfirmDelete: (id: string) => void }) => {

@@ -1,3 +1,4 @@
+// Material UI components for dialogs and layout
 import {
   Dialog,
   DialogTitle,
@@ -9,15 +10,31 @@ import {
   Button
 } from '@mui/material'
 
+// Custom text field component
 import CustomTextField from 'src/@core/components/mui/text-field'
 
+// Validation library for schema validation
 import * as yup from 'yup'
+
+// React Hook Form for form handling
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-import { UserProps } from 'src/types/users'
-import { api } from 'src/services/api'
+// Toast notifications for user feedback
 import toast from 'react-hot-toast'
+
+// User Data Transfer Objects (DTOs) for type safety
+import { IUserDTO } from 'src/modules/users/dtos/IUserDTO'
+import { IUpdateUserDTO } from 'src/modules/users/dtos/IUpdateUserDTO'
+
+// React Query for data fetching and caching
+import { useQueryClient } from 'react-query'
+
+// User controller for handling user-related API calls
+import { userController } from 'src/modules/users'
+
+// Error handling class for managing application errors
+import { AppError } from 'src/shared/errors/AppError'
 
 const schema = yup.object().shape({
   name: yup.string().required('Nome obrigatório'),
@@ -25,21 +42,15 @@ const schema = yup.object().shape({
   status: yup.string().required('Status obrigatório')
 })
 
-interface FormData {
-  name: string
-  email: string
-  status: string
-}
-
 interface EditProps {
   openEdit: boolean
   handleEditClose: () => void
-  data: UserProps
-  refresh: boolean
-  setRefresh: (value: boolean) => void
+  data: IUserDTO
 }
 
-const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProps) => {
+const Edit = ({ openEdit, handleEditClose, data }: EditProps) => {
+  const queryClient = useQueryClient()
+
   const {
     control,
     handleSubmit,
@@ -50,24 +61,16 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProp
     resolver: yupResolver(schema)
   })
 
-  const onSubmit = ({ name, email, status }: FormData) => {
-    api
-      .put(`/users/${data.id}`, {
-        name: name,
-        email: email,
-        status: status
-      })
-      .then(response => {
-        if (response.status === 200) {
-          handleEditClose()
-          toast.success('Usuário atualizado com sucesso!')
-          setRefresh(!refresh)
-        }
-      })
-      .catch(() => {
-        handleEditClose()
-        toast.error('Erro ao atualizar usuário, tente novamente mais tarde')
-      })
+  const onSubmit = async ({ name, email, status, id }: IUpdateUserDTO) => {
+    try {
+      await userController.update({ name, email, status, id })
+      await queryClient.invalidateQueries(['users'])
+      await queryClient.invalidateQueries(['user', id])
+      toast.success('Usuário atualizado com sucesso!')
+      handleEditClose()
+    } catch (e) {
+      e instanceof AppError && toast.error(e.message)
+    }
   }
 
   return (

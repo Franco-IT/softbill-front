@@ -1,21 +1,37 @@
+// React Imports
 import { useState } from 'react'
+import { useRouter } from 'next/router'
+
+// React Hook Form
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useRouter } from 'next/router'
-import toast from 'react-hot-toast'
+
+// React Query
 import { useMutation, useQueryClient } from 'react-query'
+
+// MUI
 import { Box, Button, Card, CardContent, CardHeader, Grid, IconButton, InputAdornment, MenuItem } from '@mui/material'
 
+// Custom Components
 import CustomTextField from 'src/@core/components/mui/text-field'
 import Icon from 'src/@core/components/icon'
 
+// Utilities
 import { applyDocumentMask } from 'src/utils/inputs'
 import { createCounterSchema } from 'src/services/yup/schemas/counters/createCounterSchema'
 import { AppError } from 'src/shared/errors/AppError'
-import { userController } from 'src/modules/users'
 
-import { ICreateCounterDTO } from 'src/modules/users/dtos/ICreateCounterDTO'
+// Hooks
 import { useAuth } from 'src/hooks/useAuth'
+
+// DTOs
+import { ICreateAccountantDTO } from 'src/modules/accountant/dtos/ICreateAccountantDTO'
+
+// Controllers
+import { accountantsController } from 'src/modules/accountant'
+
+// Notifications
+import toast from 'react-hot-toast'
 
 const CreateCounter = () => {
   const router = useRouter()
@@ -40,20 +56,20 @@ const CreateCounter = () => {
       confirmPassword: '',
       accountingId: user?.id,
       type: 'ACCOUNTANT'
-    } as ICreateCounterDTO,
+    } as ICreateAccountantDTO,
     mode: 'onBlur',
     resolver: yupResolver(createCounterSchema)
   })
 
   const handleCreateCounter = useMutation(
-    (data: ICreateCounterDTO) => {
-      return userController.createCounter(data)
+    (data: ICreateAccountantDTO) => {
+      return accountantsController.create(data)
     },
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['counters'])
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['accountants'])
         toast.success('Contador adicionado com sucesso!')
-        router.push('/contadores')
+        await router.push('/contadores')
       },
       onError: error => {
         if (error instanceof AppError) {
@@ -75,7 +91,7 @@ const CreateCounter = () => {
     }
   )
 
-  const onSubmit = async (data: ICreateCounterDTO) => await handleCreateCounter.mutateAsync(data)
+  const onSubmit = async (data: ICreateAccountantDTO) => await handleCreateCounter.mutateAsync(data)
 
   return (
     <Card>

@@ -1,33 +1,46 @@
+// React
 import { Suspense, useEffect, useState, useMemo, useCallback, ChangeEvent, MouseEvent } from 'react'
 
+// Material UI
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, Typography } from '@mui/material'
 
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+// React Query
+import { useMutation, useQueryClient } from 'react-query'
 
+// Internal Components
 import CustomChip from 'src/@core/components/mui/chip'
 import Icon from 'src/@core/components/icon'
 import CustomBadgeAvatar from 'src/components/CustomBadgeAvatar'
 import ImageCropper from 'src/components/ImageCropper'
 import Error from 'src/components/FeedbackAPIs/Error'
 
+// Table Components
 import HeadCells from './HeadCells'
 import RowOptions from './RowOptions'
 import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import EnhancedTableHead from './EnhancedTableHead'
 
+// Utils
 import { formatNameBank } from 'src/utils/format'
 import { formatDate } from 'src/@core/utils/format'
 import { getInitials } from 'src/@core/utils/get-initials'
 import { Loading, Order, getComparator, stableSort } from 'src/utils/list'
 
+// Types
 import { ThemeColor } from 'src/@core/layouts/types'
 import { IBankDTO } from 'src/modules/banks/dtos/IBankDTO'
 import { ISetBankLogoDTO } from 'src/modules/banks/dtos/ISetBankLogoDTO'
+
+// Controller and Errors
 import { bankController } from 'src/modules/banks'
 import { AppError } from 'src/shared/errors/AppError'
 
+// Notifications
 import toast from 'react-hot-toast'
+
+// Hooks
+import { useBanks } from 'src/hooks/banks/useBanks'
 
 interface BankStatusColor {
   [key: string]: ThemeColor
@@ -66,7 +79,7 @@ const List = () => {
     data: rows,
     isLoading,
     isError
-  } = useQuery(['banks', params], async () => bankController.getBanks(params), {
+  } = useBanks(params, {
     staleTime: 1000 * 60 * 5,
     keepPreviousData: true
   })
@@ -107,13 +120,9 @@ const List = () => {
       return bankController.setBankLogo(formData)
     },
     {
-      onSuccess: response => {
-        if (response) {
-          if (response.status === 201) {
-            queryClient.invalidateQueries(['banks'])
-            toast.success('Imagem alterada com sucesso!')
-          }
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['banks'])
+        toast.success('Imagem alterada com sucesso!')
       },
       onError: error => {
         if (error instanceof AppError) toast.error(error.message)

@@ -1,3 +1,4 @@
+// Material UI components for dialog and layout
 import {
   Dialog,
   DialogTitle,
@@ -9,15 +10,30 @@ import {
   Button
 } from '@mui/material'
 
+// Custom text field component
 import CustomTextField from 'src/@core/components/mui/text-field'
 
+// Validation library
 import * as yup from 'yup'
+
+// React Hook Form and its resolver for validation with Yup
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-import { UserProps } from 'src/types/users'
-import { api } from 'src/services/api'
+// Notification library for displaying toast messages
 import toast from 'react-hot-toast'
+
+// Type definition for accounting data transfer objects
+import { IAccountingDTO } from 'src/modules/accounting/dtos/IAccountingDTO'
+
+// Accounting controller for managing API interactions
+import { accountingsController } from 'src/modules/accounting'
+
+// Query client from React Query for managing server state
+import { useQueryClient } from 'react-query'
+
+// Custom error handling class
+import { AppError } from 'src/shared/errors/AppError'
 
 const schema = yup.object().shape({
   name: yup.string().required('Nome obrigatório'),
@@ -25,21 +41,15 @@ const schema = yup.object().shape({
   status: yup.string().required('Status obrigatório')
 })
 
-interface FormData {
-  name: string
-  email: string
-  status: string
-}
-
 interface EditProps {
   openEdit: boolean
   handleEditClose: () => void
-  data: UserProps
-  refresh: boolean
-  setRefresh: (value: boolean) => void
+  data: IAccountingDTO
 }
 
-const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProps) => {
+const Edit = ({ openEdit, handleEditClose, data }: EditProps) => {
+  const queryClient = useQueryClient()
+
   const {
     control,
     handleSubmit,
@@ -50,24 +60,21 @@ const Edit = ({ openEdit, handleEditClose, data, refresh, setRefresh }: EditProp
     resolver: yupResolver(schema)
   })
 
-  const onSubmit = ({ name, email, status }: FormData) => {
-    api
-      .put(`/users/${data.id}`, {
-        name: name,
-        email: email,
-        status: status
+  const onSubmit = async ({ name, email, status, id }: IAccountingDTO) => {
+    try {
+      await accountingsController.update({
+        id,
+        email,
+        name,
+        status
       })
-      .then(response => {
-        if (response.status === 200) {
-          handleEditClose()
-          toast.success('Contabilidade atualizada com sucesso!')
-          setRefresh(!refresh)
-        }
-      })
-      .catch(() => {
-        handleEditClose()
-        toast.error('Erro ao atualizar contabilidade, tente novamente mais tarde.')
-      })
+      await queryClient.invalidateQueries(['accounting', data.id])
+      await queryClient.invalidateQueries(['accountings'])
+      toast.success('Contabilidade atualizada com sucesso!')
+      handleEditClose()
+    } catch (e) {
+      e instanceof AppError && toast.error(e.message)
+    }
   }
 
   return (

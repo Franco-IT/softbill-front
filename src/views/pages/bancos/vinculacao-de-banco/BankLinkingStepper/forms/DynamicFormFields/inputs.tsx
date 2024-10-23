@@ -125,14 +125,15 @@ export const ImportedBanksInput = memo(
             if (onChangeValue)
               onChangeValue({
                 id: newValue?.id || undefined,
-                name: newValue?.name || undefined
+                name: newValue?.name || undefined,
+                code: newValue?.code || undefined
               })
           }}
           value={currentValue}
           renderInput={params => (
             <CustomTextField
               {...params}
-              label={inputProps.label}
+              label={currentValue ? inputProps.label + ' - ' + currentValue.code : inputProps.label}
               placeholder={inputProps.placeholder}
               onBlur={onBlur}
               error={!!errors[field]}

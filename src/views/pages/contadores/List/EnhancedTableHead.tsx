@@ -1,14 +1,14 @@
-import { memo } from 'react'
+import React, { memo } from 'react'
 import { Box, TableCell, TableHead, TableRow, TableSortLabel, useTheme } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
 import { HeadCellProps } from './HeadCells'
-import { ICounterDTO } from 'src/modules/users/dtos/ICounterDTO'
+import { IAccountantDTO } from 'src/modules/accountant/dtos/IAccountantDTO'
 
 type Order = 'asc' | 'desc'
 
 interface EnhancedTableProps {
   headCells: HeadCellProps[]
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ICounterDTO) => void
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof IAccountantDTO) => void
   order: Order
   orderBy: string
   rowCount: number
@@ -19,7 +19,7 @@ const EnhancedTableHead = memo((props: EnhancedTableProps) => {
 
   const theme = useTheme()
 
-  const createSortHandler = (property: keyof ICounterDTO) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof IAccountantDTO) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property)
   }
 
@@ -40,7 +40,7 @@ const EnhancedTableHead = memo((props: EnhancedTableProps) => {
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id as keyof ICounterDTO)}
+              onClick={createSortHandler(headCell.id as keyof IAccountantDTO)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (

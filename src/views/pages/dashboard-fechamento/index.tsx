@@ -1,5 +1,5 @@
 // React Imports
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 
 // React Query
 import { useQuery, useQueryClient } from 'react-query'
@@ -27,7 +27,7 @@ import IconifyIcon from 'src/@core/components/icon'
 import CustomUserAccordion from './components/CustomUserAccordion'
 import LoadingCard from 'src/components/FeedbackAPIs/LoadingCard'
 import Error from 'src/components/FeedbackAPIs/Error'
-import CustomDatePicker from 'src/components/CustomDatePicker'
+import NavbarCalendar from './components/NavbarCalendar'
 import Pagination from './components/Pagination'
 import DrawerAnchor from 'src/components/DrawerAnchor'
 import NoResultsCard from './components/NoResultsCard'
@@ -124,10 +124,6 @@ const Dashboard = () => {
     setPage(0)
   }, [])
 
-  const handleConvertStringToDate = (date: string | null) => {
-    return date ? new Date(date) : null
-  }
-
   const handleCheckClientSituation = useMemo(
     () => (clientData: any, showList: string) => {
       if (!clientData.hasBankAccounts) {
@@ -153,9 +149,9 @@ const Dashboard = () => {
     [date]
   )
 
-  const handleInvalidationQueries = () => {
-    queryClient.invalidateQueries(['financial-closing-list'])
-    queryClient.invalidateQueries(['financial-closing-dashboard'])
+  const handleInvalidationQueries = async () => {
+    await queryClient.invalidateQueries(['financial-closing-list'])
+    await queryClient.invalidateQueries(['financial-closing-dashboard'])
   }
 
   useEffect(() => {
@@ -163,6 +159,10 @@ const Dashboard = () => {
     setDate(lastMonth)
     setMonth(dateProvider.getMonthFromDate(lastMonth))
   }, [])
+
+  useEffect(() => {
+    date && setMonth(dateProvider.getMonthFromDate(date))
+  }, [date])
 
   useEffect(() => {
     if (dashboardDataResponse) {
@@ -199,212 +199,223 @@ const Dashboard = () => {
     children
   }
 
-  const paginationProps = {
-    rowsTotal: financialClosingData?.total || 0,
-    rowsPerPage,
-    rowsPerPageOptions: [5, 10, 25],
-    page,
-    handleChangePage,
-    handleChangeRowsPerPage
-  }
+  const navbarCalendarProps = useMemo(
+    () => ({
+      date,
+      setDate
+    }),
+    [date]
+  )
+
+  const paginationProps = useMemo(
+    () => ({
+      rowsTotal: financialClosingData?.total || 0,
+      rowsPerPage,
+      rowsPerPageOptions: [5, 10, 25],
+      page,
+      handleChangePage,
+      handleChangeRowsPerPage
+    }),
+    [financialClosingData?.total, handleChangePage, handleChangeRowsPerPage, page, rowsPerPage]
+  )
 
   if (isErrorDashboardData || isErrorFinancialClosingData) return <Error />
 
   return (
-    <Card>
-      <CardHeader
-        title='Dashboard de Fechamento'
-        subheader={`#${month}`}
-        subheaderTypographyProps={{
-          variant: 'overline',
-          style: {
-            backgroundColor: '#655BD3',
-            width: 'fit-content',
-            padding: '0 8px',
-            borderRadius: '4px',
-            color: 'white'
-          }
-        }}
-      />
-      <CardActions>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={3}>
-            <CustomTextField
-              fullWidth
-              label='Cliente'
-              placeholder='Buscar Cliente'
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <CustomDatePicker
-              label='Mês de Referência'
-              value={handleConvertStringToDate(date)}
-              onChange={e => setDate(e)}
-              placeholderText='Escolha o mês'
-              maxDate={new Date()}
-              dateFormat='MMMM'
-              showMonthYearPicker
-            />
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <CustomTextField
-              select
-              fullWidth
-              label='Status'
-              placeholder='Selecione Status'
-              value={status || 'default'}
-              onChange={e => setStatus(e.target.value as StatusValue)}
-              color={statusColorsMUI[status || '']}
-              focused={!!statusColorsMUI[status || '']}
-            >
-              <MenuItem disabled value='default'>
-                <em>selecione</em>
-              </MenuItem>
-              {statusOptions.map(status => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </CustomTextField>
-          </Grid>
-          <Grid item xs={12} md={3} alignContent={'end'}>
-            {isSmallerThanMd ? (
-              <Button
+    <Fragment>
+      <Card>
+        {date && <NavbarCalendar {...navbarCalendarProps} />}
+        <CardHeader
+          title='Dashboard de Fechamento'
+          subheader={`#${month}`}
+          subheaderTypographyProps={{
+            variant: 'overline',
+            style: {
+              backgroundColor: '#655BD3',
+              width: 'fit-content',
+              padding: '0 8px',
+              borderRadius: '4px',
+              color: 'white'
+            }
+          }}
+        />
+        <CardActions>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={3}>
+              <CustomTextField
                 fullWidth
-                variant='contained'
-                color='primary'
-                startIcon={<IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />}
-                onClick={handleInvalidationQueries}
-              >
-                Atualizar Dados
-              </Button>
-            ) : (
-              <IconButton onClick={handleInvalidationQueries} title='Atualizar Dados'>
-                <IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />
-              </IconButton>
-            )}
-          </Grid>
-        </Grid>
-      </CardActions>
-      <CardContent>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            {isLoadingDashboardData ? (
-              <LoadingCard
-                title='Carregando...'
-                subtitle='Aguarde um momento'
-                avatarColor='primary'
-                icon='tabler:loader-2'
-              />
-            ) : (
-              <CardOptionHorizontal
-                title={dashboardData.totalUsers}
-                subtitle='Total de Fechamentos'
-                avatarColor='primary'
-                icon='tabler:user'
-              />
-            )}
-          </Grid>
-          <Grid item xs={12} md={6}>
-            {isLoadingDashboardData ? (
-              <LoadingCard
-                title='Carregando...'
-                subtitle='Aguarde um momento'
-                avatarColor='primary'
-                icon='tabler:loader-2'
-              />
-            ) : (
-              <CardOptionHorizontal
-                title={dashboardData.totalApproved}
-                subtitle='Fechamentos Aprovados'
-                avatarColor='success'
-                icon='tabler:user-check'
-              />
-            )}
-          </Grid>
-          <Grid item xs={12} md={6}>
-            {isLoadingDashboardData ? (
-              <LoadingCard
-                title='Carregando...'
-                subtitle='Aguarde um momento'
-                avatarColor='primary'
-                icon='tabler:loader-2'
-              />
-            ) : (
-              <CardOptionHorizontal
-                title={dashboardData.totalPending}
-                subtitle='Fechamentos Pendentes'
-                avatarColor='warning'
-                icon='tabler:user-exclamation'
-              />
-            )}
-          </Grid>
-          <Grid item xs={12} md={6}>
-            {isLoadingDashboardData ? (
-              <LoadingCard
-                title='Carregando...'
-                subtitle='Aguarde um momento'
-                avatarColor='primary'
-                icon='tabler:loader-2'
-              />
-            ) : (
-              <CardOptionHorizontal
-                title={dashboardData.totalError}
-                subtitle='Total de Bancos Pendentes'
-                avatarColor='error'
-                icon='tabler:building-bank'
-              />
-            )}
-          </Grid>
-        </Grid>
-      </CardContent>
-      <CardContent>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'end', gap: 2 }}>
-              <Pagination {...paginationProps} />
-              <ToggleButtonGroup
-                exclusive
-                size='small'
-                color='primary'
-                value={showList}
-                onChange={(e, newValue) => newValue !== null && setShowList(newValue)}
-              >
-                <ToggleButton value='GRID'>
-                  <IconifyIcon icon='tabler:layout-grid-filled' fontSize='1.5rem' />
-                </ToggleButton>
-                <ToggleButton value='LIST'>
-                  <IconifyIcon icon='tabler:layout-list-filled' fontSize='1.5rem' />
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </Box>
-          </Grid>
-          {isLoadingFinancialClosingData ? (
-            <Grid item xs={12}>
-              <LoadingCard
-                title='Carregando...'
-                subtitle='Aguarde um momento'
-                avatarColor='primary'
-                icon='tabler:loader-2'
+                label='Cliente'
+                placeholder='Buscar Cliente'
+                value={search}
+                onChange={e => setSearch(e.target.value)}
               />
             </Grid>
-          ) : financialClosingData?.data.length > 0 ? (
-            financialClosingData.data.map((client: any) => (
-              <Grid item {...gridProps[showList]} key={client.monthlyFinancialClose?.monthlyFinancialCloseId}>
-                {handleCheckClientSituation(client, showList)}
+            <Grid item xs={12} md={3}>
+              <CustomTextField
+                select
+                fullWidth
+                label='Status'
+                placeholder='Selecione Status'
+                value={status || 'default'}
+                onChange={e => setStatus(e.target.value as StatusValue)}
+                color={statusColorsMUI[status || '']}
+                focused={!!statusColorsMUI[status || '']}
+              >
+                <MenuItem disabled value='default'>
+                  <em>selecione</em>
+                </MenuItem>
+                {statusOptions.map(status => (
+                  <MenuItem key={status.value} value={status.value}>
+                    {status.label}
+                  </MenuItem>
+                ))}
+              </CustomTextField>
+            </Grid>
+            <Grid item xs={12} md={3} alignContent={'end'}>
+              {isSmallerThanMd ? (
+                <Button
+                  fullWidth
+                  variant='contained'
+                  color='primary'
+                  startIcon={<IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />}
+                  onClick={handleInvalidationQueries}
+                >
+                  Atualizar Dados
+                </Button>
+              ) : (
+                <IconButton onClick={handleInvalidationQueries} title='Atualizar Dados'>
+                  <IconifyIcon icon='tabler:refresh' fontSize='1.7rem' />
+                </IconButton>
+              )}
+            </Grid>
+          </Grid>
+        </CardActions>
+        <CardContent>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              {isLoadingDashboardData ? (
+                <LoadingCard
+                  title='Carregando...'
+                  subtitle='Aguarde um momento'
+                  avatarColor='primary'
+                  icon='tabler:loader-2'
+                />
+              ) : (
+                <CardOptionHorizontal
+                  title={dashboardData.totalUsers}
+                  subtitle='Total de Fechamentos'
+                  avatarColor='primary'
+                  icon='tabler:user'
+                />
+              )}
+            </Grid>
+            <Grid item xs={12} md={6}>
+              {isLoadingDashboardData ? (
+                <LoadingCard
+                  title='Carregando...'
+                  subtitle='Aguarde um momento'
+                  avatarColor='primary'
+                  icon='tabler:loader-2'
+                />
+              ) : (
+                <CardOptionHorizontal
+                  title={dashboardData.totalApproved}
+                  subtitle='Fechamentos Aprovados'
+                  avatarColor='success'
+                  icon='tabler:user-check'
+                />
+              )}
+            </Grid>
+            <Grid item xs={12} md={6}>
+              {isLoadingDashboardData ? (
+                <LoadingCard
+                  title='Carregando...'
+                  subtitle='Aguarde um momento'
+                  avatarColor='primary'
+                  icon='tabler:loader-2'
+                />
+              ) : (
+                <CardOptionHorizontal
+                  title={dashboardData.totalPending}
+                  subtitle='Fechamentos Pendentes'
+                  avatarColor='warning'
+                  icon='tabler:user-exclamation'
+                />
+              )}
+            </Grid>
+            <Grid item xs={12} md={6}>
+              {isLoadingDashboardData ? (
+                <LoadingCard
+                  title='Carregando...'
+                  subtitle='Aguarde um momento'
+                  avatarColor='primary'
+                  icon='tabler:loader-2'
+                />
+              ) : (
+                <CardOptionHorizontal
+                  title={dashboardData.totalError}
+                  subtitle='Total de Bancos Pendentes'
+                  avatarColor='error'
+                  icon='tabler:building-bank'
+                />
+              )}
+            </Grid>
+          </Grid>
+        </CardContent>
+        <CardContent>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'end', gap: 2 }}>
+                <Pagination {...paginationProps} />
+                <ToggleButtonGroup
+                  exclusive
+                  size='small'
+                  color='primary'
+                  value={showList}
+                  onChange={(e, newValue) => newValue !== null && setShowList(newValue)}
+                >
+                  <ToggleButton value='GRID'>
+                    <IconifyIcon icon='tabler:layout-grid-filled' fontSize='1.5rem' />
+                  </ToggleButton>
+                  <ToggleButton value='LIST'>
+                    <IconifyIcon icon='tabler:layout-list-filled' fontSize='1.5rem' />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+            </Grid>
+            {isLoadingFinancialClosingData ? (
+              <Grid item xs={12}>
+                <LoadingCard
+                  title='Carregando...'
+                  subtitle='Aguarde um momento'
+                  avatarColor='primary'
+                  icon='tabler:loader-2'
+                />
               </Grid>
-            ))
-          ) : (
-            <Grid item xs={12}>
-              <NoResultsCard />
-            </Grid>
-          )}
-        </Grid>
-      </CardContent>
-      <DrawerAnchor {...drawerProps} />
-    </Card>
+            ) : financialClosingData?.data.length > 0 ? (
+              financialClosingData.data.map((client: any) => (
+                <Grid
+                  item
+                  {...gridProps[showList]}
+                  key={
+                    client.monthlyFinancialClose?.monthlyFinancialCloseId
+                      ? client.monthlyFinancialClose?.monthlyFinancialCloseId
+                      : Math.floor(Math.random() * 5000)
+                  }
+                >
+                  {handleCheckClientSituation(client, showList)}
+                </Grid>
+              ))
+            ) : (
+              <Grid item xs={12}>
+                <NoResultsCard />
+              </Grid>
+            )}
+          </Grid>
+        </CardContent>
+        <DrawerAnchor {...drawerProps} />
+      </Card>
+    </Fragment>
   )
 }
 

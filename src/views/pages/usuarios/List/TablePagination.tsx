@@ -1,4 +1,7 @@
-import { memo } from 'react'
+// React
+import React, { memo } from 'react'
+
+// MUI
 import { TablePagination } from '@mui/material'
 
 interface PaginationProps {

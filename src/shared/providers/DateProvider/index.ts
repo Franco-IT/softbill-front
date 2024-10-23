@@ -1,6 +1,6 @@
 import { ptBR } from 'date-fns/locale'
 import { IDateProvider } from './IDateProvider'
-import { format, formatDistanceToNow, parseISO, subMonths } from 'date-fns'
+import { format, formatDistanceToNow, parseISO, subMonths, addMonths } from 'date-fns'
 
 export class DateProvider implements IDateProvider {
   getTimeSinceUpdate(date: Date): string {
@@ -25,6 +25,10 @@ export class DateProvider implements IDateProvider {
 
   getPreviousMonths(date: Date, previousQuantity: number): Date {
     return subMonths(date, previousQuantity)
+  }
+
+  getLaterMonths(date: Date, laterQuantity: number): Date {
+    return addMonths(date, laterQuantity)
   }
 
   getMonthFromDate(date: Date): string {

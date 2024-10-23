@@ -18,9 +18,6 @@ import ImageCropper from 'src/components/ImageCropper'
 import Edit from './Edit'
 import CanView from 'src/components/CanView'
 
-// Hooks
-import { useAuth } from 'src/hooks/useAuth'
-
 // Tipos e layouts
 import { ThemeColor } from 'src/@core/layouts/types'
 import { ISetUserAvatarDTO } from 'src/modules/users/dtos/ISetUserAvatarDTO'
@@ -35,7 +32,7 @@ import verifyDataValue from 'src/utils/verifyDataValue'
 import { applyPhoneMask } from 'src/utils/inputs'
 import { renderInitials, renderUser } from 'src/utils/list'
 
-// Controladores e erros
+// Controladores e errors
 import { userController } from 'src/modules/users'
 import { AppError } from 'src/shared/errors/AppError'
 import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
@@ -63,7 +60,6 @@ interface MyAccountProps {
 
 const MyAccount = memo(({ data }: MyAccountProps) => {
   const router = useRouter()
-  const { setUser, user } = useAuth()
   const queryClient = useQueryClient()
 
   const [openEdit, setOpenEdit] = useState<boolean>(false)
@@ -78,14 +74,12 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
       return userController.delete({ id })
     },
     {
-      onSuccess: response => {
-        if (response?.status === 200) {
-          toast.success('Conta deletada com sucesso!')
-          queryClient.invalidateQueries(['profile'])
-          delay(2000).then(() => {
-            router.reload()
-          })
-        }
+      onSuccess: async () => {
+        toast.success('Conta deletada com sucesso!')
+        await queryClient.invalidateQueries(['profile'])
+        delay(2000).then(() => {
+          router.reload()
+        })
       },
       onError: error => {
         if (error instanceof AppError) toast.error(error.message)
@@ -107,16 +101,9 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
       return userController.setAvatar(formData)
     },
     {
-      onSuccess: response => {
-        if (response) {
-          const responseData = response.data
-
-          if (response.status === 201) {
-            queryClient.invalidateQueries(['profile'])
-            user && setUser({ ...user, avatar: responseData.data.url })
-            toast.success('Imagem alterada com sucesso!')
-          }
-        }
+      onSuccess: () => {
+        queryClient.invalidateQueries(['profile'])
+        toast.success('Imagem alterada com sucesso!')
       },
       onError: error => {
         if (error instanceof AppError) toast.error(error.message)

@@ -1,4 +1,4 @@
-// MUI
+// MUI Components
 import {
   Dialog,
   DialogTitle,
@@ -10,28 +10,32 @@ import {
   MenuItem
 } from '@mui/material'
 
-// Componentes internos
+// Internal Components
 import CustomTextField from 'src/@core/components/mui/text-field'
 
-// Bibliotecas de validação e formulários
+// Validation Libraries and Form Handling
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-// Tipos e dados
-import { IClientDTO } from 'src/modules/users/dtos/IClientDTO'
-import { IUpdateClientDTO } from 'src/modules/users/dtos/IUpdateClientDTO'
+// Data Types and DTOs
+import { IClientDTO } from 'src/modules/clients/dtos/IClientDTO'
+import { IUpdateClientDTO } from 'src/modules/clients/dtos/IUpdateClientDTO'
 
-// Serviços e utilidades
+// Services and Utilities
 import toast from 'react-hot-toast'
 import { applyDocumentMask, applyPhoneMask } from 'src/utils/inputs'
 
-// React Query
+// React Query for Data Handling
 import { useMutation, useQueryClient } from 'react-query'
 
-// Erros
+// Error handling
 import { AppError } from 'src/shared/errors/AppError'
+
+// Validation schema for client update
 import { updateClientSchema } from 'src/services/yup/schemas/clients/updateClientSchema'
-import { userController } from 'src/modules/users'
+
+// User controller for handling user-related actions
+import { clientsController } from 'src/modules/clients'
 
 interface EditProfileProps {
   openEdit: boolean
@@ -70,15 +74,14 @@ const Edit = ({ openEdit, handleEditClose, data }: EditProfileProps) => {
 
   const handleEditClient = useMutation(
     async (formData: IUpdateClientDTO) => {
-      return userController.updateClient(formData)
+      return clientsController.update(formData)
     },
     {
-      onSuccess: response => {
-        if (response?.status === 200) {
-          queryClient.invalidateQueries(['client-data'])
-          queryClient.invalidateQueries(['clients'])
-          toast.success('Cliente atualizado com sucesso!')
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['client', data.id])
+        await queryClient.invalidateQueries(['clients'])
+        toast.success('Cliente atualizado com sucesso!')
+        handleEditClose()
       },
       onError: error => {
         if (error instanceof AppError) {
@@ -96,8 +99,7 @@ const Edit = ({ openEdit, handleEditClose, data }: EditProfileProps) => {
             toast.error(error.message)
           }
         }
-      },
-      onSettled: () => handleEditClose()
+      }
     }
   )
 

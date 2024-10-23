@@ -1,20 +1,23 @@
+// Providers
 import { errorProvider } from 'src/shared/providers'
+
+// DTOs
 import { IUserFirstAccessDTO } from '../dtos/IUserFirstAccessDTO'
+
+// Repositories
 import { IUserAuthRepository } from '../repositories/IUserAuthRepository'
-import { AxiosResponse } from 'axios'
+
+// Errors
+import { errors } from '../errors'
 
 export class FirstAccessUseCase {
-  private userAuthRepository: IUserAuthRepository
+  constructor(private userAuthRepository: IUserAuthRepository) {}
 
-  constructor(userAuthRepository: IUserAuthRepository) {
-    this.userAuthRepository = userAuthRepository
-  }
-
-  async execute(data: IUserFirstAccessDTO): Promise<AxiosResponse | undefined> {
+  async execute(data: IUserFirstAccessDTO) {
     try {
-      return await this.userAuthRepository.firtsAccess(data)
-    } catch (error: any) {
-      throw errorProvider.handle(error, {}, 'Erro ao realizar o primeiro acesso.')
+      await this.userAuthRepository.firtsAccess(data)
+    } catch (error) {
+      throw errorProvider.handle(error, errors, 'Erro ao realizar o primeiro acesso, tente novamente mais tarde.')
     }
   }
 }
