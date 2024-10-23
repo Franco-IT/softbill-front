@@ -18,9 +18,6 @@ import ImageCropper from 'src/components/ImageCropper'
 import Edit from './Edit'
 import CanView from 'src/components/CanView'
 
-// Hooks
-import { useAuth } from 'src/hooks/useAuth'
-
 // Tipos e layouts
 import { ThemeColor } from 'src/@core/layouts/types'
 import { ISetUserAvatarDTO } from 'src/modules/users/dtos/ISetUserAvatarDTO'
@@ -63,7 +60,6 @@ interface MyAccountProps {
 
 const MyAccount = memo(({ data }: MyAccountProps) => {
   const router = useRouter()
-  const { setUser, user } = useAuth()
   const queryClient = useQueryClient()
 
   const [openEdit, setOpenEdit] = useState<boolean>(false)
@@ -105,16 +101,9 @@ const MyAccount = memo(({ data }: MyAccountProps) => {
       return userController.setAvatar(formData)
     },
     {
-      onSuccess: response => {
-        if (response) {
-          const responseData = response.data
-
-          if (response.status === 201) {
-            queryClient.invalidateQueries(['profile'])
-            user && setUser({ ...user, avatar: responseData.data.url })
-            toast.success('Imagem alterada com sucesso!')
-          }
-        }
+      onSuccess: () => {
+        queryClient.invalidateQueries(['profile'])
+        toast.success('Imagem alterada com sucesso!')
       },
       onError: error => {
         if (error instanceof AppError) toast.error(error.message)

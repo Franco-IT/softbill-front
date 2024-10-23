@@ -33,10 +33,10 @@ const MyAccount = () => {
     return (
       <Grid container spacing={6}>
         <Grid item xs={12} xl={4}>
-          <MyAccountContent data={userData.data} />
+          <MyAccountContent data={userData} />
         </Grid>
         <Grid item xs={12} xl={8}>
-          <Tabs data={userData.data} />
+          <Tabs data={userData} />
         </Grid>
       </Grid>
     )
