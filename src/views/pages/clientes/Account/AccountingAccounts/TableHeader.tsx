@@ -1,14 +1,15 @@
 // React and Hooks
-import { Fragment, useState } from 'react'
+import { Fragment, useCallback, useMemo, useState } from 'react'
 
-// Material UI
-import { CardHeader, Grid, Button, MenuItem, Box } from '@mui/material'
+// Material UI Components
+import { CardHeader, Grid, Button, MenuItem } from '@mui/material'
 
-// Internal Components
+// Internal Custom Components
 import CustomTextField from 'src/@core/components/mui/text-field'
 import Icon from 'src/@core/components/icon'
 import Add from './Add'
 import Import from './Import'
+import CustomBasicMenu from 'src/components/CustomBasicMenu'
 
 interface TableHeaderProps {
   search: string
@@ -24,6 +25,33 @@ const TableHeader = (props: TableHeaderProps) => {
 
   const [open, setOpen] = useState(false)
   const [openImportFile, setOpenImportFile] = useState(false)
+  const [importType, setImportType] = useState('')
+
+  const hamdleClickImportQuestor = useCallback(() => {
+    setImportType('QUESTOR')
+    setOpenImportFile(true)
+  }, [])
+
+  const handleClickImportDomain = useCallback(() => {
+    setImportType('DOMINIO')
+    setOpenImportFile(true)
+  }, [])
+
+  const menuItems = useMemo(
+    () => [
+      {
+        label: 'Importar Questor',
+        icon: <Icon icon='tabler:file-type-csv' fontSize={20} />,
+        action: hamdleClickImportQuestor
+      },
+      {
+        label: 'Importar Domínio',
+        icon: <Icon icon='tabler:file-type-txt' fontSize={20} />,
+        action: handleClickImportDomain
+      }
+    ],
+    [handleClickImportDomain, hamdleClickImportQuestor]
+  )
 
   return (
     <Fragment>
@@ -34,25 +62,8 @@ const TableHeader = (props: TableHeaderProps) => {
               padding: 0
             }}
             title='Contas Contábeis'
+            action={<CustomBasicMenu buttonLabel='Importar Arquivos' menuItems={menuItems} />}
           />
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: {
-                xs: 'start',
-                md: 'flex-end'
-              }
-            }}
-          >
-            <Button variant='contained' sx={{ '& svg': { mr: 2 } }} onClick={() => setOpenImportFile(true)}>
-              <Icon fontSize='1.125rem' icon='tabler:file-import' />
-              Importar Arquivo
-            </Button>
-          </Box>
         </Grid>
 
         <Grid item xs={12}>
@@ -96,7 +107,9 @@ const TableHeader = (props: TableHeaderProps) => {
       </Grid>
 
       {open && <Add open={open} handleClose={() => setOpen(false)} />}
-      {openImportFile && <Import open={openImportFile} handleClose={() => setOpenImportFile(false)} />}
+      {openImportFile && (
+        <Import importType={importType} open={openImportFile} handleClose={() => setOpenImportFile(false)} />
+      )}
     </Fragment>
   )
 }

@@ -1,7 +1,11 @@
 import * as yup from 'yup'
 
-export const FILE_TYPES: { [key: string]: string[] } = {
-  'application/pdf': ['.pdf']
+export const FILE_TYPE_QUESTOR: { [key: string]: string[] } = {
+  'text/csv': ['.csv']
+}
+
+export const FILE_TYPE_DOMINIO: { [key: string]: string[] } = {
+  'text/plain': ['.txt', '.TXT']
 }
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -9,7 +13,8 @@ export const MAX_FILE_SIZE = 5 * 1024 * 1024
 export const isValidFileType = (file: File | null): boolean => {
   if (!file) return false
 
-  const allowedExtensions = FILE_TYPES[file.type || 'application/pdf']
+  const allowedExtensions = file.type === 'text/csv' ? FILE_TYPE_QUESTOR[file.type] : FILE_TYPE_DOMINIO[file.type]
+
   if (!allowedExtensions) return false
 
   const fileExtension = file.name.split('.').pop()
@@ -28,5 +33,6 @@ export const ImportAccountingAccounts = yup.object().shape({
         .test('fileType', 'Tipo de arquivo não permitido', value => isValidFileType(value))
     )
     .required('Arquivos obrigatórios')
-    .min(1, 'Você precisa fornecer o arquivo do tipo PDF para continuar')
+    .min(1, 'Você precisa fornecer o arquivo para continuar')
+    .max(1, 'Você só pode fornecer um arquivo por vez')
 })
