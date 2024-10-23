@@ -24,7 +24,7 @@ import { IGetAccountingAccountsByClientDTO } from 'src/modules/accountingAccount
 import { IAccountingAccountDTO } from 'src/modules/accountingAccounts/dtos/IAccountingAccountDTO'
 
 // Hooks
-import { useAccountingAccountsByClient } from '../../../../../hooks/accountingAccounts/useAccountingAccountsByClient'
+import { useAccountingAccountsByClient } from 'src/hooks/accountingAccounts/useAccountingAccountsByClient'
 
 // Providers
 import { dateProvider } from 'src/shared/providers'

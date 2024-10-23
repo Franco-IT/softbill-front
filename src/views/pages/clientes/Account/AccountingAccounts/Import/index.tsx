@@ -11,13 +11,10 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useQueryClient } from 'react-query'
 
 // Schema
-import { FILE_TYPES, ImportAccountingAccounts } from './schema'
+import { FILE_TYPE_DOMINIO, FILE_TYPE_QUESTOR, ImportAccountingAccounts } from './schema'
 
 // Next.js Router
 import { useRouter } from 'next/router'
-
-// DTOs and Controllers
-import { accountingAccountsController } from 'src/modules/accountingAccounts'
 
 // Utilities
 import { AppError } from 'src/shared/errors/AppError'
@@ -26,13 +23,20 @@ import { AppError } from 'src/shared/errors/AppError'
 import useToast from 'src/hooks/useToast'
 import DropzoneWrapper from 'src/@core/styles/libs/react-dropzone'
 import FileUploaderRestrictions from 'src/components/FileUploaderRestrictions'
+import { api } from 'src/services/api'
 
 interface ImportProps {
+  importType: string
   open: boolean
   handleClose: () => void
 }
 
-const Import = ({ open, handleClose }: ImportProps) => {
+const typeFile: { [key: string]: string } = {
+  QUESTOR: 'csv',
+  DOMINIO: 'txt'
+}
+
+const Import = ({ open, handleClose, importType }: ImportProps) => {
   const router = useRouter()
   const { toastSuccess, toastError } = useToast()
   const queryClient = useQueryClient()
@@ -50,11 +54,22 @@ const Import = ({ open, handleClose }: ImportProps) => {
     resolver: yupResolver(ImportAccountingAccounts)
   })
 
-  //TODO: Refactor for import method
   const onSubmit = async (data: any) => {
     try {
-      await accountingAccountsController.createAccountingAccount(data)
+      const formData = new FormData()
+
+      formData.append('clientId', data.clientId)
+      formData.append('file', data.files[0])
+      formData.append('importedFrom', importType)
+
+      await api.post('clientAccountingAccounts/import-accounts', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
       await queryClient.invalidateQueries(['accounting-accounts-by-client'])
+
       toastSuccess('Contas contábeis adicionadas com sucesso!')
       handleClose()
     } catch (e) {
@@ -82,7 +97,7 @@ const Import = ({ open, handleClose }: ImportProps) => {
         }}
       >
         <DialogContentText variant='body2' sx={{ textAlign: 'center', mb: 7 }}>
-          Importe o arquivo tipo PDF
+          Importe o arquivo tipo {typeFile[importType]} com as contas contábeis
         </DialogContentText>
         <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
           <DropzoneWrapper
@@ -97,7 +112,7 @@ const Import = ({ open, handleClose }: ImportProps) => {
               rules={{ required: true }}
               render={({ field: { value, onChange } }) => (
                 <FileUploaderRestrictions
-                  accept={FILE_TYPES}
+                  accept={importType === 'QUESTOR' ? FILE_TYPE_QUESTOR : FILE_TYPE_DOMINIO}
                   error={errors?.files?.message || errors?.files?.[0]?.message || ''}
                   onChange={onChange}
                   value={value}
