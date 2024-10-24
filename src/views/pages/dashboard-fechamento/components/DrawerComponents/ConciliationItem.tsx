@@ -1,11 +1,28 @@
+// React Imports
+import { Fragment, useEffect, useMemo, useState } from 'react'
+
+// Next Imports
+import { useRouter } from 'next/router'
+
 // Material UI Imports
-import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  CircularProgress,
+  Grid,
+  Typography
+} from '@mui/material'
 
 // Custom Components
+import GlowIcon from 'src/components/GlowIcon'
 import IconifyIcon from 'src/@core/components/icon'
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomTextField from 'src/@core/components/mui/text-field'
-import GlowIcon from 'src/components/GlowIcon'
+import CustomAutocomplete from 'src/@core/components/mui/autocomplete'
 
 // React Hook Form Imports
 import { Controller, useForm } from 'react-hook-form'
@@ -16,10 +33,10 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import useToast from 'src/hooks/useToast'
 import { useQueryClient } from 'react-query'
 import { useDrawer } from 'src/hooks/useDrawer'
+import { useAccountingAccountsByClient } from 'src/hooks/accountingAccounts/useAccountingAccountsByClient'
 
 // Utils
 import { formatAmount } from 'src/utils/format'
-import { applyAccountNumberMask } from 'src/utils/inputs'
 
 // Controllers and DTOs
 import { financialCloseController } from 'src/modules/financialClose'
@@ -27,6 +44,7 @@ import { IUpdateBankTransactionDTO } from 'src/modules/financialClose/dtos/IUpda
 
 // Errors
 import { AppError } from 'src/shared/errors/AppError'
+import { IGetAccountingAccountsByClientDTO } from 'src/modules/accountingAccounts/dtos/IGetAccountingAccountsByClientDTO'
 
 const schema = yup.object().shape({
   account: yup.string().required('Campo obrigatório'),
@@ -37,6 +55,12 @@ interface FormData {
   id: string
   account: string
   conciliationDescription: string
+}
+
+type Options = {
+  id: string
+  label: string
+  description: string
 }
 
 interface ConciliationItemProps {
@@ -64,14 +88,52 @@ const ConciliationItem = (props: ConciliationItemProps) => {
     transactionTypeConciliation
   } = props
 
+  const router = useRouter()
   const queryClient = useQueryClient()
   const { anchor, toggleDrawer } = useDrawer()
   const { toastError, toastSuccess } = useToast()
 
+  const [options, setOptions] = useState<Options[]>([])
+  const [search, setSearch] = useState('')
+
+  const params = useMemo(
+    () => ({
+      clientId: router.query.clientId as string,
+      params: {
+        search
+      }
+    }),
+    [router.query.clientId, search]
+  )
+
+  const { isFetching } = useAccountingAccountsByClient(params as unknown as IGetAccountingAccountsByClientDTO, {
+    onSuccess: data => {
+      const arrayOptions: Options[] = []
+
+      if (data.data.length > 0) {
+        for (const item of data.data) {
+          arrayOptions.push({ id: item.id, label: item.number, description: item.description })
+        }
+      }
+
+      if (search) {
+        setOptions(arrayOptions)
+      }
+
+      arrayOptions.length > 0 && setOptions(arrayOptions)
+    },
+    onError: () => {
+      setOptions([])
+    },
+    refetchOnWindowFocus: false
+  })
+
   const {
     handleSubmit,
     control,
-    formState: { errors }
+    formState: { errors },
+    setValue,
+    watch
   } = useForm({
     defaultValues: {
       id,
@@ -105,6 +167,16 @@ const ConciliationItem = (props: ConciliationItemProps) => {
     }
 
     return statusValues[status]
+  }
+
+  const handleSelectAccount = (account: Options | null) => {
+    if (!account) {
+      setValue('account', '')
+      setValue('conciliationDescription', '')
+    } else {
+      setValue('account', account.label)
+      setValue('conciliationDescription', account.description)
+    }
   }
 
   const onSubmit = (formData: FormData, e?: React.KeyboardEvent | React.MouseEvent) => {
@@ -144,6 +216,22 @@ const ConciliationItem = (props: ConciliationItemProps) => {
   const handleCancel = (e?: React.KeyboardEvent | React.MouseEvent) => {
     toggleDrawer(anchor, false, null)(e as React.KeyboardEvent | React.MouseEvent)
   }
+
+  // Usar o watch para verificar o valor de account
+  const watchedAccount = watch('conciliationDescription')
+
+  // Quando a conta for observada, atualize o search para mostrar o valor corretamente no autocomplete
+  useEffect(() => {
+    if (watchedAccount) {
+      setSearch(watchedAccount)
+
+      const selectedAccount = options.find(option => option.description === watchedAccount)
+
+      if (selectedAccount) {
+        setValue('account', selectedAccount.label)
+      }
+    }
+  }, [options, setValue, watchedAccount])
 
   return (
     <Card>
@@ -198,17 +286,46 @@ const ConciliationItem = (props: ConciliationItemProps) => {
               name='account'
               control={control}
               rules={{ required: true }}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <CustomTextField
-                  fullWidth
-                  required
-                  value={value}
-                  onBlur={onBlur}
-                  onChange={e => onChange(applyAccountNumberMask(e.target.value))}
-                  label={transactionTypeConciliation === 'DEBIT' ? 'Conta Crédito' : 'Conta Débito'}
-                  placeholder='Ex: 12345678'
-                  error={Boolean(errors.account)}
-                  {...(errors.account && { helperText: errors.account.message })}
+              render={({ field }) => (
+                <CustomAutocomplete
+                  options={options}
+                  loading={isFetching}
+                  onInputChange={(event, newInputValue) => setSearch(newInputValue)}
+                  noOptionsText={
+                    options.length === 0
+                      ? 'Nenhum resultado encontrado'
+                      : options.length === 0 && search
+                      ? 'Nenhum resultado encontrado'
+                      : 'Digite para buscar'
+                  }
+                  loadingText='Carregando...'
+                  getOptionLabel={option => option.label + ' - ' + option.description}
+                  onBlur={field.onBlur}
+                  onChange={(event, newValue) => {
+                    handleSelectAccount(newValue)
+                  }}
+                  value={options.find(option => option.label === field.value) || null}
+                  renderInput={params => (
+                    <CustomTextField
+                      {...params}
+                      fullWidth
+                      required
+                      value={options.find(option => option.id === field.value)?.label || ''}
+                      label={transactionTypeConciliation === 'DEBIT' ? 'Conta Crédito' : 'Conta Débito'}
+                      placeholder='Ex: 1 - Fornecedor 1'
+                      error={Boolean(errors.account)}
+                      {...(errors.account && { helperText: errors.account.message })}
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <Fragment>
+                            {isFetching ? <CircularProgress size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                          </Fragment>
+                        )
+                      }}
+                    />
+                  )}
                 />
               )}
             />

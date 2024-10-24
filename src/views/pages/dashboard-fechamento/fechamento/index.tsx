@@ -1,5 +1,5 @@
 // React and Next.js Imports
-import React, { Fragment, useCallback, useEffect, useMemo } from 'react'
+import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/router'
 
 // React Query Imports
@@ -84,6 +84,7 @@ const statusValuesText: any = {
 
 const Closure = () => {
   const router = useRouter()
+  const { toggleDrawer } = useDrawer()
   const queryClient = useQueryClient()
   const { toastError, toastSuccess } = useToast()
 
@@ -95,7 +96,7 @@ const Closure = () => {
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
   const isSmallerThanSm = useMediaQuery((theme: any) => theme.breakpoints.down('sm'))
 
-  const { toggleDrawer } = useDrawer()
+  const isFirstRender = useRef(true)
 
   const [referenceDate, setReferenceDate] = React.useState<any>('')
   const [closuresOptions, setClosuresOptions] = React.useState<ClosureOptionsProps[]>([])
@@ -125,15 +126,20 @@ const Closure = () => {
         referenceDate: paramsFinancialClosing.referenceDate
       }),
     {
+      onSuccess: async data => {
+        if (!isFirstRender.current) {
+          await updateQueryParams(data.monthlyFinancialCloseBank.monthlyFinancialCloseBankId, data.referenceDate)
+        }
+      },
       enabled: router.isReady,
       keepPreviousData: true,
-      staleTime: 1000 * 60 * 5
+      refetchOnWindowFocus: false
     }
   )
 
   const paramsClosures = useMemo(
-    () => ({ clientId: router.query.clientId as string, perPage: 1000 }),
-    [router.query.clientId]
+    () => ({ clientId: router.query.clientId as string, perPage: 1000, referenceDate }),
+    [referenceDate, router.query.clientId]
   )
 
   const { isError: isErrorClosures, isFetching: isLoadingClosures } = useQuery(
@@ -205,9 +211,30 @@ const Closure = () => {
       .finally(() => setOpenDeleteDialog(false))
   }
 
+  const updateQueryParams = useCallback(
+    async (id: string, referenceDate: string) => {
+      router.push(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, id, referenceDate }
+        },
+        undefined,
+        { shallow: true }
+      )
+    },
+    [router]
+  )
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+    }
+  }, [])
+
   useEffect(() => {
     if (financialData) {
-      setReferenceDate(handleConvertDateToString(dateProvider.adjustDate(financialData.referenceDate)))
+      const financialDate = handleConvertDateToString(dateProvider.adjustDate(financialData.referenceDate))
+      setReferenceDate(financialDate)
       dispatch(setMonthlyFinancialClose(financialData))
       dispatch(setShowStatements(false))
       dispatch(setShowConciliations(false))
@@ -219,19 +246,6 @@ const Closure = () => {
       setClosureSelected(monthlyFinancialClose.monthlyFinancialCloseBank.monthlyFinancialCloseBankId)
     }
   }, [closuresOptions, monthlyFinancialClose])
-
-  useEffect(() => {
-    const resetStates = () => {
-      setClosureSelected('')
-      dispatch(setMonthlyFinancialClose(null))
-    }
-
-    router.events.on('routeChangeStart', resetStates)
-
-    return () => {
-      router.events.off('routeChangeStart', resetStates)
-    }
-  }, [dispatch, router.events])
 
   if (isLoadingFinancial || (!monthlyFinancialClose && !isErrorFinancial))
     return (

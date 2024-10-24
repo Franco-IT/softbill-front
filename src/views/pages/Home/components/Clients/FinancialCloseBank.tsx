@@ -37,7 +37,7 @@ interface FinancialCloseBankProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const FinancialCloseBank = memo(({ data }: FinancialCloseBankProps) => {
   const { toastError } = useToast()
-  const dataCached = useGetFetchQuery<any>('client-dashboard')
+  const dataCached = useGetFetchQuery<any>(['client-dashboard'])
   const isSmallerThanSm = useMediaQuery((theme: any) => theme.breakpoints.down('sm'))
 
   const bankAccount = dataCached?.bankAccounts?.find((item: any) => item.bankAccountId === data.bankAccountId) || null
