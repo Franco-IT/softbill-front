@@ -12,7 +12,7 @@ import Actions from './Actions'
 import useGetFetchQuery from 'src/hooks/useGetFetchQuery'
 
 const CardPending = () => {
-  const data = useGetFetchQuery<any>('client-dashboard')
+  const data = useGetFetchQuery<any>(['client-dashboard'])
 
   const bankAccounts =
     data.bankAccounts.filter(

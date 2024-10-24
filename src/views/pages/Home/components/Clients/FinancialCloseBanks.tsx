@@ -13,7 +13,7 @@ import { dateProvider } from 'src/shared/providers'
 
 const FinancialCloseBanks = () => {
   const { getPreviousMonths, getMonthFromDate } = dateProvider
-  const dataCached = useGetFetchQuery<any>('client-dashboard')
+  const dataCached = useGetFetchQuery<any>(['client-dashboard'])
 
   const monthlyFinancialCloseBanks = dataCached.monthlyFinancialCloseBank
 

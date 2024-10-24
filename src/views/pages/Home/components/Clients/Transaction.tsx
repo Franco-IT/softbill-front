@@ -28,7 +28,7 @@ interface TransactionProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Transaction = memo(({ data, ...rest }: TransactionProps) => {
   const { anchor, open, toggleDrawer, children } = useDrawer()
-  const dataCached = useGetFetchQuery<any>('client-dashboard')
+  const dataCached = useGetFetchQuery<any>(['client-dashboard'])
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
 
   const bankAccount = dataCached?.bankAccounts?.find((item: any) => item.bankAccountId === data.bankAccountId) || null
