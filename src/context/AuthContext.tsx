@@ -153,8 +153,7 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
     onSettled: () => {
       setLoading(false)
     },
-    enabled: false,
-    staleTime: 1000 * 60 * 20
+    staleTime: 1000 * 60 * 10
   })
 
   const handleResetPassword = useCallback(
