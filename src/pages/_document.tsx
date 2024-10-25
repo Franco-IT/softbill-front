@@ -9,6 +9,7 @@ import createEmotionServer from '@emotion/server/create-instance'
 
 // ** Utils Imports
 import { createEmotionCache } from 'src/@core/utils/create-emotion-cache'
+import Script from 'next/script'
 
 class CustomDocument extends Document {
   render() {
@@ -24,7 +25,7 @@ class CustomDocument extends Document {
           />
           <link rel='apple-touch-icon' sizes='180x180' href='/images/favicon.png' />
           <link rel='shortcut icon' href='/images/favicon.png' />
-          <script id='google-tag-manager'>
+          <Script id='google-tag-manager' strategy='lazyOnload'>
             {`
             function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -32,7 +33,7 @@ class CustomDocument extends Document {
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer','GTM-KHKQ4GS5');
         `}
-          </script>
+          </Script>
         </Head>
         <body>
           <Main />
