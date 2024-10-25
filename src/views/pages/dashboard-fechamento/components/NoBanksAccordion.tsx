@@ -104,7 +104,7 @@ const NoBanksAccordion = memo(({ data }: NoBanksAccordionProps) => {
           }
         }}
       >
-        <CustomAvatar src={data.clientAvatar} content={getInitials(data.client.name)} />
+        <CustomAvatar src={data.client.avatar} content={getInitials(data.client.name)} />
         <Button
           LinkComponent={Link}
           href={`/clientes/${data.clientId}`}

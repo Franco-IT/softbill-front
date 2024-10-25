@@ -133,7 +133,7 @@ const NoClosureAccordion = memo(({ data, referenceDate }: NoClosureAccordionProp
           }
         }}
       >
-        <CustomAvatar src={data.clientAvatar} content={getInitials(data.client.name)} />
+        <CustomAvatar src={data.client.avatar} content={getInitials(data.client.name)} />
         <Button
           LinkComponent={Link}
           href={`/clientes/${data.clientId}`}

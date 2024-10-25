@@ -12,7 +12,7 @@ export class SetUserAvatarUseCase {
 
   async execute(data: ISetUserAvatarDTO) {
     try {
-      return this.userRepository.setAvatar(data)
+      return await this.userRepository.setAvatar(data)
     } catch (error) {
       throw errorProvider.handle(error, {}, 'Erro ao enviar imagem, tente novamente mais tarde.')
     }
