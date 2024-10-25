@@ -1,5 +1,5 @@
 // React Imports
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, memo, useMemo, useState } from 'react'
 
 // Next Imports
 import { useRouter } from 'next/router'
@@ -41,20 +41,22 @@ import { formatAmount } from 'src/utils/format'
 // Controllers and DTOs
 import { financialCloseController } from 'src/modules/financialClose'
 import { IUpdateBankTransactionDTO } from 'src/modules/financialClose/dtos/IUpdateBankTransactionDTO'
+import { IGetAccountingAccountsByClientDTO } from 'src/modules/accountingAccounts/dtos/IGetAccountingAccountsByClientDTO'
 
 // Errors
 import { AppError } from 'src/shared/errors/AppError'
-import { IGetAccountingAccountsByClientDTO } from 'src/modules/accountingAccounts/dtos/IGetAccountingAccountsByClientDTO'
 
 const schema = yup.object().shape({
   account: yup.string().required('Campo obrigatório'),
-  conciliationDescription: yup.string().required('Campo obrigatório')
+  conciliationDescription: yup.string().required('Campo obrigatório'),
+  accountingAccountDescription: yup.string().required('Campo obrigatório')
 })
 
 interface FormData {
   id: string
   account: string
   conciliationDescription: string
+  accountingAccountDescription: string
 }
 
 type Options = {
@@ -73,9 +75,10 @@ interface ConciliationItemProps {
   debitAccount: string
   extractDescription: string
   transactionTypeConciliation: string
+  accountingAccountDescription: string
 }
 
-const ConciliationItem = (props: ConciliationItemProps) => {
+const ConciliationItem = memo((props: ConciliationItemProps) => {
   const {
     id,
     status,
@@ -85,7 +88,8 @@ const ConciliationItem = (props: ConciliationItemProps) => {
     creditAccount,
     debitAccount,
     extractDescription,
-    transactionTypeConciliation
+    transactionTypeConciliation,
+    accountingAccountDescription
   } = props
 
   const router = useRouter()
@@ -94,7 +98,24 @@ const ConciliationItem = (props: ConciliationItemProps) => {
   const { toastError, toastSuccess } = useToast()
 
   const [options, setOptions] = useState<Options[]>([])
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState(accountingAccountDescription)
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    setValue,
+    watch
+  } = useForm({
+    defaultValues: {
+      id,
+      account: transactionTypeConciliation === 'DEBIT' ? creditAccount : debitAccount,
+      conciliationDescription,
+      accountingAccountDescription
+    } as FormData,
+    resolver: yupResolver(schema),
+    mode: 'onBlur'
+  })
 
   const params = useMemo(
     () => ({
@@ -122,26 +143,9 @@ const ConciliationItem = (props: ConciliationItemProps) => {
 
       arrayOptions.length > 0 && setOptions(arrayOptions)
     },
-    onError: () => {
-      setOptions([])
-    },
-    refetchOnWindowFocus: false
-  })
-
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    setValue,
-    watch
-  } = useForm({
-    defaultValues: {
-      id,
-      account: transactionTypeConciliation === 'DEBIT' ? creditAccount : debitAccount,
-      conciliationDescription
-    } as FormData,
-    resolver: yupResolver(schema),
-    mode: 'onBlur'
+    onError: () => setOptions([]),
+    refetchOnWindowFocus: false,
+    refetchOnMount: true
   })
 
   const typeValues: { [key: string]: string } = {
@@ -172,22 +176,24 @@ const ConciliationItem = (props: ConciliationItemProps) => {
   const handleSelectAccount = (account: Options | null) => {
     if (!account) {
       setValue('account', '')
-      setValue('conciliationDescription', '')
+      setValue('accountingAccountDescription', '')
     } else {
       setValue('account', account.label)
-      setValue('conciliationDescription', account.description)
+      setValue('accountingAccountDescription', account.description)
     }
   }
 
   const onSubmit = (formData: FormData, e?: React.KeyboardEvent | React.MouseEvent) => {
     const bodyCredit = {
       creditAccount: formData.account,
-      conciliationDescription: formData.conciliationDescription
+      conciliationDescription: formData.conciliationDescription,
+      accountingAccountDescription: formData.accountingAccountDescription
     }
 
     const bodyDebit = {
       debitAccount: formData.account,
-      conciliationDescription: formData.conciliationDescription
+      conciliationDescription: formData.conciliationDescription,
+      accountingAccountDescription: formData.accountingAccountDescription
     }
 
     const reqBody: IUpdateBankTransactionDTO['reqBody'] = {} as IUpdateBankTransactionDTO['reqBody']
@@ -217,21 +223,27 @@ const ConciliationItem = (props: ConciliationItemProps) => {
     toggleDrawer(anchor, false, null)(e as React.KeyboardEvent | React.MouseEvent)
   }
 
-  // Usar o watch para verificar o valor de account
-  const watchedAccount = watch('conciliationDescription')
-
-  // Quando a conta for observada, atualize o search para mostrar o valor corretamente no autocomplete
-  useEffect(() => {
-    if (watchedAccount) {
-      setSearch(watchedAccount)
-
-      const selectedAccount = options.find(option => option.description === watchedAccount)
-
-      if (selectedAccount) {
-        setValue('account', selectedAccount.label)
-      }
+  const handleCheckValue = (value: string) => {
+    if (
+      options.includes({
+        id,
+        label: value,
+        description: watch('accountingAccountDescription')
+      })
+    ) {
+      return options.find(option => option.label === value)
     }
-  }, [options, setValue, watchedAccount])
+
+    if (value === '') {
+      return null
+    }
+
+    return {
+      id,
+      label: value,
+      description: watch('accountingAccountDescription')
+    }
+  }
 
   return (
     <Card>
@@ -275,7 +287,7 @@ const ConciliationItem = (props: ConciliationItemProps) => {
           />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Typography sx={{ fontWeight: 500, color: 'text.secondary' }}>Descrição:</Typography>
+          <Typography sx={{ fontWeight: 500, color: 'text.secondary' }}>Descrição da Transação</Typography>
           <CustomTextField disabled multiline fullWidth value={extractDescription} />
         </Box>
       </CardContent>
@@ -290,7 +302,12 @@ const ConciliationItem = (props: ConciliationItemProps) => {
                 <CustomAutocomplete
                   options={options}
                   loading={isFetching}
-                  onInputChange={(event, newInputValue) => setSearch(newInputValue)}
+                  freeSolo={false} // Impede entrada manual
+                  onInputChange={(event, newInputValue) => {
+                    if (!field.value) {
+                      setSearch(newInputValue.split(' - ')[1])
+                    }
+                  }}
                   noOptionsText={
                     options.length === 0
                       ? 'Nenhum resultado encontrado'
@@ -304,14 +321,14 @@ const ConciliationItem = (props: ConciliationItemProps) => {
                   onChange={(event, newValue) => {
                     handleSelectAccount(newValue)
                   }}
-                  value={options.find(option => option.label === field.value) || null}
+                  value={handleCheckValue(field.value)}
                   renderInput={params => (
                     <CustomTextField
                       {...params}
                       fullWidth
                       required
                       value={options.find(option => option.id === field.value)?.label || ''}
-                      label={transactionTypeConciliation === 'DEBIT' ? 'Conta Crédito' : 'Conta Débito'}
+                      label={'Conta Contábil'}
                       placeholder='Ex: 1 - Fornecedor 1'
                       error={Boolean(errors.account)}
                       {...(errors.account && { helperText: errors.account.message })}
@@ -322,10 +339,33 @@ const ConciliationItem = (props: ConciliationItemProps) => {
                             {isFetching ? <CircularProgress size={20} /> : null}
                             {params.InputProps.endAdornment}
                           </Fragment>
-                        )
+                        ),
+                        readOnly: !!field.value
                       }}
                     />
                   )}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name='accountingAccountDescription'
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <CustomTextField
+                  {...field}
+                  multiline
+                  fullWidth
+                  required
+                  disabled
+                  label='Descrição Conta Contábil'
+                  placeholder='Escolha a conta contábil'
+                  error={Boolean(errors.accountingAccountDescription)}
+                  {...(errors.accountingAccountDescription && {
+                    helperText: errors.accountingAccountDescription.message
+                  })}
                 />
               )}
             />
@@ -352,8 +392,8 @@ const ConciliationItem = (props: ConciliationItemProps) => {
           <Grid item xs={12} md={6}>
             <Button
               fullWidth
-              variant='contained'
-              color='primary'
+              variant='tonal'
+              color='error'
               disabled={status === 'APPROVED'}
               startIcon={<IconifyIcon icon='tabler:x' fontSize='1.7rem' />}
               onClick={handleCancel}
@@ -376,6 +416,6 @@ const ConciliationItem = (props: ConciliationItemProps) => {
       </CardActions>
     </Card>
   )
-}
+})
 
 export default ConciliationItem
