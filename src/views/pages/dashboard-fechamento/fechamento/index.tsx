@@ -49,7 +49,7 @@ import { getInitials } from 'src/utils/getInitials'
 import { statusColorsMUI, typesIntegration } from '../utils'
 
 // Redux Actions
-import { setMonthlyFinancialClose, setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
+import { setMonthlyFinancialClose } from 'src/store/modules/closing/reducer'
 
 // Types
 import { ClosureOptionsProps, StatusValue } from '../types'
@@ -62,6 +62,7 @@ import { financialCloseController } from 'src/modules/financialClose'
 
 // Erros
 import { AppError } from 'src/shared/errors/AppError'
+import Link from 'next/link'
 
 const closureSituation: Record<StatusValue, string> = {
   PENDING: 'Extrato Pendente',
@@ -236,8 +237,6 @@ const Closure = () => {
       const financialDate = handleConvertDateToString(dateProvider.adjustDate(financialData.referenceDate))
       setReferenceDate(financialDate)
       dispatch(setMonthlyFinancialClose(financialData))
-      dispatch(setShowStatements(false))
-      dispatch(setShowConciliations(false))
     }
   }, [dispatch, financialData])
 
@@ -266,7 +265,15 @@ const Closure = () => {
                     src={monthlyFinancialClose?.clientAvatar}
                     color={statusColorsMUI[monthlyFinancialClose.status]}
                   />
-                  <Typography variant='h5'>{formatNameUser(monthlyFinancialClose?.clientName)}</Typography>
+                  <Typography
+                    variant='h5'
+                    component={Link}
+                    href={'/clientes/' + monthlyFinancialClose.clientId}
+                    target='_blank'
+                    sx={{ textDecoration: 'none' }}
+                  >
+                    {formatNameUser(monthlyFinancialClose?.clientName)}
+                  </Typography>
                   <CustomChip
                     rounded
                     skin='light'
