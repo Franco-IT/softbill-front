@@ -234,7 +234,7 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
       return options.find(option => option.label === value)
     }
 
-    if (value === '') {
+    if (!value) {
       return null
     }
 
@@ -302,7 +302,6 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
                 <CustomAutocomplete
                   options={options}
                   loading={isFetching}
-                  freeSolo={false} // Impede entrada manual
                   onInputChange={(event, newInputValue) => {
                     if (!field.value) {
                       setSearch(newInputValue.split(' - ')[1])
