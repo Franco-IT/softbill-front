@@ -156,7 +156,7 @@ const App = (props: ExtendedAppProps) => {
                               {getLayout(
                                 <ErrorBoundary>
                                   <Component {...pageProps} />
-                                  <GoogleTagManager gtmId='GTM-KHKQ4GS5' />
+                                  {process.env.NODE_ENV !== 'development' && <GoogleTagManager gtmId='GTM-KHKQ4GS5' />}
                                 </ErrorBoundary>
                               )}
                             </Provider>
