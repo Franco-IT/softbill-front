@@ -18,7 +18,6 @@ import { useQueryClient } from 'react-query'
 
 // Utils
 import { formatAmount } from 'src/utils/format'
-import { applyAccountNumberMask } from 'src/utils/inputs'
 
 // Services
 import { api } from 'src/services/api'
@@ -29,7 +28,6 @@ import toast from 'react-hot-toast'
 export type ColorType = 'primary' | 'error' | 'success' | 'secondary' | 'info' | 'warning' | undefined
 
 const schema = yup.object().shape({
-  account: yup.string().required('Campo obrigatório'),
   conciliationDescription: yup.string().required('Campo obrigatório')
 })
 
@@ -53,18 +51,7 @@ interface EditTransactionProps {
 }
 
 const EditTransaction = (props: EditTransactionProps) => {
-  const {
-    id,
-    status,
-    amount,
-    validated,
-    conciliationDescription,
-    creditAccount,
-    debitAccount,
-    extractDescription,
-    transactionTypeExtract,
-    transactionTypeConciliation
-  } = props
+  const { id, status, amount, validated, conciliationDescription, extractDescription, transactionTypeExtract } = props
 
   const { anchor, toggleDrawer } = useDrawer()
   const queryClient = useQueryClient()
@@ -76,7 +63,6 @@ const EditTransaction = (props: EditTransactionProps) => {
   } = useForm({
     defaultValues: {
       id,
-      account: applyAccountNumberMask(transactionTypeExtract === 'DEBIT' ? debitAccount : creditAccount),
       conciliationDescription
     } as FormData,
     resolver: yupResolver(schema),
@@ -113,22 +99,8 @@ const EditTransaction = (props: EditTransactionProps) => {
   }
 
   const onSubmit = (data: FormData, e?: React.KeyboardEvent | React.MouseEvent) => {
-    const bodyCredit = {
-      creditAccount: data.account,
-      conciliationDescription: data.conciliationDescription
-    }
-
-    const bodyDebit = {
-      debitAccount: data.account,
-      conciliationDescription: data.conciliationDescription
-    }
-
-    const requestBody = new Object()
-
-    Object.assign(requestBody, transactionTypeConciliation === 'DEBIT' ? bodyCredit : bodyDebit)
-
     api
-      .put('transactions/' + data.id, requestBody)
+      .put('transactions/' + data.id, data)
       .then(response => {
         if (response.status === 200) {
           queryClient.invalidateQueries(['client-pending-transactions-list'])
@@ -200,26 +172,6 @@ const EditTransaction = (props: EditTransactionProps) => {
       </CardContent>
       <CardActions>
         <Grid container spacing={5}>
-          <Grid item xs={12}>
-            <Controller
-              name='account'
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <CustomTextField
-                  fullWidth
-                  required
-                  value={value || ''}
-                  onBlur={onBlur}
-                  onChange={e => onChange(applyAccountNumberMask(e.target.value))}
-                  label={transactionTypeExtract === 'DEBIT' ? 'Conta Destino' : 'Conta Origem'}
-                  placeholder='Ex: 12345678'
-                  error={Boolean(errors.account)}
-                  {...(errors.account && { helperText: errors.account.message })}
-                />
-              )}
-            />
-          </Grid>
           <Grid item xs={12}>
             <Controller
               name='conciliationDescription'

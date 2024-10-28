@@ -380,8 +380,8 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
                   multiline
                   fullWidth
                   required
-                  label='Origem'
-                  placeholder='Digite a origem da transação'
+                  label='Histórico'
+                  placeholder='Digite o histórico da conciliação'
                   error={Boolean(errors.conciliationDescription)}
                   {...(errors.conciliationDescription && { helperText: errors.conciliationDescription.message })}
                 />

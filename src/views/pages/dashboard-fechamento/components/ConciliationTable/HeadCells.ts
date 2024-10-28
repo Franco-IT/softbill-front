@@ -38,7 +38,7 @@ const HeadCells: HeadCellProps[] = [
   {
     id: 'origin',
     disablePadding: false,
-    label: 'Origem'
+    label: 'Histórico'
   }
 ]
 
