@@ -77,7 +77,6 @@ const AccountingAccounts = () => {
     isError
   } = useAccountingAccountsByClient(requestParams, {
     enabled: router.isReady,
-    staleTime: 1000 * 60 * 5,
     keepPreviousData: true
   })
 

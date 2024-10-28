@@ -121,7 +121,8 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
     () => ({
       clientId: router.query.clientId as string,
       params: {
-        search
+        search,
+        perPage: 50000
       }
     }),
     [router.query.clientId, search]
@@ -145,7 +146,7 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
     },
     onError: () => setOptions([]),
     refetchOnWindowFocus: false,
-    refetchOnMount: true
+    enabled: !!params
   })
 
   const typeValues: { [key: string]: string } = {
@@ -327,6 +328,11 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
                       fullWidth
                       required
                       value={options.find(option => option.id === field.value)?.label || ''}
+                      onChange={e => {
+                        if (!field.value) {
+                          setSearch(e.target.value)
+                        }
+                      }}
                       label={'Conta Contábil'}
                       placeholder='Ex: 1 - Fornecedor 1'
                       error={Boolean(errors.account)}
