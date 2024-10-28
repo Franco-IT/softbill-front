@@ -93,6 +93,11 @@ export const errors = {
   },
   500: {
     'Error: This OFX has transactions isnt in the same month of the current monthly financial close ':
-      'Este OFX possui transações que não estão no mesmo mês do fechamento financeiro mensal atual, tente novamente mais tarde.'
+      'Este OFX possui transações que não estão no mesmo mês do fechamento financeiro mensal atual, tente novamente mais tarde.',
+    'Error: Fail on find client by OFX': 'Falha ao encontrar cliente pelo OFX, tente novamente mais tarde.',
+    'Error: Client found isnt equals of client on OFX':
+      'Cliente encontrado não é igual ao cliente no OFX, tente novamente mais tarde.',
+    'Error: Conciliation not open': 'Conciliação não aberta, tente novamente mais tarde.',
+    'Error: Bank already conciliated': 'Banco já conciliado, tente novamente mais tarde.'
   }
 }
