@@ -32,6 +32,9 @@ import AuthGuard from 'src/@core/components/auth/AuthGuard'
 import GuestGuard from 'src/@core/components/auth/GuestGuard'
 import DynamicSEO from 'src/components/DynamicSEO/index'
 
+// ** Google Tag Manager
+import { GoogleTagManager } from '@next/third-parties/google'
+
 // ** Error Boundary
 import ErrorBoundary from 'src/components/ErrorBoundary'
 
@@ -153,6 +156,7 @@ const App = (props: ExtendedAppProps) => {
                               {getLayout(
                                 <ErrorBoundary>
                                   <Component {...pageProps} />
+                                  <GoogleTagManager gtmId='GTM-KHKQ4GS5' />
                                 </ErrorBoundary>
                               )}
                             </Provider>
