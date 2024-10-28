@@ -145,7 +145,8 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
       arrayOptions.length > 0 && setOptions(arrayOptions)
     },
     onError: () => setOptions([]),
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    enabled: !!params
   })
 
   const typeValues: { [key: string]: string } = {
@@ -327,6 +328,11 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
                       fullWidth
                       required
                       value={options.find(option => option.id === field.value)?.label || ''}
+                      onChange={e => {
+                        if (!field.value) {
+                          setSearch(e.target.value)
+                        }
+                      }}
                       label={'Conta Contábil'}
                       placeholder='Ex: 1 - Fornecedor 1'
                       error={Boolean(errors.account)}
