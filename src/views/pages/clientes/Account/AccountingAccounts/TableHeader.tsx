@@ -21,7 +21,7 @@ interface TableHeaderProps {
 }
 
 const TableHeader = (props: TableHeaderProps) => {
-  const { handleNumber, number, handleTransactionType, transactionType } = props
+  const { handleSearch, search, handleTransactionType, transactionType } = props
 
   const [open, setOpen] = useState(false)
   const [openImportFile, setOpenImportFile] = useState(false)
@@ -72,9 +72,9 @@ const TableHeader = (props: TableHeaderProps) => {
               <CustomTextField
                 fullWidth
                 label='Buscar Conta'
-                value={number}
+                value={search}
                 placeholder='Buscar Conta'
-                onChange={e => handleNumber(e.target.value)}
+                onChange={e => handleSearch(e.target.value)}
               />
             </Grid>
 

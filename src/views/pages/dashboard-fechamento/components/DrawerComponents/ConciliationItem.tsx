@@ -121,7 +121,8 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
     () => ({
       clientId: router.query.clientId as string,
       params: {
-        search
+        search,
+        perPage: 50000
       }
     }),
     [router.query.clientId, search]
@@ -144,8 +145,7 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
       arrayOptions.length > 0 && setOptions(arrayOptions)
     },
     onError: () => setOptions([]),
-    refetchOnWindowFocus: false,
-    refetchOnMount: true
+    refetchOnWindowFocus: false
   })
 
   const typeValues: { [key: string]: string } = {
