@@ -10,7 +10,8 @@ export const BB = {
     id: '',
     name: '',
     code: ''
-  }
+  },
+  accountingAccountNumber: ''
 }
 
 export const INTER = {
@@ -26,6 +27,7 @@ export const INTER = {
     name: '',
     code: ''
   },
+  accountingAccountNumber: '',
   files: []
 }
 
@@ -38,5 +40,6 @@ export const OFX = {
     name: '',
     code: ''
   },
+  accountingAccountNumber: ``,
   generatedBy: 'IMPORT'
 }

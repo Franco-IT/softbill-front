@@ -57,7 +57,13 @@ const Edit = ({ openEdit, handleEditClose, data }: EditProps) => {
     const schemaKeys = Object.keys(formComponents[form.generatedBy === 'API' ? form.bank.code : 'OFX'])
 
     for (const key of schemaKeys) {
-      if (dataKeys.includes(key)) formData.append(key, form[key])
+      if (dataKeys.includes(key)) {
+        if (key === 'accountingAccountNumber') {
+          formData.append(key, form[key].split(' - ')[0])
+        } else {
+          formData.append(key, form[key])
+        }
+      }
     }
 
     api

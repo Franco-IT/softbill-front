@@ -207,25 +207,39 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
     setActiveStep(prevActiveStep => prevActiveStep - 1)
   }, [activeStep, methods, operationType])
 
+  const createFormData = (data: Record<string, any>, operationType: string) => {
+    const formData = new FormData()
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (!value) return
+
+      switch (key) {
+        case 'files':
+          value.forEach((file: any) => formData.append(key, file))
+          break
+
+        case 'bank':
+          if (operationType === 'IMPORT') {
+            formData.append('bankId', value.id)
+          }
+          break
+
+        case 'accountingAccountNumber':
+          formData.append(key, value.split(' - ')[0])
+          break
+
+        default:
+          formData.append(key, value)
+      }
+    })
+
+    return formData
+  }
+
   const handleFinalSubmit = useCallback(
     (data: any) => {
       setLoading(true)
-      const dataKeys = Object.keys(data)
-
-      const formData = new FormData()
-
-      dataKeys.map(key => {
-        if (data[key]) {
-          if (key === 'files') {
-            data[key].map((file: any) => formData.append(key, file))
-          } else if (key === 'bank') {
-            operationType === 'IMPORT' ? formData.append('bankId', data[key].id) : delete data[key]
-          } else {
-            formData.append(key, data[key])
-          }
-        }
-      })
-
+      const formData = createFormData(data, operationType as string)
       api
         .post('/bankAccounts', formData, {
           headers: {
@@ -322,6 +336,9 @@ const BankLinkingStepper = memo(({ client }: BankLinkingStepperProps) => {
               <Typography variant='subtitle2' component='p'>
                 {stepsOptions[activeStep].description}
               </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Divider />
             </Grid>
             <Grid item xs={12}>
               {getStepContent(activeStep)}

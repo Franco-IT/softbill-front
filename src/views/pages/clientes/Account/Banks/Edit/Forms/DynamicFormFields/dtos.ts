@@ -5,6 +5,7 @@ export type BBValues = {
   bankClientSecret: string | undefined
   accountNumber: string | undefined
   agencyNumber: string | undefined
+  accountingAccountNumber: string | undefined
 }
 
 export type InterValues = {
@@ -12,12 +13,14 @@ export type InterValues = {
   bankClientSecret: string | undefined
   accountNumber: string | undefined
   agencyNumber: string | undefined
+  accountingAccountNumber: string | undefined
   files: File[]
 }
 
 export type OFXValues = {
   accountNumber: string | undefined
   agencyNumber: string | undefined
+  accountingAccountNumber: string | undefined
 }
 
 export interface TypeMapEntry extends Partial<ControllerRenderProps<FieldValues>> {

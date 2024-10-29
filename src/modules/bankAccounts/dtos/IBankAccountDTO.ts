@@ -21,5 +21,6 @@ export interface IBankAccountDTO {
   bankOFXAcctId?: string
   createdAt: string
   updatedAt: string
+  accountingAccountNumber: string
   bank: Bank
 }
