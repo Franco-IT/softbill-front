@@ -95,6 +95,9 @@ const BankInfo = ({ data }: BankInfoProps) => {
               <CustomInfoField label='Agência' value={data.agencyNumber} />
             </Grid>
             <Grid item xs={12}>
+              <CustomInfoField label='Conta Contábel' value={data.accountingAccountNumber} />
+            </Grid>
+            <Grid item xs={12}>
               <Box sx={{ display: 'flex' }}>
                 <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Status:</Typography>
                 <Chip

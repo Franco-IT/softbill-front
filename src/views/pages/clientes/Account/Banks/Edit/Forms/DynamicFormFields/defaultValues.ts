@@ -5,6 +5,7 @@ export const BB = {
   agencyNumber: '',
   bankId: '',
   clientId: '',
+  accountingAccountNumber: '',
   generatedBy: 'API'
 }
 
@@ -16,6 +17,7 @@ export const INTER = {
   bankId: '',
   clientId: '',
   generatedBy: 'API',
+  accountingAccountNumber: '',
   files: []
 }
 
@@ -23,7 +25,8 @@ export const OFX = {
   clientId: '',
   accountNumber: '',
   agencyNumber: '',
-  generatedBy: 'IMPORT'
+  generatedBy: 'IMPORT',
+  accountingAccountNumber: ''
 }
 
 export const defaultValuesObj: { [key: string]: any } = {

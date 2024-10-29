@@ -77,7 +77,8 @@ const AccountingAccounts = () => {
     isError
   } = useAccountingAccountsByClient(requestParams, {
     enabled: router.isReady,
-    keepPreviousData: true
+    keepPreviousData: true,
+    staleTime: 1000 * 60 * 5
   })
 
   const handleRequestSort = (event: MouseEvent<unknown>, property: any) => {

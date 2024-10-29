@@ -1,5 +1,5 @@
 import { BBValues, InterValues, OFXValues, TypeMapEntry } from './dtos'
-import { StringInput, SensitiveInput, FileInput } from './inputs'
+import { StringInput, SensitiveInput, FileInput, AccountingAccountsInput } from './inputs'
 import { applyAccountNumberMask, applyAgencyNumberMask } from 'src/utils/inputs'
 
 export type BBFields = keyof BBValues
@@ -24,6 +24,10 @@ const bbTypeMap: Record<BBFields, TypeMapEntry> = {
     Input: StringInput,
     inputProps: { label: 'Número da Agência', required: false, min: 4, placeholder: 'Ex: 1234' },
     mask: applyAgencyNumberMask
+  },
+  accountingAccountNumber: {
+    Input: AccountingAccountsInput,
+    inputProps: { label: 'Conta Contábel', required: true, placeholder: 'Ex: 1 - Fornecedor 1' }
   }
 }
 
@@ -46,6 +50,10 @@ const interTypeMap: Record<InterFields, TypeMapEntry> = {
     inputProps: { label: 'Número da Agência', required: false, min: 4, placeholder: 'Ex: 1234' },
     mask: applyAgencyNumberMask
   },
+  accountingAccountNumber: {
+    Input: AccountingAccountsInput,
+    inputProps: { label: 'Conta Contábel', required: true, placeholder: 'Ex: 1 - Fornecedor 1' }
+  },
   files: {
     Input: FileInput,
     inputProps: { label: 'Certificado Digital', required: true, bank: 'INTER' }
@@ -62,6 +70,10 @@ const OFXTypeMap: Record<OFXFields, TypeMapEntry> = {
     Input: StringInput,
     inputProps: { label: 'Número da Agência', required: false, min: 4, placeholder: 'Ex: 1234' },
     mask: applyAgencyNumberMask
+  },
+  accountingAccountNumber: {
+    Input: AccountingAccountsInput,
+    inputProps: { label: 'Conta Contábel', required: true, placeholder: 'Ex: 1 - Fornecedor 1' }
   }
 }
 

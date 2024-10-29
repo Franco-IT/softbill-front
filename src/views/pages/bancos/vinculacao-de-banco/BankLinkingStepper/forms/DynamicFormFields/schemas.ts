@@ -27,13 +27,15 @@ export const validationSchemaByBank: { [key: string]: any } = {
     bankClientId: yup.string().required('ClientID obrigatório'),
     bankClientSecret: yup.string().required('ClientSecret obrigatório'),
     accountNumber: yup.string().required('Número da conta obrigatório'),
-    agencyNumber: yup.string().required('Número da agência obrigatório').min(4, 'Mínimo de 4 caracteres')
+    agencyNumber: yup.string().required('Número da agência obrigatório').min(4, 'Mínimo de 4 caracteres'),
+    accountingAccountNumber: yup.string().required('Conta contábel obrigatória')
   }),
   '077': yup.object().shape({
     bankClientId: yup.string().required('ClientID obrigatório'),
     bankClientSecret: yup.string().required('ClientSecret obrigatório'),
     accountNumber: yup.string().required('Número da conta obrigatório'),
     agencyNumber: yup.string().required('Número da agência obrigatório').min(4, 'Mínimo de 4 caracteres'),
+    accountingAccountNumber: yup.string().required('Conta contábel obrigatória'),
     files: yup
       .array()
       .of(
