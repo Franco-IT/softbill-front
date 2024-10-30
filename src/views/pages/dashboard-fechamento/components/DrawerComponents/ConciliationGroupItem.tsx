@@ -33,14 +33,16 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import useToast from 'src/hooks/useToast'
 import { useQueryClient } from 'react-query'
 import { useDrawer } from 'src/hooks/useDrawer'
+import { useAppSelector } from 'src/hooks/useAppSelector'
 import { useAccountingAccountsByClient } from 'src/hooks/accountingAccounts/useAccountingAccountsByClient'
+
+// Services
+import { api } from 'src/services/api'
 
 // Utils
 import { formatAmount } from 'src/utils/format'
 
 // Controllers and DTOs
-import { financialCloseController } from 'src/modules/financialClose'
-import { IUpdateBankTransactionDTO } from 'src/modules/financialClose/dtos/IUpdateBankTransactionDTO'
 import { IGetAccountingAccountsByClientDTO } from 'src/modules/accountingAccounts/dtos/IGetAccountingAccountsByClientDTO'
 
 // Errors
@@ -65,7 +67,7 @@ type Options = {
   description: string
 }
 
-interface ConciliationItemProps {
+interface ConciliationGroupItemProps {
   id: string
   status: string
   amount: number
@@ -76,9 +78,10 @@ interface ConciliationItemProps {
   extractDescription: string
   transactionTypeConciliation: string
   accountingAccountDescription: string
+  bankAccountId: string
 }
 
-const ConciliationItem = memo((props: ConciliationItemProps) => {
+const ConciliationGroupItem = memo((props: ConciliationGroupItemProps) => {
   const {
     id,
     status,
@@ -89,13 +92,16 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
     debitAccount,
     extractDescription,
     transactionTypeConciliation,
-    accountingAccountDescription
+    accountingAccountDescription,
+    bankAccountId
   } = props
 
   const router = useRouter()
   const queryClient = useQueryClient()
   const { anchor, toggleDrawer } = useDrawer()
   const { toastError, toastSuccess } = useToast()
+
+  const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
 
   const [options, setOptions] = useState<Options[]>([])
   const [search, setSearch] = useState(accountingAccountDescription)
@@ -197,17 +203,23 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
       accountingAccountDescription: formData.accountingAccountDescription
     }
 
-    const reqBody: IUpdateBankTransactionDTO['reqBody'] = {} as IUpdateBankTransactionDTO['reqBody']
-
-    Object.assign(reqBody, transactionTypeConciliation === 'DEBIT' ? bodyCredit : bodyDebit)
-
-    const data: IUpdateBankTransactionDTO = {
-      transactionId: formData.id,
-      reqBody
+    const reqBody = {
+      description: extractDescription,
+      monthlyFinancialCloseId: monthlyFinancialClose.monthlyFinancialCloseId,
+      bankAccountId,
+      transactionType: transactionTypeConciliation,
+      updatedData: {
+        validated: true
+      }
     }
 
-    financialCloseController
-      .updateBankTransaction(data)
+    Object.assign(reqBody.updatedData, {
+      ...reqBody.updatedData,
+      ...(transactionTypeConciliation === 'DEBIT' ? bodyCredit : bodyDebit)
+    })
+
+    api
+      .put('transactions/by-description', reqBody)
       .then(response => {
         if (response.status === 200) {
           queryClient.invalidateQueries(['conciliations'])
@@ -424,4 +436,4 @@ const ConciliationItem = memo((props: ConciliationItemProps) => {
   )
 })
 
-export default ConciliationItem
+export default ConciliationGroupItem

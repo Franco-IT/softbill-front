@@ -63,6 +63,7 @@ import { financialCloseController } from 'src/modules/financialClose'
 // Erros
 import { AppError } from 'src/shared/errors/AppError'
 import Link from 'next/link'
+import ConciliationsTableByGroup from '../components/ConciliationsTableByGroup'
 
 const closureSituation: Record<StatusValue, string> = {
   PENDING: 'Extrato Pendente',
@@ -93,6 +94,7 @@ const Closure = () => {
   const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
   const showStatements = useAppSelector(state => state.ClosingReducer.showStatements)
   const showConciliations = useAppSelector(state => state.ClosingReducer.showConciliations)
+  const showConciliationsByGroup = useAppSelector(state => state.ClosingReducer.showConciliationsByGroup)
 
   const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'))
   const isSmallerThanSm = useMediaQuery((theme: any) => theme.breakpoints.down('sm'))
@@ -438,8 +440,8 @@ const Closure = () => {
         <Divider />
         {showStatements && <StatementsTable />}
         {showConciliations && <ConciliationTable />}
+        {showConciliationsByGroup && <ConciliationsTableByGroup />}
       </Card>
-
       {openDeleteDialog && (
         <DialogAlert
           open={openDeleteDialog}
