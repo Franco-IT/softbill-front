@@ -264,8 +264,6 @@ const Closure = () => {
       }
     }
 
-    router.events.on('routeChangeStart', handleRouteChange)
-
     return () => {
       router.events.off('routeChangeStart', handleRouteChange)
     }
