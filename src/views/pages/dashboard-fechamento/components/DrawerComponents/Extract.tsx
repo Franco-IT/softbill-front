@@ -37,7 +37,7 @@ import toast from 'react-hot-toast'
 import { useQueryClient } from 'react-query'
 
 // Store
-import { setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
+import { setShowConciliations, setShowStatements, setShowConciliationsByGroup } from 'src/store/modules/closing/reducer'
 
 // Utils
 import { statusColorsMUI, typesIntegration } from '../../utils'
@@ -170,6 +170,7 @@ const Extract = () => {
   const handleGenerateExtract = (e: React.KeyboardEvent | React.MouseEvent) => {
     showStatements ? queryClient.invalidateQueries(['financial-statements']) : dispatch(setShowStatements(true))
     dispatch(setShowConciliations(false))
+    dispatch(setShowConciliationsByGroup(false))
     toggleDrawer(anchor, false, null)(e)
   }
 

@@ -79,7 +79,7 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
           sx={{
             padding: 0
           }}
-          title='Conciliações Bancárias po Grupo'
+          title='Conciliações Bancárias por Grupo'
           action={
             <Button
               size='small'
