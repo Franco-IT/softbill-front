@@ -49,7 +49,12 @@ import { getInitials } from 'src/utils/getInitials'
 import { statusColorsMUI, typesIntegration } from '../utils'
 
 // Redux Actions
-import { setMonthlyFinancialClose } from 'src/store/modules/closing/reducer'
+import {
+  setMonthlyFinancialClose,
+  setShowConciliations,
+  setShowConciliationsByGroup,
+  setShowStatements
+} from 'src/store/modules/closing/reducer'
 
 // Types
 import { ClosureOptionsProps, StatusValue } from '../types'
@@ -229,12 +234,6 @@ const Closure = () => {
   )
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-    }
-  }, [])
-
-  useEffect(() => {
     if (financialData) {
       const financialDate = handleConvertDateToString(dateProvider.adjustDate(financialData.referenceDate))
       setReferenceDate(financialDate)
@@ -247,6 +246,30 @@ const Closure = () => {
       setClosureSelected(monthlyFinancialClose.monthlyFinancialCloseBank.monthlyFinancialCloseBankId)
     }
   }, [closuresOptions, monthlyFinancialClose])
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      if (url !== router.asPath) {
+        isFirstRender.current = true
+        dispatch(setShowStatements(false))
+        dispatch(setShowConciliations(false))
+        dispatch(setMonthlyFinancialClose(null))
+        dispatch(setShowConciliationsByGroup(false))
+      }
+    }
+
+    router.events.on('routeChangeStart', handleRouteChange)
+
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange)
+    }
+  }, [dispatch, router.events, router.asPath])
 
   if (isLoadingFinancial || (!monthlyFinancialClose && !isErrorFinancial))
     return (
