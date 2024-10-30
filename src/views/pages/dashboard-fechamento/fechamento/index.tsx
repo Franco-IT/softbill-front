@@ -139,7 +139,7 @@ const Closure = () => {
           await updateQueryParams(data.monthlyFinancialCloseBank.monthlyFinancialCloseBankId, data.referenceDate)
         }
       },
-      enabled: router.isReady,
+      enabled: router.isReady && !!paramsFinancialClosing,
       keepPreviousData: true,
       refetchOnWindowFocus: false
     }
@@ -269,7 +269,7 @@ const Closure = () => {
     }
   }, [dispatch, router.events, router.asPath])
 
-  if (isLoadingFinancial || (!monthlyFinancialClose && !isErrorFinancial))
+  if (isLoadingFinancial || !monthlyFinancialClose)
     return (
       <LoadingCard title='Carregando...' subtitle='Aguarde um momento' avatarColor='primary' icon='tabler:loader-2' />
     )
