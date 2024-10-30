@@ -159,6 +159,7 @@ const Extract = () => {
 
       await queryClient.invalidateQueries(['financial-closing'])
       await queryClient.invalidateQueries(['conciliations'])
+      await queryClient.invalidateQueries(['conciliations-by-group'])
       await queryClient.invalidateQueries(['financial-closing-dashboard'])
       await queryClient.invalidateQueries(['financial-closing-list'])
     } catch (e) {

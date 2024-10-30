@@ -45,9 +45,9 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
 
   const queryClient = useQueryClient()
 
-  const handleShowConciliationsByGroup = () => {
-    dispatch(setShowConciliations(false))
-    dispatch(setShowConciliationsByGroup(true))
+  const handleShowConciliations = () => {
+    dispatch(setShowConciliationsByGroup(false))
+    dispatch(setShowConciliations(true))
   }
 
   const handleValidate = (id: string) => {
@@ -79,15 +79,15 @@ const TableHeader = memo(({ searchProps }: TableHeaderProps) => {
           sx={{
             padding: 0
           }}
-          title='Conciliações Bancárias'
+          title='Conciliações Bancárias po Grupo'
           action={
             <Button
               size='small'
               variant='tonal'
-              startIcon={<IconifyIcon icon='fluent:group-list-24-regular' fontSize='1.7rem' />}
-              onClick={handleShowConciliationsByGroup}
+              startIcon={<IconifyIcon icon='fluent:list-24-regular' fontSize='1.7rem' />}
+              onClick={handleShowConciliations}
             >
-              Visualizar por Agrupamento
+              Visualizar por Conciliação
             </Button>
           }
         />

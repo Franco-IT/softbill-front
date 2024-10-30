@@ -14,7 +14,7 @@ import { useQueryClient } from 'react-query'
 import useToast from 'src/hooks/useToast'
 
 // Store
-import { setShowConciliations, setShowStatements } from 'src/store/modules/closing/reducer'
+import { setShowConciliations, setShowStatements, setShowConciliationsByGroup } from 'src/store/modules/closing/reducer'
 
 // Types
 import { ColorType } from '../../types'
@@ -71,8 +71,14 @@ const Conciliation = () => {
     )
   }
 
-  const handleGenerateConciliations = (e: React.KeyboardEvent | React.MouseEvent) => {
-    showConcilations ? queryClient.invalidateQueries(['conciliations']) : dispatch(setShowConciliations(true))
+  const handleGenerateConciliations = (e: React.KeyboardEvent | React.MouseEvent, type: string) => {
+    if (showConcilations) {
+      queryClient.invalidateQueries(['conciliations'])
+      queryClient.invalidateQueries(['conciliations-by-group'])
+    } else {
+      type === 'LIST' ? dispatch(setShowConciliations(true)) : dispatch(setShowConciliationsByGroup(true))
+    }
+
     dispatch(setShowStatements(false))
     toggleDrawer(anchor, false, null)(e)
   }
@@ -122,9 +128,21 @@ const Conciliation = () => {
               color='primary'
               startIcon={<IconifyIcon icon='tabler:eye' fontSize='1.7rem' />}
               disabled={statusValuesBoolean[status]}
-              onClick={e => handleGenerateConciliations(e)}
+              onClick={e => handleGenerateConciliations(e, 'LIST')}
             >
               Visualizar
+            </Button>
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              fullWidth
+              variant='contained'
+              color='primary'
+              startIcon={<IconifyIcon icon='tabler:eye' fontSize='1.7rem' />}
+              disabled={statusValuesBoolean[status]}
+              onClick={e => handleGenerateConciliations(e, 'GROUP')}
+            >
+              Visualizar por agrupamento
             </Button>
           </Grid>
           <Grid item xs={12}>
