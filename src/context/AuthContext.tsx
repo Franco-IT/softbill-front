@@ -109,7 +109,7 @@ const AuthProvider = ({ children, guestGuard }: Props) => {
       setUser(null)
       authChannel.postMessage('logout')
 
-      return router.push('/login')
+      return router.replace('/login')
     },
     {
       onSuccess: () => {
