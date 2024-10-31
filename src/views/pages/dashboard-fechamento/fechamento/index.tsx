@@ -259,15 +259,20 @@ const Closure = () => {
         isFirstRender.current = true
         dispatch(setShowStatements(false))
         dispatch(setShowConciliations(false))
-        dispatch(setMonthlyFinancialClose(null))
         dispatch(setShowConciliationsByGroup(false))
+
+        if (!monthlyFinancialClose) {
+          dispatch(setMonthlyFinancialClose(null))
+        }
       }
     }
+
+    router.events.on('routeChangeStart', handleRouteChange)
 
     return () => {
       router.events.off('routeChangeStart', handleRouteChange)
     }
-  }, [dispatch, router.events, router.asPath])
+  }, [dispatch, router.events, router.asPath, monthlyFinancialClose])
 
   if (isLoadingFinancial || !monthlyFinancialClose)
     return (
