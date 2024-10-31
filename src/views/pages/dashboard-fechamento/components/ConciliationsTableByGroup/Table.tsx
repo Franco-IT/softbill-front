@@ -1,5 +1,5 @@
 // React Imports
-import { Suspense, useMemo, memo, useState, useEffect, Fragment } from 'react'
+import { Suspense, useMemo, memo, useState, useEffect } from 'react'
 
 // Material UI Imports
 import {
@@ -211,7 +211,7 @@ const Table = memo(
                         <TableRow
                           hover
                           tabIndex={-1}
-                          key={row.id}
+                          key={row.id + Math.floor(Math.random() * 50000).toString()}
                           onClick={event => handleRowClick(event, row.id)}
                           selected={isItemSelected}
                           sx={{
@@ -224,7 +224,7 @@ const Table = memo(
                             }
                           }}
                         >
-                          <TableCell component='th' id={labelId} scope='row' padding='none'>
+                          <TableCell id={labelId} scope='row' padding='none'>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                               {renderInitials(row.bankName, {
                                 sx: {
@@ -290,94 +290,97 @@ const Table = memo(
                     }
 
                     return (
-                      <TableRow key={row.id}>
+                      <TableRow key={row.id + Math.floor(Math.random() * 50000).toString()}>
                         <TableCell colSpan={7}>
                           <CustomConciliationGroupAccordion data={row}>
-                            <Fragment>
-                              {row.data.map((rowItem: any) => (
-                                <TableRow
-                                  hover
-                                  key={row.id}
-                                  onClick={event => handleRowClick(event, rowItem.id)}
-                                  selected={isItemSelected}
-                                  sx={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    '& > *': { flex: 1 },
-                                    backgroundColor: rowColor[settings.mode][rowItem.status],
-                                    cursor: 'pointer',
-                                    '&:hover': {
-                                      backgroundColor: `${rowColor[settings.mode][rowItem.status]} !important`,
-                                      filter: 'brightness(0.9)',
-                                      transition: 'filter 0.3s'
-                                    }
-                                  }}
-                                >
-                                  <TableCell component='th' id={labelId} align='left' scope='row' padding='none'>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', py: 1.5 }}>
-                                      {renderInitials(rowItem.bankName, {
-                                        sx: {
-                                          mr: 2.5,
-                                          width: 38,
-                                          height: 38,
-                                          fontWeight: 500,
-                                          fontSize: (theme: any) => theme.typography.body1.fontSize
-                                        }
-                                      })}
-                                      <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-                                        <Typography
-                                          noWrap
-                                          sx={{
+                            {row.data.map((rowItem: any) => (
+                              <MuiTable size='small' key={rowItem.id}>
+                                <TableBody>
+                                  <TableRow
+                                    hover
+                                    onClick={event => handleRowClick(event, rowItem.id)}
+                                    selected={isItemSelected}
+                                    sx={{
+                                      width: '100%',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      '& > *': { flex: 1 },
+                                      backgroundColor: rowColor[settings.mode][rowItem.status],
+                                      cursor: 'pointer',
+                                      '&:hover': {
+                                        backgroundColor: `${rowColor[settings.mode][rowItem.status]} !important`,
+                                        filter: 'brightness(0.9)',
+                                        transition: 'filter 0.3s'
+                                      }
+                                    }}
+                                  >
+                                    <TableCell id={labelId} align='left' scope='row' padding='none'>
+                                      <Box sx={{ display: 'flex', alignItems: 'center', py: 1.5 }}>
+                                        {renderInitials(rowItem.bankName, {
+                                          sx: {
+                                            mr: 2.5,
+                                            width: 38,
+                                            height: 38,
                                             fontWeight: 500,
-                                            textDecoration: 'none',
-                                            color: 'text.secondary'
-                                          }}
+                                            fontSize: (theme: any) => theme.typography.body1.fontSize
+                                          }
+                                        })}
+                                        <Box
+                                          sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}
                                         >
-                                          {formatNameBank(rowItem.bankName)}
-                                        </Typography>
+                                          <Typography
+                                            noWrap
+                                            sx={{
+                                              fontWeight: 500,
+                                              textDecoration: 'none',
+                                              color: 'text.secondary'
+                                            }}
+                                          >
+                                            {formatNameBank(rowItem.bankName)}
+                                          </Typography>
+                                        </Box>
                                       </Box>
-                                    </Box>
-                                  </TableCell>
-                                  <TableCell align='left'>
-                                    <Typography noWrap sx={{ color: 'text.secondary' }}>
-                                      {handleCheckRowValue(applyAccountNumberMask(rowItem.creditAccount))}
-                                    </Typography>
-                                  </TableCell>
-                                  <TableCell align='left'>
-                                    <Typography noWrap sx={{ color: 'text.secondary' }}>
-                                      {handleCheckRowValue(applyAccountNumberMask(rowItem.debitAccount))}
-                                    </Typography>
-                                  </TableCell>
-                                  <TableCell align='left'>
-                                    <CustomChip
-                                      rounded
-                                      skin='light'
-                                      size='small'
-                                      label={handleCheckRowValue(typeValues[rowItem.transactionTypeConciliation])}
-                                      color={'secondary'}
-                                      sx={{ textTransform: 'uppercase', minWidth: 85 }}
-                                    />
-                                  </TableCell>
-                                  <TableCell align='left'>
-                                    <CustomChip
-                                      rounded
-                                      skin='light'
-                                      size='small'
-                                      label={formatAmount(rowItem.amount)}
-                                      color={'secondary'}
-                                      sx={{ textTransform: 'capitalize', minWidth: 85 }}
-                                    />
-                                  </TableCell>
-                                  <TableCell align='left'>
-                                    <RowItemLimited item={handleCheckRowValue(rowItem.extractDescription)} />
-                                  </TableCell>
-                                  <TableCell align='left'>
-                                    <RowItemLimited item={handleCheckRowValue(rowItem.conciliationDescription)} />
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </Fragment>
+                                    </TableCell>
+                                    <TableCell align='left'>
+                                      <Typography noWrap sx={{ color: 'text.secondary' }}>
+                                        {handleCheckRowValue(applyAccountNumberMask(rowItem.creditAccount))}
+                                      </Typography>
+                                    </TableCell>
+                                    <TableCell align='left'>
+                                      <Typography noWrap sx={{ color: 'text.secondary' }}>
+                                        {handleCheckRowValue(applyAccountNumberMask(rowItem.debitAccount))}
+                                      </Typography>
+                                    </TableCell>
+                                    <TableCell align='left'>
+                                      <CustomChip
+                                        rounded
+                                        skin='light'
+                                        size='small'
+                                        label={handleCheckRowValue(typeValues[rowItem.transactionTypeConciliation])}
+                                        color={'secondary'}
+                                        sx={{ textTransform: 'uppercase', minWidth: 85 }}
+                                      />
+                                    </TableCell>
+                                    <TableCell align='left'>
+                                      <CustomChip
+                                        rounded
+                                        skin='light'
+                                        size='small'
+                                        label={formatAmount(rowItem.amount)}
+                                        color={'secondary'}
+                                        sx={{ textTransform: 'capitalize', minWidth: 85 }}
+                                      />
+                                    </TableCell>
+                                    <TableCell align='left'>
+                                      <RowItemLimited item={handleCheckRowValue(rowItem.extractDescription)} />
+                                    </TableCell>
+                                    <TableCell align='left'>
+                                      <RowItemLimited item={handleCheckRowValue(rowItem.conciliationDescription)} />
+                                    </TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              </MuiTable>
+                            ))}
                           </CustomConciliationGroupAccordion>
                         </TableCell>
                       </TableRow>

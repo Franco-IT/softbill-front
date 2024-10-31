@@ -39,25 +39,6 @@ api.interceptors.request.use(
 
 let isErrorAuthenticating = false
 
-api.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 400 || error.response?.status === 401) {
-      if (error.response?.statusText === `Unauthorized`) {
-        if (!isErrorAuthenticating) {
-          isErrorAuthenticating = true
-          const authChannel: BroadcastChannel = new BroadcastChannel('auth')
-          authChannel.postMessage('logout')
-          toast.error('Sua sessão expirou, faça login novamente.')
-          setTimeout(() => (isErrorAuthenticating = false), 1000)
-        }
-      }
-    }
-
-    return Promise.reject(error)
-  }
-)
-
 function isErrorMessage(value: string): value is (typeof ErrorMessages)[keyof typeof ErrorMessages] {
   return Object.values(ErrorMessages).includes(value as any)
 }

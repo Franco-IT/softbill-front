@@ -25,7 +25,7 @@ const ConciliationsTableByGroup = () => {
   const monthlyFinancialClose = useAppSelector(state => state.ClosingReducer.monthlyFinancialClose) as any
   const { monthlyFinancialCloseBank } = monthlyFinancialClose
 
-  const [order, setOrder] = useState<Order>('asc')
+  const [order, setOrder] = useState<Order>('desc')
   const [orderBy, setOrderBy] = useState<keyof any>('createdAt')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
