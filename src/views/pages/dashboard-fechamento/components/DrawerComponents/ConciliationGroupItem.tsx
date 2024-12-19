@@ -116,8 +116,8 @@ const ConciliationGroupItem = memo((props: ConciliationGroupItemProps) => {
     defaultValues: {
       id,
       account: transactionTypeConciliation === 'DEBIT' ? creditAccount : debitAccount,
-      conciliationDescription,
-      accountingAccountDescription
+      conciliationDescription: conciliationDescription || '',
+      accountingAccountDescription: accountingAccountDescription || ''
     } as FormData,
     resolver: yupResolver(schema),
     mode: 'onBlur'
