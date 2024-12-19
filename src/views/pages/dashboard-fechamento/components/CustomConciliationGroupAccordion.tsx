@@ -145,11 +145,14 @@ const CustomConciliationGroupAccordion = memo(({ children, data }: CustomConcili
           </Box>
           <IconButton
             title='Preencher conciliações desse grupo'
-            color={data.validated === data.totalValidated ? 'success' : 'error'}
+            color={data.totalTransactions === data.totalValidated ? 'success' : 'error'}
             sx={{ ml: 4 }}
             onClick={handleClickGroup}
           >
-            <IconifyIcon icon={data.validated === data.totalValidated ? 'tabler:check' : 'tabler:x'} fontSize={20} />
+            <IconifyIcon
+              icon={data.totalTransactions === data.totalValidated ? 'tabler:check' : 'tabler:x'}
+              fontSize={20}
+            />
           </IconButton>
         </Box>
       </AccordionSummary>

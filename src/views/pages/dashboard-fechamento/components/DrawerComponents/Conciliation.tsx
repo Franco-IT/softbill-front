@@ -71,12 +71,15 @@ const Conciliation = () => {
     )
   }
 
-  const handleGenerateConciliations = (e: React.KeyboardEvent | React.MouseEvent, type: string) => {
-    if (showConcilations) {
-      queryClient.invalidateQueries(['conciliations'])
-      queryClient.invalidateQueries(['conciliations-by-group'])
+  const handleGenerateConciliations = async (e: React.KeyboardEvent | React.MouseEvent, type: string) => {
+    if (type === 'LIST') {
+      showConcilations && await queryClient.invalidateQueries(['conciliations'])
+      dispatch(setShowConciliations(true))
+      dispatch(setShowConciliationsByGroup(false))
     } else {
-      type === 'LIST' ? dispatch(setShowConciliations(true)) : dispatch(setShowConciliationsByGroup(true))
+      showConcilations && await queryClient.invalidateQueries(['conciliations-by-group'])
+      dispatch(setShowConciliationsByGroup(true))
+      dispatch(setShowConciliations(false))
     }
 
     dispatch(setShowStatements(false))

@@ -49,7 +49,12 @@ import { getInitials } from 'src/utils/getInitials'
 import { statusColorsMUI, typesIntegration } from '../utils'
 
 // Redux Actions
-import { setMonthlyFinancialClose } from 'src/store/modules/closing/reducer'
+import {
+  setMonthlyFinancialClose,
+  setShowConciliations,
+  setShowConciliationsByGroup,
+  setShowStatements
+} from 'src/store/modules/closing/reducer'
 
 // Types
 import { ClosureOptionsProps, StatusValue } from '../types'
@@ -233,6 +238,9 @@ const ClosureContent = () => {
       const financialDate = handleConvertDateToString(dateProvider.adjustDate(financialData.referenceDate))
       setReferenceDate(financialDate)
       dispatch(setMonthlyFinancialClose(financialData))
+      dispatch(setShowStatements(false))
+      dispatch(setShowConciliations(false))
+      dispatch(setShowConciliationsByGroup(false))
     }
   }, [dispatch, financialData])
 
