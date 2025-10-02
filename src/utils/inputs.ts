@@ -109,7 +109,7 @@ const applyAccountNumberMask = (value: string) => {
 
   value = value.replace(/\D/g, '')
 
-  if (value.length > 7) value = value.slice(0, 7) + '-' + value.slice(7, 8)
+  if (value.length > 15) value = value.slice(0, 15)
 
   return value
 }
